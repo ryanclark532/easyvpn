@@ -27,7 +27,8 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responseData := map[string]string{
-		"token": token,
+		"token":    token,
+		"is_admin": "true",
 	}
 
 	w.Header().Set("Content-Type", "application/json")
