@@ -1,10 +1,10 @@
 package utils
 
 import (
+	"easyvpn/src/dtos"
 	"fmt"
-	"time"
-
 	"github.com/dgrijalva/jwt-go"
+	"time"
 )
 
 var (
@@ -27,21 +27,33 @@ func CreateToken(userID int64) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) (jwt.MapClaims, error) {
+func VerifyToken(tokenString string) (*dtos.CheckTokenResponse, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			HandleError("unexpected signing method", "VerifyToken")
 			return nil, fmt.Errorf("unexpected signing method")
 		}
 		return secretKey, nil
 	})
 
 	if err != nil {
+		HandleError(err.Error(), "VerifyToken")
 		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims, nil
+		fmt.Println(claims["user_id"])
+
+		response := &dtos.CheckTokenResponse{
+			IsAdmin:    true,
+			TokenValid: true,
+		}
+		return response, nil
 	}
 
-	return nil, fmt.Errorf("invalid token")
+	response := &dtos.CheckTokenResponse{
+		IsAdmin:    false,
+		TokenValid: false,
+	}
+	return response, nil
 }

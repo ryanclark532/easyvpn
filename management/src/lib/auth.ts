@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
 
 export const token = writable<string>();
-export const is_admin = writable<boolean>()
 
 export async function handleLogin(e: any): Promise<void> {
 	const formData = new FormData(e.target);
@@ -16,16 +15,26 @@ export async function handleLogin(e: any): Promise<void> {
 		method: 'POST'
 	});
 	if (!response.ok) {
+
 	}
 
 	const json = await response.json();
-	console.log(json)
 	token.set(json.token);
-	is_admin.set(json.is_admin === 'true')
-
+	console.log(json)
+	/*
 	if(json.is_admin === 'true'){
 		window.location.href ="/admin"
 	} else {
 		window.location.href ="/"
 	}
+	*/
+
+}
+export function isAuthed(token: string){
+	console.log(token)
+	return true
+}
+
+export function isAuthedAdmin(token: string){
+	return true
 }
