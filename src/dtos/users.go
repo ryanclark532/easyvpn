@@ -1,5 +1,16 @@
 package dtos
 
+import "gorm.io/gorm"
+
+type User struct {
+	gorm.Model
+	ID       uint   `gorm:"primaryKey"`
+	Username string `gorm:"unique"`
+	Name     string
+	Password string
+	IsAdmin  bool
+}
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

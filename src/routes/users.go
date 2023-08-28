@@ -1,7 +1,10 @@
 package routes
 
 import (
+	"easyvpn/src/services"
 	"encoding/json"
+	"errors"
+	"gorm.io/gorm"
 	"net/http"
 
 	"easyvpn/src/dtos"
@@ -12,16 +15,22 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	var requestData dtos.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		utils.HandleError("Bad Request", "UserLogin")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	//Handle Auth stuff here
 
-	userID := int64(123)
-	token, err := utils.CreateToken(userID)
+	user, err := services.VerifyUser(requestData.Username, requestData.Password)
 	if err != nil {
-		utils.HandleError("Error Creating Token", "UserLogin")
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	token, err := utils.CreateToken(user.ID)
+	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -34,7 +43,6 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
-		utils.HandleError(err.Error(), "UserLogin")
 		return
 	}
 
@@ -44,14 +52,12 @@ func CheckUserToken(w http.ResponseWriter, r *http.Request) {
 	var requestData dtos.CheckTokenRequest
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		utils.HandleError(err.Error(), "CheckUserToken")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	check, err := utils.VerifyToken(requestData.Token)
 	if err != nil {
-		utils.HandleError(err.Error(), "CheckUserToken")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -64,7 +70,7 @@ func CheckUserToken(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
-		utils.HandleError(err.Error(), "CheckUserToken")
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 }

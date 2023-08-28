@@ -1,12 +1,11 @@
 <script lang="ts">
     import Sidepanel from "./sidepanel.svelte";
+    import {isAuthedAdmin} from "$lib/auth";
     import {onMount} from "svelte";
-    import {isAuthedAdmin, token} from "$lib/auth";
-    import { goto } from '$app/navigation';
 
-    onMount(()=>{
-        if(!isAuthedAdmin($token)){
-            goto("/login")
+    onMount(async () => {
+        if (await isAuthedAdmin() === false) {
+            window.location.href ="/login"
         }
     })
 </script>

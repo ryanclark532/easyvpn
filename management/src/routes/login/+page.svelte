@@ -1,5 +1,12 @@
 <script lang="ts">
 	import { handleLogin } from '$lib/auth';
+
+	async function login(e: any){
+		const success = await handleLogin(e)
+		if(success){
+			window.location.href ="/admin"
+		}
+	}
 </script>
 
 <section class="bg-gray-50 dark:bg-gray-900">
@@ -21,7 +28,7 @@
 				>
 					Sign in to your account
 				</h1>
-				<form class="space-y-4 md:space-y-6" on:submit={handleLogin}>
+				<form class="space-y-4 md:space-y-6" on:submit={login}>
 					<div>
 						<label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
 							>Your email</label

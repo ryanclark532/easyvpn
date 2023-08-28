@@ -11,7 +11,7 @@ var (
 	secretKey = []byte("your-secret-key")
 )
 
-func CreateToken(userID int64) (string, error) {
+func CreateToken(userID uint) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -30,20 +30,19 @@ func CreateToken(userID int64) (string, error) {
 func VerifyToken(tokenString string) (*dtos.CheckTokenResponse, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			HandleError("unexpected signing method", "VerifyToken")
-			return nil, fmt.Errorf("unexpected signing method")
+			return nil, HandleError("unexpected signing method", "VerifyToken")
 		}
 		return secretKey, nil
 	})
 
 	if err != nil {
-		HandleError(err.Error(), "VerifyToken")
-		return nil, err
+		return nil, HandleError(err.Error(), "VerifyToken")
+
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		fmt.Println(claims["user_id"])
-
+		//TODO add db check if userid is admin
 		response := &dtos.CheckTokenResponse{
 			IsAdmin:    true,
 			TokenValid: true,
