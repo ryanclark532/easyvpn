@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"fmt"
 	"math/big"
 	"os"
 	"time"
@@ -17,26 +16,26 @@ const KeyDir string = "./keys/"
 func GenerateRootKeyPair() error {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error generating private key: %s", err), "GenerateRootKeyPair")
+		return err
 	}
 	cert, err := createCertificate(key)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error creating certificate: %s", err), "GenerateRootKeyPair")
+		return err
 	}
 
 	certDer, err := selfSignCertificate(cert, key)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error signing certificate: %s", err), "GenerateRootKeyPair")
+		return err
 	}
 
 	err = saveCertificate(KeyDir+"root.crt", certDer)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error writing certificate to file: %s", err), "GenerateRootKeyPair")
+		return err
 	}
 
 	err = savePrivateKey(KeyDir+"root.key", key)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error writing private key to file: %s", err), "GenerateRootKeyPair")
+		return err
 	}
 
 	return nil
@@ -45,31 +44,31 @@ func GenerateRootKeyPair() error {
 func GenerateCertificateKeyPair(keyFile string, certFile string) error {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error generating private key: %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 	cert, err := createCertificate(key)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error creating certificate: %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 
 	rootCert, rootKey, err := loadKeyPair(KeyDir+"root.crt", KeyDir+"root.key")
 	if err != nil {
-		return HandleError(fmt.Sprintf("error getting certificates %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 
 	certDer, err := signCertificate(cert, rootKey, rootCert)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error signing certificate: %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 
 	err = saveCertificate(KeyDir+certFile, certDer)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error writing certificate to file: %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 
 	err = savePrivateKey(KeyDir+keyFile, key)
 	if err != nil {
-		return HandleError(fmt.Sprintf("error writing private key to file: %s", err), "GenerateCertificateKeyPair")
+		return err
 	}
 
 	return nil

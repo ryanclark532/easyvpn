@@ -1,7 +1,7 @@
 package main
 
 import (
-	"easyvpn/src/utils"
+	"easyvpn/src/database"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -11,11 +11,10 @@ import (
 )
 
 func main() {
-	err := utils.InitializeDB("../database.db")
+	err := database.InitializeDatabase()
 	if err != nil {
-		panic("Couldn't init DB")
+		panic(err)
 	}
-	fmt.Println("Database Connected")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/user/sign-in", routes.UserLogin).Methods(http.MethodPost)

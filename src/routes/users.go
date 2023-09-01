@@ -1,10 +1,10 @@
 package routes
 
 import (
+	"database/sql"
 	"easyvpn/src/services"
 	"encoding/json"
 	"errors"
-	"gorm.io/gorm"
 	"net/http"
 
 	"easyvpn/src/dtos"
@@ -21,15 +21,16 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := services.VerifyUser(requestData.Username, requestData.Password)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, sql.ErrNoRows) {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
+		utils.HandleError(err, "UserLogin")
 		return
 	}
 
-	token, err := utils.CreateToken(user.ID)
+	token, err := utils.CreateToken(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

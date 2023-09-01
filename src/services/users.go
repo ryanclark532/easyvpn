@@ -1,19 +1,19 @@
 package services
 
 import (
+	"easyvpn/src/database"
 	"easyvpn/src/dtos"
-	"easyvpn/src/utils"
 )
 
-func VerifyUser(username string, password string) (*dtos.User, error) {
-	db, err := utils.GetDB()
+func VerifyUser(username string, password string) (dtos.User, error) {
+	loginRequest := dtos.LoginRequest{
+		Username: username,
+		Password: password,
+	}
+
+	var user, err = database.GetUser(loginRequest)
 	if err != nil {
-		return nil, utils.HandleError(err.Error(), "VerifyUser")
+		return dtos.User{}, err
 	}
-	var user dtos.User
-	result := db.Where("username = ? AND password = ?", username, password).First(&user)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return &user, nil
+	return user, nil
 }
