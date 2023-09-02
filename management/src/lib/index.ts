@@ -1,2 +1,3 @@
 import { handleLogin } from './auth';
-export { handleLogin };
+import { createUser } from './users';
+export { handleLogin, createUser };

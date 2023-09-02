@@ -5,6 +5,8 @@ import (
 	"easyvpn/src/services"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/go-sql-driver/mysql"
 	"net/http"
 
 	"easyvpn/src/dtos"
@@ -74,4 +76,33 @@ func CheckUserToken(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req dtos.CreateUser
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		fmt.Println(err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, err = services.CreateUser(req.Username, req.Name, req.Password, req.IsAdmin, req.Enabled)
+	if err != nil {
+		fmt.Println(err.Error())
+		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
+			if mysqlErr.Number == 1062 {
+				w.WriteHeader(http.StatusConflict)
+				return
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	return
 }

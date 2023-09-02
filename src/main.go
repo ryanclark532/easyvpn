@@ -2,6 +2,7 @@ package main
 
 import (
 	"easyvpn/src/database"
+	"easyvpn/src/services"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -16,9 +17,13 @@ func main() {
 		panic(err)
 	}
 
+	users, _ := services.GetUsers()
+	fmt.Println(users)
+
 	r := mux.NewRouter()
 	r.HandleFunc("/user/sign-in", routes.UserLogin).Methods(http.MethodPost)
 	r.HandleFunc("/user/check-token", routes.CheckUserToken).Methods(http.MethodPost)
+	r.HandleFunc("/user", routes.CreateUser).Methods(http.MethodPost)
 	corsHandler := middleware.SetupCORS(r)
 
 	port := "8080"

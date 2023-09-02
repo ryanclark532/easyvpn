@@ -6,6 +6,15 @@ type User struct {
 	Name     string
 	Password string
 	IsAdmin  bool
+	Enabled  bool
+}
+
+type CreateUser struct {
+	Username string `json:"username"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	IsAdmin  bool   `json:"is_admin"`
+	Enabled  bool   `json:"enabled"`
 }
 
 type LoginRequest struct {
