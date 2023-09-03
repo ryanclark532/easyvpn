@@ -31,7 +31,7 @@ func GetUser(request interface{}) (dtos.User, error) {
 	var query string
 	var values []interface{}
 
-	query = "SELECT ID, username, name, password, IsAdmin FROM users WHERE "
+	query = "SELECT ID, username, name, password, IsAdmin FROM Users WHERE "
 
 	for i := 0; i < requestType.NumField(); i++ {
 		field := requestType.Field(i)
@@ -57,7 +57,7 @@ func GetUsers() ([]dtos.User, error) {
 	}
 	fmt.Println(db)
 
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := db.Query("SELECT * FROM Users")
 	if err != nil {
 		return nil, err // Return the error
 	}
@@ -68,7 +68,7 @@ func GetUsers() ([]dtos.User, error) {
 	for rows.Next() {
 		var user dtos.User
 
-		err := rows.Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin)
+		err := rows.Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled)
 		if err != nil {
 			return nil, err // Return the error
 		}
@@ -100,4 +100,23 @@ func CreateUser(Username string, Name string, Password string, IsAdmin bool, Ena
 		Password: Password,
 		IsAdmin:  IsAdmin,
 	}, nil
+}
+
+func FormatUsers(users []dtos.User) []dtos.FrontEndUser {
+	var formattedUsers []dtos.FrontEndUser
+	for i := range users {
+		u := users[i]
+		formattedUsers = append(formattedUsers, FormatUser(u))
+	}
+	return formattedUsers
+}
+
+func FormatUser(u dtos.User) dtos.FrontEndUser {
+	return dtos.FrontEndUser{
+		ID:       u.ID,
+		Username: u.Username,
+		Name:     u.Name,
+		IsAdmin:  u.IsAdmin,
+		Enabled:  u.Enabled,
+	}
 }

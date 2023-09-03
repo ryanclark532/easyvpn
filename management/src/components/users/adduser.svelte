@@ -2,7 +2,7 @@
 	import { userValidationMessage } from '../../stores/stores';
 	import { createUser } from '$lib';
 
-	let hidden: boolean = true;
+	let hidden: boolean = false;
 	let confirmed: boolean = false;
 
 	let name: string;

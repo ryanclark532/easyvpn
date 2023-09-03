@@ -1,4 +1,6 @@
-import { userValidationMessage } from '../stores/stores';
+import {users, userValidationMessage} from '../stores/stores';
+import type {UserCreationResponse, UserResponse} from "../types/types";
+import {typedFetch} from "$lib/fetch";
 
 function validateUser(name: string, username: string, password: string): boolean {
 	if (!name) {
@@ -34,7 +36,7 @@ export async function createUser(
 		enabled
 	};
 
-	const response = await fetch('http://localhost:8080/user', {
+	const response = await typedFetch<UserCreationResponse>('http://localhost:8080/user', {
 		method: 'POST',
 		body: JSON.stringify(body)
 	});
@@ -46,5 +48,17 @@ export async function createUser(
 		return false;
 	}
 	alert(`User ${username} Created`);
+	users.update((prev) => [...prev, response.data.user]);
 	return true;
+}
+
+
+export async function getUsers() {
+	const response = await typedFetch<UserResponse>('http://localhost:8080/user');
+	if (response.status!== 200) {
+//Some error occurred
+        return
+    }
+	users.set(response.data.users);
+	return response.data.users;
 }

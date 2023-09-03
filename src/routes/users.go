@@ -87,7 +87,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = services.CreateUser(req.Username, req.Name, req.Password, req.IsAdmin, req.Enabled)
+	user, err := services.CreateUser(req.Username, req.Name, req.Password, req.IsAdmin, req.Enabled)
 	if err != nil {
 		fmt.Println(err.Error())
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
@@ -103,6 +103,42 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	u := services.FormatUser(user)
+
+	responseData := map[string]interface{}{}
+	responseData["user"] = u
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	err = json.NewEncoder(w).Encode(responseData)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusCreated)
 	return
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := services.GetUsers()
+	if err != nil {
+		fmt.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	u := services.FormatUsers(users)
+
+	responseData := map[string]interface{}{}
+	responseData["users"] = u
+	responseData["count"] = len(u)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(responseData)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 }

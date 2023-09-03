@@ -1,6 +1,7 @@
 <script lang="ts">
     import Tablerow from "./tablerow.svelte"
-    import {checkboxMaster} from "../../stores/stores";
+	import {checkboxMaster, users} from "../../stores/stores";
+
 </script>
 
 <div class="overflow-x-auto">
@@ -15,14 +16,17 @@
 						class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 					/>
 				</th>
-                <th scope="col" class="px-4 py-3">Username</th>
+				<th scope="col" class="px-4 py-3">Name</th>
+				<th scope="col" class="px-4 py-3">Username</th>
 				<th scope="col" class="px-4 py-3">Last Logged In</th>
-				<th scope="col" class="px-4 py-3">Certificates</th>
+				<th scope="col" class="px-4 py-3">Enabled</th>
 				<th scope="col" class="px-4 py-3">Admin</th>
 			</tr>
 		</thead>
 		<tbody>
-			<Tablerow />
+		{#each $users as user}
+			<Tablerow username={user.Username} name={user.Name} IsAdmin={user.IsAdmin} Enabled={user.Enabled}/>
+		{/each}
 		</tbody>
 	</table>
 </div>

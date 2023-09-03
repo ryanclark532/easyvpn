@@ -17,6 +17,14 @@ type CreateUser struct {
 	Enabled  bool   `json:"enabled"`
 }
 
+type FrontEndUser struct {
+	ID       uint
+	Username string
+	Name     string
+	IsAdmin  bool
+	Enabled  bool
+}
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`

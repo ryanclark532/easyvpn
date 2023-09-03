@@ -24,6 +24,7 @@ func main() {
 	r.HandleFunc("/user/sign-in", routes.UserLogin).Methods(http.MethodPost)
 	r.HandleFunc("/user/check-token", routes.CheckUserToken).Methods(http.MethodPost)
 	r.HandleFunc("/user", routes.CreateUser).Methods(http.MethodPost)
+	r.HandleFunc("/user", routes.GetUsers).Methods(http.MethodGet)
 	corsHandler := middleware.SetupCORS(r)
 
 	port := "8080"

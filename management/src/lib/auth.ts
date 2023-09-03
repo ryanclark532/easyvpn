@@ -1,4 +1,6 @@
 import { authResponseMessage } from '../stores/stores';
+import {typedFetch} from "$lib/fetch";
+import type {AuthResponse, CheckTokenResponse} from "../types/types";
 
 function getToken(): { token: string | undefined; is_admin: boolean | undefined } {
 	if (localStorage) {
@@ -33,7 +35,7 @@ export async function handleLogin(e: any): Promise<boolean> {
 		return false;
 	}
 
-	const response = await fetch('http://localhost:8080/user/sign-in', {
+	const response = await typedFetch<AuthResponse>('http://localhost:8080/user/sign-in', {
 		body: JSON.stringify(body),
 		method: 'POST'
 	});
@@ -45,13 +47,12 @@ export async function handleLogin(e: any): Promise<boolean> {
 		authResponseMessage.set('Incorrect Username Or Password');
 		return false;
 	}
-	const json = await response.json();
 
-	if (!json.token && !json.is_admin) {
+	if (!response.data.token && !response.data.is_admin) {
 		return false;
 	}
 
-	setToken(json.token, json.is_admin);
+	setToken(response.data.token, response.data.is_admin);
 	return true;
 }
 
@@ -61,19 +62,15 @@ export async function isAuthed(): Promise<boolean> {
 		return false;
 	}
 	const body = {
-		token: token
+		token
 	};
 
-	const response = await fetch('http://localhost:8080/user/check-token', {
+	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/user/check-token', {
 		body: JSON.stringify(body),
 		method: 'POST'
 	});
-	if (!response.ok) {
-		return false;
-	}
 
-	const json = await response.json();
-	return json.token_valid;
+	return response.data.token_valid;
 }
 
 export async function isAuthedAdmin(): Promise<boolean> {
@@ -85,14 +82,10 @@ export async function isAuthedAdmin(): Promise<boolean> {
 		token
 	};
 
-	const response = await fetch('http://localhost:8080/user/check-token', {
+	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/user/check-token', {
 		body: JSON.stringify(body),
 		method: 'POST'
 	});
-	if (!response.ok) {
-		return false;
-	}
 
-	const json = await response.json();
-	return json.is_admin && json.token_valid;
+	return response.data.is_admin && response.data.token_valid;
 }
