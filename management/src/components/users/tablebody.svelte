@@ -1,7 +1,6 @@
 <script lang="ts">
-    import Tablerow from "./tablerow.svelte"
-	import {checkboxMaster, users} from "../../stores/stores";
-
+	import Tablerow from './tablerow.svelte';
+	import { checkboxMaster, users, usersCount } from '../../stores/stores';
 </script>
 
 <div class="overflow-x-auto">
@@ -12,7 +11,7 @@
 					<input
 						id="default-checkbox"
 						type="checkbox"
-                        bind:checked={$checkboxMaster}
+						bind:checked={$checkboxMaster}
 						class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
 					/>
 				</th>
@@ -24,9 +23,15 @@
 			</tr>
 		</thead>
 		<tbody>
-		{#each $users as user}
-			<Tablerow username={user.Username} name={user.Name} IsAdmin={user.IsAdmin} Enabled={user.Enabled}/>
-		{/each}
+			{#each $users as user}
+				<Tablerow
+					ID={user.ID}
+					username={user.Username}
+					name={user.Name}
+					IsAdmin={user.IsAdmin}
+					Enabled={user.Enabled}
+				/>
+			{/each}
 		</tbody>
 	</table>
 </div>
@@ -38,7 +43,7 @@
 		Showing
 		<span class="font-semibold text-gray-900 dark:text-white">1-10</span>
 		of
-		<span class="font-semibold text-gray-900 dark:text-white">1000</span>
+		<span class="font-semibold text-gray-900 dark:text-white">{$usersCount}</span>
 	</span>
 	<ul class="inline-flex items-stretch -space-x-px">
 		<li>

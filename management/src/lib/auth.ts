@@ -1,6 +1,6 @@
 import { authResponseMessage } from '../stores/stores';
-import {typedFetch} from "$lib/fetch";
-import type {AuthResponse, CheckTokenResponse} from "../types/types";
+import { typedFetch } from '$lib/fetch';
+import type { AuthResponse, CheckTokenResponse } from '../types/types';
 
 function getToken(): { token: string | undefined; is_admin: boolean | undefined } {
 	if (localStorage) {

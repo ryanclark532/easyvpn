@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { handleLogin } from '$lib';
-	import {authResponseMessage} from "../../stores/stores";
+	import { authResponseMessage } from '../../stores/stores';
 
 	async function login(e: any) {
 		const success = await handleLogin(e);
