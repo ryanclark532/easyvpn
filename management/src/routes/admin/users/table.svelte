@@ -5,23 +5,31 @@
 		TableBodyRow,
 		TableHead,
 		TableHeadCell,
-		Table
+		Table,
+		Checkbox
 	} from 'flowbite-svelte';
+	import { users } from '$lib/users';
 </script>
 
-<Table style="width: calc(100% - 256px); margin-left: 256px;">
+<Table divClass="w-full">
 	<TableHead>
-		<TableHeadCell padding="px-4 py-3" scope="col">Product name</TableHeadCell>
-		<TableHeadCell padding="px-4 py-3" scope="col">Brand</TableHeadCell>
-		<TableHeadCell padding="px-4 py-3" scope="col">Category</TableHeadCell>
-		<TableHeadCell padding="px-4 py-3" scope="col">Price</TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col"><Checkbox /></TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col">Name</TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col">Username</TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col">Last Logged In</TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col">Is Admin</TableHeadCell>
+		<TableHeadCell padding="px-4 py-3" scope="col">Enabled</TableHeadCell>
 	</TableHead>
 	<TableBody>
-		<TableBodyRow>
-			<TableBodyCell tdClass="px-4 py-3">test</TableBodyCell>
-			<TableBodyCell tdClass="px-4 py-3">test</TableBodyCell>
-			<TableBodyCell tdClass="px-4 py-3">test</TableBodyCell>
-			<TableBodyCell tdClass="px-4 py-3">test</TableBodyCell>
-		</TableBodyRow>
+		{#each $users as user}
+			<TableBodyRow>
+				<TableBodyCell tdClass="px-4 py-3"><Checkbox /></TableBodyCell>
+				<TableBodyCell tdClass="px-4 py-3">{user.Name}</TableBodyCell>
+				<TableBodyCell tdClass="px-4 py-3">{user.Username}</TableBodyCell>
+				<TableBodyCell tdClass="px-4 py-3">Yesterday</TableBodyCell>
+				<TableBodyCell tdClass="px-4 py-3">{user.IsAdmin}</TableBodyCell>
+				<TableBodyCell tdClass="px-4 py-3">{user.Enabled}</TableBodyCell>
+			</TableBodyRow>
+		{/each}
 	</TableBody>
 </Table>

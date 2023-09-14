@@ -9,7 +9,6 @@ export async function load() {
 	const users = await getUsers(token);
 
 	return {
-		token,
-		users
+		...users
 	};
 }

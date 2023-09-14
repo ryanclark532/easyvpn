@@ -14,8 +14,8 @@
 	};
 </script>
 
-<Sidebar style="height: 100vh; position: fixed;" class="bg-gray-50 h-full">
-	<SidebarWrapper>
+<Sidebar style="height: 100vh" class="h-full border-x-2 border-gray-200">
+	<SidebarWrapper class="bg-white">
 		<SidebarGroup>
 			<SidebarBrand {site} />
 			<SidebarItem label="Status" {spanClass} href="/admin/status">

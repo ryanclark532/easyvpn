@@ -54,7 +54,7 @@ export async function handleLogin(e: Event) {
 
 	if (response.data.token) {
 		setToken(response.data.token);
-		window.location.href = response.data.is_admin ? '/admin' : '/';
+		window.location.href = response.data.is_admin ? '/admin/status' : '/';
 	}
 }
 
