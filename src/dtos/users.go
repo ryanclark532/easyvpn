@@ -29,6 +29,11 @@ type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+type LoginResponse struct {
+	Token   string `json:"token"`
+	IsAdmin bool   `json:"is_admin"`
+	Error   string `json:"error"`
+}
 
 type CheckTokenRequest struct {
 	Token string `json:"token"`

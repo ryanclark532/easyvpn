@@ -1,10 +1,8 @@
 package routes
 
 import (
-	"database/sql"
 	"easyvpn/src/services"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"net/http"
@@ -21,30 +19,16 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := services.VerifyUser(requestData.Username, requestData.Password)
+	response, err := services.VerifyUser(requestData.Username, requestData.Password)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-		}
 		utils.HandleError(err, "UserLogin")
-		return
-	}
-
-	token, err := utils.CreateToken(user)
-	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	responseData := map[string]interface{}{}
-	responseData["token"] = token
-	responseData["is_admin"] = true
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		return
 	}
@@ -55,16 +39,12 @@ func CheckUserToken(w http.ResponseWriter, r *http.Request) {
 	var requestData dtos.CheckTokenRequest
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
+		utils.HandleError(err, "CheckUserToken")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	check, err := utils.VerifyToken(requestData.Token)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
+	check := utils.VerifyToken(requestData.Token)
 	responseData := map[string]interface{}{}
 	responseData["is_admin"] = check.IsAdmin
 	responseData["token_valid"] = check.TokenValid
@@ -73,6 +53,7 @@ func CheckUserToken(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
+		utils.HandleError(err, "CheckUserToken")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -82,7 +63,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req dtos.CreateUser
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		fmt.Println(err.Error())
+		utils.HandleError(err, "CreateUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -92,12 +73,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err.Error())
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
+				utils.HandleError(err, "CreateUser")
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
+			utils.HandleError(err, "CreateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		} else {
+			utils.HandleError(err, "CreateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -112,6 +96,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
+		utils.HandleError(err, "CreateUser")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -123,7 +108,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	users, err := services.GetUsers()
 	if err != nil {
-		fmt.Println(err.Error())
+		utils.HandleError(err, "GetUsers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -138,6 +123,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
+		utils.HandleError(err, "GetUsers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

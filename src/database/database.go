@@ -27,12 +27,12 @@ func InitializeDatabase() error {
 
 	// TODO extract this to a method
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS Users (
-		ID INTEGER PRIMARY KEY,
-		Username VARCHAR(255) UNIQUE NOT NULL,
-		Name VARCHAR(255) NOT NULL,
-		Password VARCHAR(255) NOT NULL,
-		IsAdmin BOOLEAN NOT NULL,
-	    Enabled BOOLEAN NOT NULL
+		id INTEGER PRIMARY KEY,
+		username VARCHAR(255) UNIQUE NOT NULL,
+		name VARCHAR(255) NOT NULL,
+		password VARCHAR(255) NOT NULL,
+		is_admin BOOLEAN NOT NULL,
+	    enabled BOOLEAN NOT NULL
 
 	);`)
 	if err != nil {

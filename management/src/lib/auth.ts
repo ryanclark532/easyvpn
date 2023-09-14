@@ -1,91 +1,103 @@
-import { authResponseMessage } from '../stores/stores';
+import { writable } from 'svelte/store';
+import type { DataWithStatus } from '../types/data-with-status';
 import { typedFetch } from '$lib/fetch';
-import type { AuthResponse, CheckTokenResponse } from '../types/types';
+import type { AuthResponse, CheckTokenResponse } from '../types/auth';
+import { redirect } from '@sveltejs/kit';
 
-function getToken(): { token: string | undefined; is_admin: boolean | undefined } {
+export const loginResponse = writable<DataWithStatus<string | AuthResponse>>({
+	data: undefined,
+	status: 'initial'
+});
+
+export function getToken(): string | undefined {
 	if (localStorage) {
-		return {
-			token: localStorage.getItem('token') ?? undefined,
-			is_admin: localStorage.getItem('is_admin') === 'true'
-		};
+		return localStorage.getItem('token') ?? undefined;
 	}
-	return {
-		token: undefined,
-		is_admin: undefined
-	};
+	console.log('localstorage undefined');
 }
 
-function setToken(token: string, is_admin: boolean) {
+function setToken(token: string) {
 	if (localStorage) {
 		localStorage.setItem('token', token);
-		localStorage.setItem('is_admin', `${is_admin}`);
 	}
 }
 
-export async function handleLogin(e: any): Promise<boolean> {
-	const formData = new FormData(e.target);
-	const body: { [key: string]: string } = {};
-
-	formData.forEach((value, key) => {
-		body[key] = value.toString();
+export async function handleLogin(e: Event) {
+	loginResponse.set({
+		status: 'loading',
+		data: undefined
 	});
+	e.preventDefault();
+	const formData = new FormData(e.target as HTMLFormElement);
+	const username = formData.get('username') as string;
+	const password = formData.get('password') as string;
 
-	if (!body['username'] || !body['password']) {
-		authResponseMessage.set('Username Or Password Not Provided');
-		return false;
+	if (!validateLoginAttempt(username, password)) {
+		loginResponse.set({
+			status: 'error',
+			data: 'Invalid username or password'
+		});
+		return;
 	}
 
 	const response = await typedFetch<AuthResponse>('http://localhost:8080/user/sign-in', {
+		body: JSON.stringify({ username, password }),
+		method: 'POST'
+	});
+	if (response.status >= 400 || response.data.error) {
+		loginResponse.set({
+			status: 'error',
+			data: response.data.error ?? 'Something Went Wrong, Please Try Again'
+		});
+		return;
+	}
+
+	if (response.data.token) {
+		setToken(response.data.token);
+		window.location.href = response.data.is_admin ? '/admin' : '/';
+	}
+}
+
+export async function getTokenValid(
+	token: string
+): Promise<DataWithStatus<CheckTokenResponse | undefined>> {
+	const body = {
+		token
+	};
+
+	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/user/check-token', {
 		body: JSON.stringify(body),
 		method: 'POST'
 	});
-	if (response.status >= 500) {
-		authResponseMessage.set('Internal Server Error, Please try again');
-		return false;
-	}
 	if (response.status >= 400) {
-		authResponseMessage.set('Incorrect Username Or Password');
-		return false;
+		return {
+			data: undefined,
+			status: 'error'
+		};
 	}
 
-	if (!response.data.token && !response.data.is_admin) {
-		return false;
-	}
+	return {
+		data: response.data,
+		status: 'ready'
+	};
+}
 
-	setToken(response.data.token, response.data.is_admin);
+function validateLoginAttempt(username: string | undefined, password: string | undefined) {
+	//TODO add some validations here
 	return true;
 }
 
-export async function isAuthed(): Promise<boolean> {
-	const { token } = getToken();
+export async function checkToken() {
+	const token = getToken();
 	if (!token) {
-		return false;
+		throw redirect(307, '/login');
 	}
-	const body = {
-		token
-	};
-
-	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/user/check-token', {
-		body: JSON.stringify(body),
-		method: 'POST'
-	});
-
-	return response.data.token_valid;
-}
-
-export async function isAuthedAdmin(): Promise<boolean> {
-	const { token } = getToken();
-	if (!token) {
-		return false;
+	const tokenCheck = await getTokenValid(token);
+	if (!tokenCheck || tokenCheck.status === 'error' || !tokenCheck.data?.token_valid) {
+		throw redirect(307, '/login');
 	}
-	const body = {
-		token
-	};
-
-	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/user/check-token', {
-		body: JSON.stringify(body),
-		method: 'POST'
-	});
-
-	return response.data.is_admin && response.data.token_valid;
+	if (!tokenCheck.data.is_admin) {
+		throw redirect(307, '/');
+	}
+	return token;
 }

@@ -1,24 +1,49 @@
 package services
 
 import (
+	"database/sql"
 	"easyvpn/src/database"
 	"easyvpn/src/dtos"
+	"easyvpn/src/utils"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
 )
 
-func VerifyUser(username string, password string) (dtos.User, error) {
-	loginRequest := dtos.LoginRequest{
+type UsernameSearch struct {
+	Username string
+}
+
+func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
+	loginRequest := UsernameSearch{
 		Username: username,
-		Password: password,
 	}
 
 	var user, err = GetUser(loginRequest)
 	if err != nil {
-		return dtos.User{}, err
+		return nil, err
 	}
-	return user, nil
+
+	if utils.CheckEmpty(dtos.User{}, user) {
+		return &dtos.LoginResponse{
+			Token:   "",
+			IsAdmin: true,
+			Error:   fmt.Sprintf("User %s not found", username),
+		}, nil
+	}
+
+	//TODO check password
+
+	token, err := utils.CreateToken(user)
+	if err != nil {
+
+	}
+
+	return &dtos.LoginResponse{
+		Token:   token,
+		IsAdmin: user.IsAdmin,
+	}, nil
 }
 
 func GetUser(request interface{}) (dtos.User, error) {
@@ -31,7 +56,7 @@ func GetUser(request interface{}) (dtos.User, error) {
 	var query string
 	var values []interface{}
 
-	query = "SELECT ID, username, name, password, IsAdmin FROM Users WHERE "
+	query = "SELECT id, username, name, password, is_admin FROM Users WHERE "
 
 	for i := 0; i < requestType.NumField(); i++ {
 		field := requestType.Field(i)
@@ -40,9 +65,10 @@ func GetUser(request interface{}) (dtos.User, error) {
 	}
 
 	query = strings.TrimSuffix(query, "AND ")
-
-	// Execute the query
 	err = db.QueryRow(query, values...).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin)
+	if errors.Is(err, sql.ErrNoRows) {
+		return dtos.User{}, nil
+	}
 	if err != nil {
 		return dtos.User{}, err
 	}
@@ -55,7 +81,6 @@ func GetUsers() ([]dtos.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(db)
 
 	rows, err := db.Query("SELECT * FROM Users")
 	if err != nil {
@@ -88,7 +113,7 @@ func CreateUser(Username string, Name string, Password string, IsAdmin bool, Ena
 	if err != nil {
 		return dtos.User{}, err
 	}
-	query := "INSERT INTO Users (username, name, password, IsAdmin, enabled) VALUES (?, ?, ?, ?, ?)"
+	query := "INSERT INTO Users (username, name, password, is_admin, enabled) VALUES (?, ?, ?, ?, ?)"
 	_, err = db.Exec(query, Username, Name, Password, IsAdmin, Enabled)
 	if err != nil {
 		return dtos.User{}, err
