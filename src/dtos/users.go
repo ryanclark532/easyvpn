@@ -17,6 +17,10 @@ type CreateUser struct {
 	Enabled  bool   `json:"enabled"`
 }
 
+type UserID struct {
+	ID []int `json:"id"`
+}
+
 type FrontEndUser struct {
 	ID       uint
 	Username string

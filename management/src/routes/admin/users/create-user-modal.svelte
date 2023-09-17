@@ -9,12 +9,17 @@
 	onDestroy(s);
 </script>
 
-<div class="float-right mt-7">
-	<Button on:click={() => (defaultModal = true)}>Create User</Button>
-</div>
-<Modal title="User Creation Successful" bind:open={createUserConfirmation} autoclose size="sm" class="w-full">
+<Button class="w-40" on:click={() => (defaultModal = true)}>New User</Button>
+
+<Modal
+	title="User Creation Successful"
+	bind:open={createUserConfirmation}
+	autoclose
+	size="sm"
+	class="w-full"
+>
 	<p class="mb-4 text-gray-500 dark:text-gray-300 text-center">
-        {$createUserResponse.data}
+		{$createUserResponse.data}
 	</p>
 </Modal>
 

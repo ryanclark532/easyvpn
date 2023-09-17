@@ -101,7 +101,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	return
 }
 
@@ -127,4 +126,55 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+	var req dtos.UserID
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "DeleteUser")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = services.DeleteUsers(req.ID)
+	if err != nil {
+		utils.HandleError(err, "DeleteUser")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return
+}
+
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	var req dtos.FrontEndUser
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "DeleteUser")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	u, err := services.UpdateUser(req)
+	if err != nil {
+		utils.HandleError(err, "DeleteUser")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	responseData := map[string]interface{}{}
+	responseData["user"] = u
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(responseData)
+	if err != nil {
+		utils.HandleError(err, "CreateUser")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	return
+
 }

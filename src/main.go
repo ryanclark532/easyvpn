@@ -23,8 +23,10 @@ func main() {
 
 	adminRouter := r.PathPrefix("/admin").Subrouter()
 	adminRouter.Use(middleware.CorsMiddleware, middleware.CheckAdminRoute)
-	adminRouter.HandleFunc("/get-users", routes.GetUsers).Methods(http.MethodGet, http.MethodOptions)
-	adminRouter.HandleFunc("/create-user", routes.CreateUser).Methods(http.MethodPost, http.MethodOptions)
+	adminRouter.HandleFunc("/user", routes.GetUsers).Methods(http.MethodGet, http.MethodOptions)
+	adminRouter.HandleFunc("/user", routes.CreateUser).Methods(http.MethodPost, http.MethodOptions)
+	adminRouter.HandleFunc("/user", routes.DeleteUser).Methods(http.MethodDelete, http.MethodOptions)
+	adminRouter.HandleFunc("/user", routes.DeleteUser).Methods(http.MethodPut, http.MethodOptions)
 
 	port := "8080"
 	fmt.Printf("Server is listening on port %s...\n", port)

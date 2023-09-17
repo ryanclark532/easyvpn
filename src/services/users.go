@@ -124,7 +124,71 @@ func CreateUser(Username string, Name string, Password string, IsAdmin bool, Ena
 		Name:     Name,
 		Password: Password,
 		IsAdmin:  IsAdmin,
+		Enabled:  Enabled,
 	}, nil
+}
+
+func DeleteUsers(IDs []int) error {
+	db, err := database.GetDB()
+	if err != nil {
+		return err
+	}
+
+	tableName := "Users"
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE ID IN (%v)", tableName, utils.JoinInts(IDs, ", "))
+	fmt.Println(query)
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateUser(request interface{}) (dtos.User, error) {
+	db, err := database.GetDB()
+	if err != nil {
+		return dtos.User{}, err
+	}
+
+	requestType := reflect.TypeOf(request)
+	tableName := "Users"
+	primaryKeyField := "ID"
+
+	query := fmt.Sprintf("UPDATE %s SET ", tableName)
+	var setValues []interface{}
+
+	for i := 0; i < requestType.Elem().NumField(); i++ {
+		field := requestType.Elem().Field(i)
+		fieldName := field.Name
+
+		if fieldName == primaryKeyField {
+			continue
+		}
+
+		query += fmt.Sprintf("%s = ?, ", fieldName)
+		setValues = append(setValues, reflect.ValueOf(request).Elem().Field(i).Interface())
+	}
+
+	query = strings.TrimSuffix(query, ", ")
+
+	query += fmt.Sprintf(" WHERE %s = ?", primaryKeyField)
+	setValues = append(setValues, reflect.ValueOf(request).Elem().FieldByName(primaryKeyField).Interface())
+
+	_, err = db.Exec(query, setValues...)
+	if err != nil {
+		return dtos.User{}, err
+	}
+
+	updatedUser := dtos.User{}
+	selectQuery := fmt.Sprintf("SELECT id, username, name, password, is_admin FROM %s WHERE %s = ?", tableName, primaryKeyField)
+	err = db.QueryRow(selectQuery, setValues[len(setValues)-1]).Scan(&updatedUser.ID, &updatedUser.Username, &updatedUser.Name, &updatedUser.Password, &updatedUser.IsAdmin)
+	if err != nil {
+		return dtos.User{}, err
+	}
+
+	return updatedUser, nil
 }
 
 func FormatUsers(users []dtos.User) []dtos.FrontEndUser {
