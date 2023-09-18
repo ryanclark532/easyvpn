@@ -20,7 +20,7 @@ export const selectedUsers = writable<User[]>([]);
 export const masterCheckbox = writable<boolean>(false);
 
 export async function getUsers(
-	token: string
+	token: string | undefined
 ): Promise<DataWithStatus<GetUsersResponse | undefined>> {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);

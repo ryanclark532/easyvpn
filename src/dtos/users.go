@@ -45,6 +45,7 @@ type LoginResponse struct {
 	IsAdmin         bool   `json:"is_admin"`
 	Error           string `json:"error"`
 	PasswordExpired bool   `json:"password_expired"`
+	ID              uint   `json:"id"`
 }
 
 type CheckTokenRequest struct {
@@ -52,6 +53,12 @@ type CheckTokenRequest struct {
 }
 
 type CheckTokenResponse struct {
-	IsAdmin    bool `json:"is_admin"`
-	TokenValid bool `json:"token_valid"`
+	IsAdmin         bool `json:"is_admin"`
+	TokenValid      bool `json:"token_valid"`
+	PasswordExpired bool `json:"password_expired"`
+}
+
+type ChangePasswordRequest struct {
+	Password string `json:"password"`
+	ID       string `json:"id"`
 }

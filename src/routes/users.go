@@ -198,3 +198,22 @@ func SetTemporaryPassword(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 	return
 }
+
+func ChangeUserPassword(w http.ResponseWriter, r *http.Request) {
+	var req dtos.ChangePasswordRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "ChangeUserPassword")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = services.ChangeUserPassword(req.ID, req.Password)
+	if err != nil {
+		utils.HandleError(err, "ChangeUserPassword")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return
+}

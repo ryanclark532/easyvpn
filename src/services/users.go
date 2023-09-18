@@ -54,11 +54,13 @@ func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(user.PasswordExpiry)
 
 	return &dtos.LoginResponse{
 		Token:           token,
 		IsAdmin:         user.IsAdmin,
 		PasswordExpired: user.PasswordExpiry.Before(time.Now()),
+		ID:              user.ID,
 	}, nil
 }
 
@@ -213,7 +215,22 @@ func SetTempUserPassword(IDs []int) error {
 	}
 	tempPassword := "changeme"
 
-	query := fmt.Sprintf("UPDATE users SET password='%s',password_expiry='%s'  WHERE ID IN (%v)", tempPassword, time.Now(), utils.JoinInts(IDs, ", "))
+	query := fmt.Sprintf("UPDATE users SET password='%s',password_expiry='%s'  WHERE ID IN (%v)", tempPassword, time.Now().Format(time.DateTime), utils.JoinInts(IDs, ", "))
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ChangeUserPassword(ID string, password string) error {
+	db, err := database.GetDB()
+	if err != nil {
+		return err
+	}
+
+	query := fmt.Sprintf("UPDATE Users SET password='%s',password_expiry='%s'  WHERE ID=%s", password, time.Now().Add(30*24*time.Hour).Format(time.DateTime), ID)
 	_, err = db.Exec(query)
 	if err != nil {
 		return err
