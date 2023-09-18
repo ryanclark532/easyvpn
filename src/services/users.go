@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 )
 
 type UsernameSearch struct {
@@ -28,21 +29,36 @@ func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
 	if utils.CheckEmpty(dtos.User{}, user) {
 		return &dtos.LoginResponse{
 			Token:   "",
-			IsAdmin: true,
+			IsAdmin: false,
 			Error:   fmt.Sprintf("User %s not found", username),
 		}, nil
 	}
 
-	//TODO check password
+	if user.Password != password {
+		return &dtos.LoginResponse{
+			Token:   "",
+			IsAdmin: false,
+			Error:   fmt.Sprintf("Password for %s is not correct", username),
+		}, nil
+	}
+
+	if !user.Enabled {
+		return &dtos.LoginResponse{
+			Token:   "",
+			IsAdmin: false,
+			Error:   fmt.Sprintf("User %s is not enabled", username),
+		}, nil
+	}
 
 	token, err := utils.CreateToken(user)
 	if err != nil {
-
+		return nil, err
 	}
 
 	return &dtos.LoginResponse{
-		Token:   token,
-		IsAdmin: user.IsAdmin,
+		Token:           token,
+		IsAdmin:         user.IsAdmin,
+		PasswordExpired: user.PasswordExpiry.Before(time.Now()),
 	}, nil
 }
 
@@ -56,7 +72,7 @@ func GetUser(request interface{}) (dtos.User, error) {
 	var query string
 	var values []interface{}
 
-	query = "SELECT id, username, name, password, is_admin FROM Users WHERE "
+	query = "SELECT id, username, name, password, is_admin, enabled, password_expiry FROM Users WHERE "
 
 	for i := 0; i < requestType.NumField(); i++ {
 		field := requestType.Field(i)
@@ -65,7 +81,7 @@ func GetUser(request interface{}) (dtos.User, error) {
 	}
 
 	query = strings.TrimSuffix(query, "AND ")
-	err = db.QueryRow(query, values...).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin)
+	err = db.QueryRow(query, values...).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
 	if errors.Is(err, sql.ErrNoRows) {
 		return dtos.User{}, nil
 	}
@@ -93,7 +109,7 @@ func GetUsers() ([]dtos.User, error) {
 	for rows.Next() {
 		var user dtos.User
 
-		err := rows.Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled)
+		err := rows.Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
 		if err != nil {
 			return nil, err // Return the error
 		}
@@ -113,8 +129,8 @@ func CreateUser(Username string, Name string, Password string, IsAdmin bool, Ena
 	if err != nil {
 		return dtos.User{}, err
 	}
-	query := "INSERT INTO Users (username, name, password, is_admin, enabled) VALUES (?, ?, ?, ?, ?)"
-	_, err = db.Exec(query, Username, Name, Password, IsAdmin, Enabled)
+	query := "INSERT INTO Users (username, name, password, is_admin, enabled, password_expiry) VALUES (?, ?, ?, ?, ?, ?)"
+	_, err = db.Exec(query, Username, Name, Password, IsAdmin, Enabled, time.Now().Add(30*24*time.Hour))
 	if err != nil {
 		return dtos.User{}, err
 	}
@@ -134,10 +150,9 @@ func DeleteUsers(IDs []int) error {
 		return err
 	}
 
-	tableName := "Users"
+	tableName := "users"
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE ID IN (%v)", tableName, utils.JoinInts(IDs, ", "))
-	fmt.Println(query)
 	_, err = db.Exec(query)
 	if err != nil {
 		return err
@@ -153,7 +168,7 @@ func UpdateUser(request interface{}) (dtos.User, error) {
 	}
 
 	requestType := reflect.TypeOf(request)
-	tableName := "Users"
+	tableName := "users"
 	primaryKeyField := "ID"
 
 	query := fmt.Sprintf("UPDATE %s SET ", tableName)
@@ -189,6 +204,22 @@ func UpdateUser(request interface{}) (dtos.User, error) {
 	}
 
 	return updatedUser, nil
+}
+
+func SetTempUserPassword(IDs []int) error {
+	db, err := database.GetDB()
+	if err != nil {
+		return err
+	}
+	tempPassword := "changeme"
+
+	query := fmt.Sprintf("UPDATE users SET password='%s',password_expiry='%s'  WHERE ID IN (%v)", tempPassword, time.Now(), utils.JoinInts(IDs, ", "))
+	_, err = db.Exec(query)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func FormatUsers(users []dtos.User) []dtos.FrontEndUser {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"easyvpn/src/database"
+	"easyvpn/src/services"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -16,6 +17,19 @@ func main() {
 		panic(err)
 	}
 
+	db, _ := database.GetDB()
+	_, err = db.Exec(`
+	INSERT INTO Users (username, name, password, is_admin, enabled, password_expiry)
+	VALUES ('test', 'Dummy User', 'test', false, true, CURRENT_TIMESTAMP);
+`)
+	fmt.Println(err)
+
+	users, err := services.GetUsers()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(users)
+
 	r := mux.NewRouter()
 	r.Use(middleware.CorsMiddleware)
 	r.HandleFunc("/user/sign-in", routes.UserLogin).Methods(http.MethodPost, http.MethodOptions)
@@ -26,7 +40,8 @@ func main() {
 	adminRouter.HandleFunc("/user", routes.GetUsers).Methods(http.MethodGet, http.MethodOptions)
 	adminRouter.HandleFunc("/user", routes.CreateUser).Methods(http.MethodPost, http.MethodOptions)
 	adminRouter.HandleFunc("/user", routes.DeleteUser).Methods(http.MethodDelete, http.MethodOptions)
-	adminRouter.HandleFunc("/user", routes.DeleteUser).Methods(http.MethodPut, http.MethodOptions)
+	adminRouter.HandleFunc("/user", routes.UpdateUser).Methods(http.MethodPut, http.MethodOptions)
+	adminRouter.HandleFunc("/user/set-temporary-password", routes.SetTemporaryPassword).Methods(http.MethodPut, http.MethodOptions)
 
 	port := "8080"
 	fmt.Printf("Server is listening on port %s...\n", port)

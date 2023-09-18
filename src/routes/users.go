@@ -3,7 +3,6 @@ package routes
 import (
 	"easyvpn/src/services"
 	"encoding/json"
-	"fmt"
 	"github.com/go-sql-driver/mysql"
 	"net/http"
 
@@ -70,7 +69,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	user, err := services.CreateUser(req.Username, req.Name, req.Password, req.IsAdmin, req.Enabled)
 	if err != nil {
-		fmt.Println(err.Error())
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
 				utils.HandleError(err, "CreateUser")
@@ -148,7 +146,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	var req dtos.FrontEndUser
+	var req dtos.FrontEndUsers
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
@@ -156,15 +154,19 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u, err := services.UpdateUser(req)
-	if err != nil {
-		utils.HandleError(err, "DeleteUser")
-		w.WriteHeader(http.StatusBadRequest)
-		return
+	var users []dtos.FrontEndUser
+	for _, user := range req.Users {
+		u, err := services.UpdateUser(user)
+		if err != nil {
+			utils.HandleError(err, "DeleteUser")
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		users = append(users, services.FormatUser(u))
 	}
 
 	responseData := map[string]interface{}{}
-	responseData["user"] = u
+	responseData["users"] = users
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -176,5 +178,23 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	return
+}
 
+func SetTemporaryPassword(w http.ResponseWriter, r *http.Request) {
+	var req dtos.UserID
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "SetTemporaryPassword")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = services.SetTempUserPassword(req.ID)
+	if err != nil {
+		utils.HandleError(err, "SetTemporaryPassword")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+	return
 }

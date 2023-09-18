@@ -32,9 +32,10 @@ func InitializeDatabase() error {
 		name VARCHAR(255) NOT NULL,
 		password VARCHAR(255) NOT NULL,
 		is_admin BOOLEAN NOT NULL,
-	    enabled BOOLEAN NOT NULL
-
+	    enabled BOOLEAN NOT NULL,
+		password_expiry DATE NOT NULL
 	);`)
+
 	if err != nil {
 		return err
 	}

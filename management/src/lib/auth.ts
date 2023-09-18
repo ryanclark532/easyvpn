@@ -9,6 +9,8 @@ export const loginResponse = writable<DataWithStatus<string | AuthResponse>>({
 	status: 'initial'
 });
 
+export const passwordChangeResponse = writable<DataWithStatus<any>>();
+
 export function getToken(): string | undefined {
 	if (localStorage) {
 		return localStorage.getItem('token') ?? undefined;
@@ -54,7 +56,11 @@ export async function handleLogin(e: Event) {
 
 	if (response.data.token) {
 		setToken(response.data.token);
-		window.location.href = response.data.is_admin ? '/admin/status' : '/';
+		window.location.href = response.data.password_expired
+			? '/login/reset'
+			: response.data.is_admin
+			? '/admin/status'
+			: '/';
 	}
 }
 
@@ -97,7 +103,7 @@ export async function checkToken() {
 		throw redirect(307, '/login');
 	}
 	if (!tokenCheck.data.is_admin) {
-		throw redirect(307, '/');
+		throw redirect(307, '/user');
 	}
 	return token;
 }

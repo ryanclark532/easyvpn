@@ -127,6 +127,40 @@ export async function deleteUsers(usersToDelete: User[]) {
 	});
 }
 
+export async function setTemporaryPassword(usersToSet: User[]) {
+	const body = {
+		ID: usersToSet.map((u) => u.ID)
+	};
+	if (body.ID.length === 0) {
+		actionResponse.set({
+			status: 'error',
+			data: 'There was an error setting a temporary password for the selected users. Please try again later.'
+		});
+		return;
+	}
+	const token = getToken();
+	const headers = new Headers();
+	headers.append('Authorization', `Bearer ${token}`);
+
+	const response = await fetch('http://localhost:8080/admin/user/set-temporary-password', {
+		body: JSON.stringify(body),
+		method: 'PUT',
+		headers
+	});
+
+	if (response.status >= 400) {
+		actionResponse.set({
+			status: 'error',
+			data: 'There was an error setting a temporary password for the selected users. Please try again later.'
+		});
+	}
+
+	actionResponse.set({
+		status: 'ready',
+		data: 'Users updated successfully'
+	});
+}
+
 export async function updateUser(user: User) {}
 
 function validateNewUser(user: CreateUserRequest) {
