@@ -7,8 +7,6 @@ import (
 	"easyvpn/src/utils"
 	"errors"
 	"fmt"
-	"reflect"
-	"strings"
 	"time"
 )
 
@@ -16,12 +14,14 @@ type UsernameSearch struct {
 	Username string
 }
 
-func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
-	loginRequest := UsernameSearch{
-		Username: username,
-	}
+type UpdateUserSearch struct {
+	username string
+	name     string
+	id       uint
+}
 
-	var user, err = GetUser(loginRequest)
+func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
+	var user, err = GetUser(username)
 	if err != nil {
 		return nil, err
 	}
@@ -64,26 +64,15 @@ func VerifyUser(username string, password string) (*dtos.LoginResponse, error) {
 	}, nil
 }
 
-func GetUser(request interface{}) (dtos.User, error) {
+func GetUser(username string) (dtos.User, error) {
 	var user dtos.User
 	db, err := database.GetDB()
 	if err != nil {
 		return dtos.User{}, err
 	}
-	requestType := reflect.TypeOf(request)
-	var query string
-	var values []interface{}
+	query := fmt.Sprintf("SELECT id, username, name, password, is_admin, enabled, password_expiry FROM Users WHERE username ='%s'", username)
 
-	query = "SELECT id, username, name, password, is_admin, enabled, password_expiry FROM Users WHERE "
-
-	for i := 0; i < requestType.NumField(); i++ {
-		field := requestType.Field(i)
-		query += fmt.Sprintf("%s = ? AND ", field.Name)
-		values = append(values, reflect.ValueOf(request).Field(i).Interface())
-	}
-
-	query = strings.TrimSuffix(query, "AND ")
-	err = db.QueryRow(query, values...).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
+	err = db.QueryRow(query).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
 	if errors.Is(err, sql.ErrNoRows) {
 		return dtos.User{}, nil
 	}
@@ -104,7 +93,12 @@ func GetUsers() ([]dtos.User, error) {
 	if err != nil {
 		return nil, err // Return the error
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	var users []dtos.User
 
@@ -136,14 +130,13 @@ func CreateUser(Username string, Name string, Password string, IsAdmin bool, Ena
 	if err != nil {
 		return dtos.User{}, err
 	}
-	return dtos.User{
-		ID:       0,
-		Username: Username,
-		Name:     Name,
-		Password: Password,
-		IsAdmin:  IsAdmin,
-		Enabled:  Enabled,
-	}, nil
+
+	user, err := GetUser(Username)
+	if err != nil {
+		return dtos.User{}, err
+	}
+
+	return user, nil
 }
 
 func DeleteUsers(IDs []int) error {
@@ -163,49 +156,24 @@ func DeleteUsers(IDs []int) error {
 	return nil
 }
 
-func UpdateUser(request interface{}) (dtos.User, error) {
+func UpdateUser(user dtos.FrontEndUser) (*dtos.User, error) {
 	db, err := database.GetDB()
 	if err != nil {
-		return dtos.User{}, err
+		return nil, err
 	}
 
-	requestType := reflect.TypeOf(request)
-	tableName := "users"
-	primaryKeyField := "ID"
-
-	query := fmt.Sprintf("UPDATE %s SET ", tableName)
-	var setValues []interface{}
-
-	for i := 0; i < requestType.Elem().NumField(); i++ {
-		field := requestType.Elem().Field(i)
-		fieldName := field.Name
-
-		if fieldName == primaryKeyField {
-			continue
-		}
-
-		query += fmt.Sprintf("%s = ?, ", fieldName)
-		setValues = append(setValues, reflect.ValueOf(request).Elem().Field(i).Interface())
-	}
-
-	query = strings.TrimSuffix(query, ", ")
-
-	query += fmt.Sprintf(" WHERE %s = ?", primaryKeyField)
-	setValues = append(setValues, reflect.ValueOf(request).Elem().FieldByName(primaryKeyField).Interface())
-
-	_, err = db.Exec(query, setValues...)
+	query := fmt.Sprintf("UPDATE Users SET username='%s', name='%s', is_admin='%t', enabled='%t' WHERE id='%d'", user.Username, user.Name, user.IsAdmin, user.Enabled, user.ID)
+	_, err = db.Exec(query)
 	if err != nil {
-		return dtos.User{}, err
+		return nil, err
 	}
 
-	updatedUser := dtos.User{}
-	selectQuery := fmt.Sprintf("SELECT id, username, name, password, is_admin FROM %s WHERE %s = ?", tableName, primaryKeyField)
-	err = db.QueryRow(selectQuery, setValues[len(setValues)-1]).Scan(&updatedUser.ID, &updatedUser.Username, &updatedUser.Name, &updatedUser.Password, &updatedUser.IsAdmin)
+	u, err := GetUser(user.Username)
 	if err != nil {
-		return dtos.User{}, err
+		return nil, err
 	}
 
-	return updatedUser, nil
+	return &u, nil
 }
 
 func SetTempUserPassword(IDs []int) error {

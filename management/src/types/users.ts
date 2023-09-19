@@ -9,7 +9,7 @@ export type User = {
 export type GetUsersResponse = {
 	count: number;
 	users: User[];
-}
+};
 
 export type CreateUserRequest = {
 	username: string;
@@ -17,8 +17,12 @@ export type CreateUserRequest = {
 	password: string;
 	is_admin: boolean;
 	enabled: boolean;
-}
+};
 
 export type UserCreationResponse = {
 	user: User;
-}
+};
+
+export type UpdateUserResponse = {
+	users: User[];
+};

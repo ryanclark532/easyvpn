@@ -4,6 +4,7 @@ import type { DataWithStatus } from '../types/data-with-status';
 import type {
 	CreateUserRequest,
 	GetUsersResponse,
+	UpdateUserResponse,
 	User,
 	UserCreationResponse
 } from '../types/users';
@@ -24,7 +25,7 @@ export async function getUsers(
 ): Promise<DataWithStatus<GetUsersResponse | undefined>> {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
-	const response = await typedFetch<GetUsersResponse>('http://localhost:8080/admin/user', {
+	const response = await typedFetch<GetUsersResponse>('http://localhost:8080/user', {
 		method: 'GET',
 		headers
 	});
@@ -62,7 +63,7 @@ export async function createUser(e: Event) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await typedFetch<UserCreationResponse>('http://localhost:8080/admin/user', {
+	const response = await typedFetch<UserCreationResponse>('http://localhost:8080/user', {
 		body: JSON.stringify(body),
 		method: 'POST',
 		headers
@@ -101,7 +102,7 @@ export async function deleteUsers(usersToDelete: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await fetch('http://localhost:8080/admin/user', {
+	const response = await fetch('http://localhost:8080/user', {
 		body: JSON.stringify(body),
 		method: 'DELETE',
 		headers
@@ -142,7 +143,7 @@ export async function setTemporaryPassword(usersToSet: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await fetch('http://localhost:8080/admin/user/set-temporary-password', {
+	const response = await fetch('http://localhost:8080/user/set-temporary-password', {
 		body: JSON.stringify(body),
 		method: 'PUT',
 		headers
@@ -161,7 +162,42 @@ export async function setTemporaryPassword(usersToSet: User[]) {
 	});
 }
 
-export async function updateUser(user: User) {}
+export async function updateUser(usersToSet: User[]) {
+	const body = {
+		users: usersToSet
+	};
+	if (body.users.length === 0) {
+		actionResponse.set({
+			status: 'error',
+			data: 'There was an error updating the selected users. Please try again later.'
+		});
+		return;
+	}
+	const token = getToken();
+	const headers = new Headers();
+	headers.append('Authorization', `Bearer ${token}`);
+
+	const response = await typedFetch<UpdateUserResponse>('http://localhost:8080/user', {
+		body: JSON.stringify(body),
+		method: 'PUT',
+		headers
+	});
+
+	if (response.status >= 400) {
+		actionResponse.set({
+			status: 'error',
+			data: 'There was an error updating the selected users. Please try again later.'
+		});
+		return;
+	}
+
+	actionResponse.set({
+		status: 'ready',
+		data: 'Users updated successfully'
+	});
+
+	window.location.reload();
+}
 
 function validateNewUser(user: CreateUserRequest) {
 	//todo some validation here

@@ -102,7 +102,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
+func GetUsers(w http.ResponseWriter) {
 	users, err := services.GetUsers()
 	if err != nil {
 		utils.HandleError(err, "GetUsers")
@@ -158,11 +158,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	for _, user := range req.Users {
 		u, err := services.UpdateUser(user)
 		if err != nil {
-			utils.HandleError(err, "DeleteUser")
+			utils.HandleError(err, "UpdateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		users = append(users, services.FormatUser(u))
+		users = append(users, services.FormatUser(*u))
 	}
 
 	responseData := map[string]interface{}{}
@@ -172,7 +172,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)
 	if err != nil {
-		utils.HandleError(err, "CreateUser")
+		utils.HandleError(err, "UpdateUser")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -1,7 +1,7 @@
-import {writable} from 'svelte/store';
-import type {DataWithStatus} from '../types/data-with-status';
-import {typedFetch} from '$lib/fetch';
-import type {AuthResponse, CheckTokenResponse} from '../types/auth';
+import { writable } from 'svelte/store';
+import type { DataWithStatus } from '../types/data-with-status';
+import { typedFetch } from '$lib/fetch';
+import type { AuthResponse, CheckTokenResponse } from '../types/auth';
 
 export const loginResponse = writable<DataWithStatus<string | AuthResponse>>({
 	data: undefined,
@@ -70,7 +70,12 @@ export async function handleLogin(e: Event) {
 	if (response.data.token && response.data.id) {
 		setID(response.data.id);
 		setToken(response.data.token);
-
+		if (response.data.password_expired) {
+			passwordChangeResponse.set({
+				status: 'error',
+				data: 'Your password has expired, please update it'
+			});
+		}
 		window.location.href = response.data.password_expired
 			? '/user/reset'
 			: response.data.is_admin

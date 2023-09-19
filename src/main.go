@@ -2,7 +2,7 @@ package main
 
 import (
 	"easyvpn/src/database"
-	"easyvpn/src/services"
+	"easyvpn/src/utils"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -17,18 +17,10 @@ func main() {
 		panic(err)
 	}
 
-	db, _ := database.GetDB()
-	_, err = db.Exec(`
-	INSERT INTO Users (username, name, password, is_admin, enabled, password_expiry)
-	VALUES ('test', 'Dummy User', 'test', false, true, CURRENT_TIMESTAMP);
-`)
-	fmt.Println(err)
-
-	users, err := services.GetUsers()
+	err = utils.SetupVPNServer()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(users)
 
 	r := mux.NewRouter()
 	r.Use(middleware.CorsMiddleware)

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const KeyDir string = "./keys/"
+const KeyDir string = "./src/keys/"
 
 func GenerateRootKeyPair() error {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
@@ -125,12 +125,20 @@ func selfSignCertificate(cert *x509.Certificate, selfKey *rsa.PrivateKey) ([]byt
 }
 
 func saveCertificate(filename string, cert []byte) error {
-	return os.WriteFile(filename, cert, 0644)
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		err = os.WriteFile(filename, cert, 0644)
+	}
+	return err
 }
 
 func savePrivateKey(filename string, key *rsa.PrivateKey) error {
-	keyBytes := x509.MarshalPKCS1PrivateKey(key)
-	return os.WriteFile(filename, keyBytes, 0600)
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		keyBytes := x509.MarshalPKCS1PrivateKey(key)
+		err = os.WriteFile(filename, keyBytes, 0600)
+	}
+	return err
 }
 
 func loadKeyPair(certFile, keyFile string) (*x509.Certificate, *rsa.PrivateKey, error) {
