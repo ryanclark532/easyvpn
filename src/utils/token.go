@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"easyvpn/src/dtos"
+	"easyvpn/src/auth/auth_dtos"
+	user_dtos "easyvpn/src/user/user-dtos"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
@@ -12,7 +13,7 @@ var (
 	secretKey = []byte("your-secret-key")
 )
 
-func CreateToken(user dtos.User) (string, error) {
+func CreateToken(user *user_dtos.User) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -30,7 +31,7 @@ func CreateToken(user dtos.User) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyToken(tokenString string) dtos.CheckTokenResponse {
+func CheckUserToken(tokenString string) (*auth_dtos.CheckTokenResponse, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method")
@@ -38,59 +39,50 @@ func VerifyToken(tokenString string) dtos.CheckTokenResponse {
 		return secretKey, nil
 	})
 	if err != nil {
-		return dtos.CheckTokenResponse{
-			IsAdmin:    false,
-			TokenValid: false,
-		}
+		return nil, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		isAdminClaim, ok := claims["is_admin"].(string)
 		if !ok {
-			fmt.Println("is_admin claim")
-			return dtos.CheckTokenResponse{
+			return &auth_dtos.CheckTokenResponse{
 				IsAdmin:    false,
 				TokenValid: false,
-			}
+			}, nil
 		}
 
 		isAdmin, err := strconv.ParseBool(isAdminClaim)
 		if err != nil {
-			fmt.Println("is_admin conversion")
 
-			return dtos.CheckTokenResponse{
+			return &auth_dtos.CheckTokenResponse{
 				IsAdmin:    false,
 				TokenValid: false,
-			}
+			}, nil
 		}
 
 		passwordExpirationClaim, ok := claims["password_expiry"].(string)
 		if !ok {
-			fmt.Println(passwordExpirationClaim)
-			fmt.Println(ok)
-			fmt.Println("passwordExpirationClaim claim")
-			return dtos.CheckTokenResponse{
+			return &auth_dtos.CheckTokenResponse{
 				IsAdmin:    false,
 				TokenValid: false,
-			}
+			}, nil
 		}
 		date, err := time.Parse(time.DateTime, passwordExpirationClaim)
 		if err != nil {
-			return dtos.CheckTokenResponse{
+			return &auth_dtos.CheckTokenResponse{
 				IsAdmin:    false,
 				TokenValid: false,
-			}
+			}, nil
 		}
 
-		return dtos.CheckTokenResponse{
+		return &auth_dtos.CheckTokenResponse{
 			IsAdmin:         isAdmin,
 			TokenValid:      true,
 			PasswordExpired: date.Before(time.Now()),
-		}
+		}, nil
 	}
-	fmt.Println("down here")
-	return dtos.CheckTokenResponse{
+	return &auth_dtos.CheckTokenResponse{
 		IsAdmin:    false,
 		TokenValid: false,
-	}
+	}, nil
 }

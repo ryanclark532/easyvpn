@@ -16,7 +16,7 @@ func CheckUserRoute(next http.Handler) http.Handler {
 			return
 		}
 
-		token := utils.VerifyToken(strings.Split(tokenString, "Bearer ")[1])
+		token := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
 		if !token.TokenValid {
 			utils.HandleError(fmt.Errorf("token Is not Valid"), "CheckUserRoute")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -36,7 +36,7 @@ func CheckAdminRoute(next http.Handler) http.Handler {
 			return
 		}
 
-		token := utils.VerifyToken(strings.Split(tokenString, "Bearer ")[1])
+		token := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
 		if !token.TokenValid || !token.IsAdmin {
 			utils.HandleError(fmt.Errorf("token Is not Valid"), "CheckAdminRoute")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
