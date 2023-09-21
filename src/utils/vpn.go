@@ -15,12 +15,12 @@ func SetupVPNServer() error {
 		return err
 	}
 
-	err = GenerateRootKeyPair()
+	err = GenerateRootCACertificate()
 	if err != nil {
 		return err
 	}
 
-	err = GenerateCertificateKeyPair("server.crt")
+	err = GenerateSignedCertificate("server")
 	if err != nil {
 		return err
 	}

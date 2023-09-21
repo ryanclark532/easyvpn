@@ -26,6 +26,7 @@ func main() {
 
 		err = utils.StartVPNServer()
 		vpn <- err
+
 	}()
 
 	dberr := <-db
