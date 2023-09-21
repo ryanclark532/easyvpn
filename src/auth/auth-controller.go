@@ -28,7 +28,6 @@ func UserLoginEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
-
 }
 
 func CheckUserTokenEndpoint(w http.ResponseWriter, r *http.Request) {

@@ -16,7 +16,12 @@ func CheckUserRoute(next http.Handler) http.Handler {
 			return
 		}
 
-		token := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
+		token, err := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
+		if err != nil {
+			utils.HandleError(fmt.Errorf("error Processing token"), "CheckUserRoute")
+			http.Error(w, "Unauthorized", http.StatusInternalServerError)
+			return
+		}
 		if !token.TokenValid {
 			utils.HandleError(fmt.Errorf("token Is not Valid"), "CheckUserRoute")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -36,7 +41,12 @@ func CheckAdminRoute(next http.Handler) http.Handler {
 			return
 		}
 
-		token := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
+		token, err := utils.CheckUserToken(strings.Split(tokenString, "Bearer ")[1])
+		if err != nil {
+			utils.HandleError(fmt.Errorf("error Processing token"), "CheckAdminRoute")
+			http.Error(w, "Unauthorized", http.StatusInternalServerError)
+			return
+		}
 		if !token.TokenValid || !token.IsAdmin {
 			utils.HandleError(fmt.Errorf("token Is not Valid"), "CheckAdminRoute")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)

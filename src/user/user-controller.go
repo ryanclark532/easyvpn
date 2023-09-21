@@ -77,7 +77,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *user_dtos.UserID
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {

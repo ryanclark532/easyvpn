@@ -6,19 +6,22 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"errors"
 	"math/big"
 	"os"
+	"os/exec"
 	"time"
 )
 
-const KeyDir string = "./src/keys/"
+var KeyDir = "./src/keys/"
 
 func GenerateRootKeyPair() error {
 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return err
 	}
-	cert, err := createCertificate(key)
+
+	cert, err := createCertificate(&key.PublicKey, key)
 	if err != nil {
 		return err
 	}
@@ -41,17 +44,13 @@ func GenerateRootKeyPair() error {
 	return nil
 }
 
-func GenerateCertificateKeyPair(keyFile string, certFile string) error {
-	key, err := rsa.GenerateKey(rand.Reader, 2048)
-	if err != nil {
-		return err
-	}
-	cert, err := createCertificate(key)
+func GenerateCertificateKeyPair(certFile string) error {
+	rootCert, rootKey, err := readCertificatePair(KeyDir+"root.crt", KeyDir+"root.key")
 	if err != nil {
 		return err
 	}
 
-	rootCert, rootKey, err := loadKeyPair(KeyDir+"root.crt", KeyDir+"root.key")
+	cert, err := createChildCertificate(&rootKey.PublicKey, rootKey, rootCert)
 	if err != nil {
 		return err
 	}
@@ -66,15 +65,10 @@ func GenerateCertificateKeyPair(keyFile string, certFile string) error {
 		return err
 	}
 
-	err = savePrivateKey(KeyDir+keyFile, key)
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
-func createCertificate(key *rsa.PrivateKey) (*x509.Certificate, error) {
+func createCertificate(pub *rsa.PublicKey, priv *rsa.PrivateKey) (*x509.Certificate, error) {
 	serialNumber, err := rand.Int(rand.Reader, new(big.Int).Lsh(big.NewInt(1), 128))
 	if err != nil {
 		return nil, err
@@ -91,8 +85,37 @@ func createCertificate(key *rsa.PrivateKey) (*x509.Certificate, error) {
 		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		BasicConstraintsValid: true,
 	}
+	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, pub, priv)
+	if err != nil {
+		return nil, err
+	}
 
-	certDER, err := x509.CreateCertificate(rand.Reader, &template, &template, &key.PublicKey, key)
+	cert, err := x509.ParseCertificate(certDER)
+	if err != nil {
+		return nil, err
+	}
+
+	return cert, nil
+}
+
+func createChildCertificate(pub *rsa.PublicKey, priv *rsa.PrivateKey, parentCert *x509.Certificate) (*x509.Certificate, error) {
+	serialNumber, err := rand.Int(rand.Reader, new(big.Int).Lsh(big.NewInt(1), 128))
+	if err != nil {
+		return nil, err
+	}
+
+	template := x509.Certificate{
+		SerialNumber: serialNumber,
+		Subject: pkix.Name{
+			CommonName: "Root Certificate",
+		},
+		NotBefore:             time.Now(),
+		NotAfter:              time.Now().AddDate(10, 0, 0),
+		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		BasicConstraintsValid: true,
+	}
+	certDER, err := x509.CreateCertificate(rand.Reader, &template, parentCert, pub, priv)
 	if err != nil {
 		return nil, err
 	}
@@ -136,34 +159,59 @@ func savePrivateKey(filename string, key *rsa.PrivateKey) error {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
 		keyBytes := x509.MarshalPKCS1PrivateKey(key)
-		err = os.WriteFile(filename, keyBytes, 0600)
+
+		pemBlock := &pem.Block{
+			Type:  "RSA PRIVATE KEY",
+			Bytes: keyBytes,
+		}
+
+		pemData := pem.EncodeToMemory(pemBlock)
+
+		err = os.WriteFile(filename, pemData, 0600)
 	}
 	return err
 }
 
-func loadKeyPair(certFile, keyFile string) (*x509.Certificate, *rsa.PrivateKey, error) {
-	certPEM, err := os.ReadFile(certFile)
+func GenerateDHKey() error {
+	_, err := os.Stat(KeyDir + "dh.pem")
+	if os.IsNotExist(err) {
+		cmd := exec.Command("openssl", "dhparam", "-out", KeyDir+"dh.pem", "2048")
+		err = cmd.Run()
+		return err
+	}
+	return nil
+}
+
+func readCertificatePair(certPath, keyPath string) (*x509.Certificate, *rsa.PrivateKey, error) {
+	certData, err := os.ReadFile(certPath)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	keyPEM, err := os.ReadFile(keyFile)
+	certBlock, _ := pem.Decode(certData)
+	if certBlock == nil {
+		return nil, nil, errors.New("failed to decode certificate PEM block")
+	}
+
+	cert, err := x509.ParseCertificate(certBlock.Bytes)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	certBlock, _ := pem.Decode(certPEM)
-	keyBlock, _ := pem.Decode(keyPEM)
-
-	rootCert, err := x509.ParseCertificate(certBlock.Bytes)
+	keyData, err := os.ReadFile(keyPath)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	rootKey, err := x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
+	keyBlock, _ := pem.Decode(keyData)
+	if keyBlock == nil {
+		return nil, nil, errors.New("failed to decode private key PEM block")
+	}
+
+	key, err := x509.ParsePKCS1PrivateKey(keyBlock.Bytes)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return rootCert, rootKey, nil
+	return cert, key, nil
 }

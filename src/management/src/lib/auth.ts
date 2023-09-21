@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import type { DataWithStatus } from '../types/data-with-status';
 import { typedFetch } from '$lib/fetch';
 import type { AuthResponse, CheckTokenResponse } from '../types/auth';
+import { redirect } from '@sveltejs/kit';
 
 export const loginResponse = writable<DataWithStatus<string | AuthResponse>>({
 	data: undefined,
@@ -76,11 +77,15 @@ export async function handleLogin(e: Event) {
 				data: 'Your password has expired, please update it'
 			});
 		}
-		window.location.href = response.data.password_expired
-			? '/user/reset'
-			: response.data.is_admin
-			? '/admin/status'
-			: '/';
+
+		throw redirect(
+			307,
+			response.data.password_expired
+				? '/user/reset'
+				: response.data.is_admin
+				? '/admin/status'
+				: '/'
+		);
 	}
 }
 
@@ -127,7 +132,7 @@ export async function changePassword(e: Event) {
 	});
 	setID('');
 	setToken('');
-	window.location.href = '/login';
+	throw redirect(307, '/login');
 }
 
 export async function getTokenValid(
