@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
 	"os"
+	"time"
 )
 
 func InitializeDatabase() error {
@@ -36,6 +37,19 @@ func InitializeDatabase() error {
 		password_expiry DATE NOT NULL
 	);`)
 
+	if err != nil {
+		return err
+	}
+
+	_, err = db.Exec(`INSERT INTO Users (username, name, password, is_admin, enabled, password_expiry)
+                      VALUES (?, ?, ?, ?, ?, ?);`,
+		"test",
+		"Dummy User",
+		"test",
+		true,
+		true,
+		time.Now().AddDate(0, 0, 30).Format(time.DateTime),
+	)
 	if err != nil {
 		return err
 	}

@@ -34,14 +34,14 @@ func CheckUserTokenEndpoint(w http.ResponseWriter, r *http.Request) {
 	var requestData *auth_dtos.CheckTokenRequest
 	err := json.NewDecoder(r.Body).Decode(&requestData)
 	if err != nil {
-		utils.HandleError(err, "CheckUserToken")
+		utils.HandleError(err, "CheckUserTokenEndpoint")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	check, err := utils.CheckUserToken(requestData.Token)
 	if err != nil {
-		utils.HandleError(err, "CheckUserToken")
+		utils.HandleError(err, "CheckUserTokenEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

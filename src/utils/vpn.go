@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func SetupVPNServer() error {
@@ -57,7 +59,23 @@ func checkVPNCertificates() bool {
 }
 
 func StartVPNServer() error {
-	cmd := exec.Command("openvpn", "server.conf")
+	cmd := exec.Command("openvpn", "src/server-dev.conf")
 	err := cmd.Run()
 	return err
+}
+
+func StopOpenVPNServer() error {
+	cmd := exec.Command("pkill", "openvpn")
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return fmt.Errorf("error stopping OpenVPN process: %v\n%s", err, output)
+	}
+
+	if strings.Contains(string(output), "no process found") {
+		return fmt.Errorf("OpenVPN process not found")
+	}
+
+	fmt.Println("OpenVPN process stopped successfully.")
+	return nil
 }

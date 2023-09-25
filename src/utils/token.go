@@ -3,6 +3,7 @@ package utils
 import (
 	"easyvpn/src/auth/auth_dtos"
 	user_dtos "easyvpn/src/user/user-dtos"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
@@ -39,6 +40,15 @@ func CheckUserToken(tokenString string) (*auth_dtos.CheckTokenResponse, error) {
 		return secretKey, nil
 	})
 	if err != nil {
+		var ve *jwt.ValidationError
+		if errors.As(err, &ve) {
+			if ve.Errors&jwt.ValidationErrorExpired != 0 {
+				return &auth_dtos.CheckTokenResponse{
+					IsAdmin:    false,
+					TokenValid: false,
+				}, nil
+			}
+		}
 		return nil, err
 	}
 

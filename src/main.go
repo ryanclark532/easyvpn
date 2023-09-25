@@ -6,12 +6,16 @@ import (
 	"easyvpn/src/middleware"
 	"easyvpn/src/user"
 	"easyvpn/src/utils"
+	"easyvpn/src/vpn"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
+	"os"
 )
 
 func main() {
+
+	fmt.Println(os.Getwd())
 	db := make(chan error)
 	vpn := make(chan error)
 
@@ -23,9 +27,11 @@ func main() {
 	go func() {
 		err := utils.SetupVPNServer()
 		vpn <- err
+		fmt.Println("VPN Server setup")
 
 		err = utils.StartVPNServer()
 		vpn <- err
+		fmt.Println("VPN Server started")
 
 	}()
 
@@ -54,7 +60,7 @@ func main() {
 func SetupRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middleware.CorsMiddleware)
-	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./dist/static")))) // TODO make this configurable per dev vs prod
+	//r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./dist/static")))) // TODO make this configurable per dev vs prod
 	r.HandleFunc("/auth/sign-in", auth.UserLoginEndpoint).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/auth/check-token", auth.CheckUserTokenEndpoint).Methods(http.MethodPost, http.MethodOptions)
 
@@ -65,6 +71,7 @@ func SetupRouter() *mux.Router {
 	adminRouter.HandleFunc("/user", user.DeleteUserEndpoint).Methods(http.MethodDelete, http.MethodOptions)
 	adminRouter.HandleFunc("/user", user.UpdateUserEndpoint).Methods(http.MethodPut, http.MethodOptions)
 	adminRouter.HandleFunc("/auth/set-temporary-password", auth.SetTemporaryPasswordEndpoint).Methods(http.MethodPut, http.MethodOptions)
+	adminRouter.HandleFunc("/vpn", vpn.GetServerStatusEndpoint).Methods(http.MethodGet, http.MethodOptions)
 
 	userRouter := r.PathPrefix("/").Subrouter()
 	userRouter.Use(middleware.CorsMiddleware, middleware.CheckUserRoute)

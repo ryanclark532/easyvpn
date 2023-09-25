@@ -15,11 +15,12 @@ func UserLogin(login *auth_dtos.LoginRequest) (*auth_dtos.LoginResponse, error) 
 		return nil, err
 	}
 
-	if savedUser.Password != login.Password {
+	fmt.Println(savedUser)
+	if savedUser == nil || savedUser.Password != login.Password {
 		return &auth_dtos.LoginResponse{
 			Token:   "",
 			IsAdmin: false,
-			Error:   fmt.Sprintf("Password for %s is not correct", login.Username),
+			Error:   fmt.Sprintf("Password for %s is not correct. Or user %s doesn't exist", login.Username, login.Username),
 		}, nil
 	}
 

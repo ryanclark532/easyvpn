@@ -11,7 +11,7 @@ import (
 )
 
 func GetUser(username string) (*user_dtos.User, error) {
-	var user *user_dtos.User
+	var user user_dtos.User
 	db, err := database.GetDB()
 	if err != nil {
 		return nil, err
@@ -26,7 +26,7 @@ func GetUser(username string) (*user_dtos.User, error) {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func GetUsers() (*[]user_dtos.User, error) {

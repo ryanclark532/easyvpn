@@ -78,15 +78,16 @@ export async function handleLogin(e: Event) {
 			});
 		}
 
-		throw redirect(
-			307,
-			response.data.password_expired
-				? '/user/reset'
-				: response.data.is_admin
+		window.location.href = response.data.password_expired
+			? '/user/reset'
+			: response.data.is_admin
 				? '/admin/status'
 				: '/'
-		);
 	}
+	loginResponse.set({
+		status: 'error',
+		data: response.data.error ?? 'Something Went Wrong, Please Try Again'
+	});
 }
 
 export async function changePassword(e: Event) {
