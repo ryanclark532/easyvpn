@@ -27,11 +27,8 @@ func main() {
 	go func() {
 		err := utils.SetupVPNServer()
 		vpn <- err
-		fmt.Println("VPN Server setup")
 
-		err = utils.StartVPNServer()
-		vpn <- err
-		fmt.Println("VPN Server started")
+		utils.StartVPNServer()
 
 	}()
 
@@ -72,6 +69,7 @@ func SetupRouter() *mux.Router {
 	adminRouter.HandleFunc("/user", user.UpdateUserEndpoint).Methods(http.MethodPut, http.MethodOptions)
 	adminRouter.HandleFunc("/auth/set-temporary-password", auth.SetTemporaryPasswordEndpoint).Methods(http.MethodPut, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn", vpn.GetServerStatusEndpoint).Methods(http.MethodGet, http.MethodOptions)
+	adminRouter.HandleFunc("/vpn/operation", vpn.VpnOperationEndpoint).Methods(http.MethodPost, http.MethodOptions)
 
 	userRouter := r.PathPrefix("/").Subrouter()
 	userRouter.Use(middleware.CorsMiddleware, middleware.CheckUserRoute)

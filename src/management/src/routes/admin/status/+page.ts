@@ -1,7 +1,6 @@
 import { checkToken, getToken } from '$lib/auth';
-import { getUsers, users } from '$lib/users';
 import { redirect } from '@sveltejs/kit';
-import {getVpnStatus} from "$lib/vpn";
+import {getVpnStatus, status} from "$lib/vpn";
 
 export const ssr = false;
 
@@ -19,9 +18,11 @@ export async function load() {
         throw redirect(307, 'login');
     }
 
-    const status = await getVpnStatus(getToken())
-    return {
-       serverStatus: status
+    const response = await getVpnStatus(getToken())
+    if(response.status !== "error"){
+        status.set(response.data?.status ?? "unknown")
+        return
     }
+    status.set("unknown")
 
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -58,14 +59,19 @@ func checkVPNCertificates() bool {
 	return true
 }
 
-func StartVPNServer() error {
+func StartVPNServer() {
 	cmd := exec.Command("openvpn", "src/server-dev.conf")
-	err := cmd.Run()
-	return err
+	_ = cmd.Run()
 }
 
-func StopOpenVPNServer() error {
-	cmd := exec.Command("pkill", "openvpn")
+func StopVPNServer() error {
+	var cmd *exec.Cmd
+
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("taskkill", "/F", "/IM", "openvpn.exe")
+	} else {
+		cmd = exec.Command("killall", "openvpn")
+	}
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {

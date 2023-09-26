@@ -2,6 +2,7 @@ package vpn
 
 import (
 	"easyvpn/src/utils"
+	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
 	"encoding/json"
 	"net/http"
 )
@@ -25,4 +26,23 @@ func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
+	var req *vpn_dtos.VpnOperationRequest
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "VPNOperationEndpoint")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = VpnOperation(req.Operation)
+	if err != nil {
+		utils.HandleError(err, "VPNOperationEndpoint")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	GetServerStatusEndpoint(w, r)
 }

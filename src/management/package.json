@@ -37,6 +37,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"simple-icons": "^9.16.0",
 		"svelte-routing": "^2.0.0"
 	}
 }
