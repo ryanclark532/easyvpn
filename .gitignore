@@ -1,1 +1,4 @@
 dist
+.idea
+src/app
+src/database.db

@@ -7,11 +7,17 @@ import (
 	"easyvpn/src/user"
 	"easyvpn/src/utils"
 	"easyvpn/src/vpn"
+	"embed"
 	"fmt"
-	"github.com/gorilla/mux"
+
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
+
+//go:embed app/*
+var svelte embed.FS
 
 func main() {
 
@@ -50,18 +56,19 @@ func main() {
 	err := http.ListenAndServe(":"+port, r)
 
 	if err != nil {
-		panic("Error starting REST server")
+		panic(err)
 	}
 }
 
 func SetupRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.Use(middleware.CorsMiddleware)
-	//r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("./dist/static")))) // TODO make this configurable per dev vs prod
-	r.HandleFunc("/auth/sign-in", auth.UserLoginEndpoint).Methods(http.MethodPost, http.MethodOptions)
-	r.HandleFunc("/auth/check-token", auth.CheckUserTokenEndpoint).Methods(http.MethodPost, http.MethodOptions)
 
-	adminRouter := r.PathPrefix("/").Subrouter()
+	apiRouter := r.PathPrefix("/api").Subrouter()
+	apiRouter.HandleFunc("/auth/sign-in", auth.UserLoginEndpoint).Methods(http.MethodPost, http.MethodOptions)
+	apiRouter.HandleFunc("/auth/check-token", auth.CheckUserTokenEndpoint).Methods(http.MethodPost, http.MethodOptions)
+
+	adminRouter := apiRouter.PathPrefix("/").Subrouter()
 	adminRouter.Use(middleware.CorsMiddleware, middleware.CheckAdminRoute)
 	adminRouter.HandleFunc("/user", user.GetUsersEndpoint).Methods(http.MethodGet, http.MethodOptions)
 	adminRouter.HandleFunc("/user", user.CreateUserEndpoint).Methods(http.MethodPost, http.MethodOptions)
@@ -71,9 +78,13 @@ func SetupRouter() *mux.Router {
 	adminRouter.HandleFunc("/vpn", vpn.GetServerStatusEndpoint).Methods(http.MethodGet, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn/operation", vpn.VpnOperationEndpoint).Methods(http.MethodPost, http.MethodOptions)
 
-	userRouter := r.PathPrefix("/").Subrouter()
+	userRouter := apiRouter.PathPrefix("/").Subrouter()
 	userRouter.Use(middleware.CorsMiddleware, middleware.CheckUserRoute)
 	userRouter.HandleFunc("/auth/change-password", auth.ChangeUserPasswordEndpoint).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/app", http.StatusSeeOther)
+	})
+	r.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.FS(svelte))))
 
 	return r
 }

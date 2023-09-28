@@ -25,7 +25,7 @@ export async function getUsers(
 ): Promise<DataWithStatus<GetUsersResponse | undefined>> {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
-	const response = await typedFetch<GetUsersResponse>('http://localhost:8080/user', {
+	const response = await typedFetch<GetUsersResponse>('http://localhost:8080/api/user', {
 		method: 'GET',
 		headers
 	});
@@ -63,7 +63,7 @@ export async function createUser(e: Event) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await typedFetch<UserCreationResponse>('http://localhost:8080/user', {
+	const response = await typedFetch<UserCreationResponse>('http://localhost:8080/api/user', {
 		body: JSON.stringify(body),
 		method: 'POST',
 		headers
@@ -102,7 +102,7 @@ export async function deleteUsers(usersToDelete: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await fetch('http://localhost:8080/user', {
+	const response = await fetch('http://localhost:8080/api/user', {
 		body: JSON.stringify(body),
 		method: 'DELETE',
 		headers
@@ -143,7 +143,7 @@ export async function setTemporaryPassword(usersToSet: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await fetch('http://localhost:8080/user/set-temporary-password', {
+	const response = await fetch('http://localhost:8080/api/user/set-temporary-password', {
 		body: JSON.stringify(body),
 		method: 'PUT',
 		headers
@@ -177,7 +177,7 @@ export async function updateUser(usersToSet: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
 
-	const response = await typedFetch<UpdateUserResponse>('http://localhost:8080/user', {
+	const response = await typedFetch<UpdateUserResponse>('http://localhost:8080/api/user', {
 		body: JSON.stringify(body),
 		method: 'PUT',
 		headers

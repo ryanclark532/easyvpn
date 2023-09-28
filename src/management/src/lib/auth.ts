@@ -56,7 +56,7 @@ export async function handleLogin(e: Event) {
 		return;
 	}
 
-	const response = await typedFetch<AuthResponse>('http://localhost:8080/auth/sign-in', {
+	const response = await typedFetch<AuthResponse>('http://localhost:8080/api/auth/sign-in', {
 		body: JSON.stringify({ username, password }),
 		method: 'POST'
 	});
@@ -81,8 +81,8 @@ export async function handleLogin(e: Event) {
 		window.location.href = response.data.password_expired
 			? '/user/reset'
 			: response.data.is_admin
-				? '/admin/status'
-				: '/'
+			? '/admin/status'
+			: '/';
 	}
 	loginResponse.set({
 		status: 'error',
@@ -110,7 +110,7 @@ export async function changePassword(e: Event) {
 	const token = getToken();
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${token}`);
-	const response = await fetch('http://localhost:8080/auth/change-password', {
+	const response = await fetch('http://localhost:8080/api/auth/change-password', {
 		body: JSON.stringify({
 			password,
 			ID: getID()
@@ -143,10 +143,13 @@ export async function getTokenValid(
 		token
 	};
 
-	const response = await typedFetch<CheckTokenResponse>('http://localhost:8080/auth/check-token', {
-		body: JSON.stringify(body),
-		method: 'POST'
-	});
+	const response = await typedFetch<CheckTokenResponse>(
+		'http://localhost:8080/api/auth/check-token',
+		{
+			body: JSON.stringify(body),
+			method: 'POST'
+		}
+	);
 	if (response.status >= 400) {
 		return {
 			data: undefined,
