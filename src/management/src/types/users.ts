@@ -7,7 +7,6 @@ export type User = {
 };
 
 export type GetUsersResponse = {
-	count: number;
 	users: User[];
 };
 

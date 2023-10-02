@@ -8,8 +8,7 @@ export const loginResponse = writable<DataWithStatus<string | AuthResponse>>({
 	data: undefined,
 	status: 'initial'
 });
-
-export const passwordChangeResponse = writable<DataWithStatus<any>>({
+export const passwordChangeResponse = writable<DataWithStatus<string | undefined>>({
 	data: undefined,
 	status: 'initial'
 });
@@ -60,7 +59,7 @@ export async function handleLogin(e: Event) {
 		body: JSON.stringify({ username, password }),
 		method: 'POST'
 	});
-	if (response.status >= 400 || response.data.error) {
+	if (response.status >= 400 || response.data.error || !response.data.token || !response.data.id) {
 		loginResponse.set({
 			status: 'error',
 			data: response.data.error ?? 'Something Went Wrong, Please Try Again'
@@ -68,26 +67,30 @@ export async function handleLogin(e: Event) {
 		return;
 	}
 
-	if (response.data.token && response.data.id) {
-		setID(response.data.id);
-		setToken(response.data.token);
-		if (response.data.password_expired) {
-			passwordChangeResponse.set({
-				status: 'error',
-				data: 'Your password has expired, please update it'
-			});
-		}
+	handleSuccessfulLogin(
+		response.data.id,
+		response.data.token,
+		response.data.password_expired,
+		response.data.is_admin
+	);
+}
 
-		window.location.href = response.data.password_expired
-			? '/user/reset'
-			: response.data.is_admin
-			? '/admin/status'
-			: '/';
+function handleSuccessfulLogin(
+	id: string,
+	token: string,
+	password_expired: boolean | undefined,
+	is_admin: boolean
+) {
+	setID(id);
+	setToken(token);
+	if (password_expired) {
+		passwordChangeResponse.set({
+			status: 'error',
+			data: 'Your password has expired, please update it'
+		});
 	}
-	loginResponse.set({
-		status: 'error',
-		data: response.data.error ?? 'Something Went Wrong, Please Try Again'
-	});
+
+	redirect(307, password_expired ? '/user/reset' : is_admin ? '/admin/status' : '/');
 }
 
 export async function changePassword(e: Event) {
@@ -133,7 +136,7 @@ export async function changePassword(e: Event) {
 	});
 	setID('');
 	setToken('');
-	throw redirect(307, '/login');
+	redirect(307, '/login');
 }
 
 export async function getTokenValid(
@@ -174,8 +177,7 @@ function validatePasswordChangeAttempt(
 }
 
 function validateLoginAttempt(username: string | undefined, password: string | undefined) {
-	//TODO add some validations here
-	return true;
+	return !username || !password;
 }
 
 export async function checkToken(): Promise<{

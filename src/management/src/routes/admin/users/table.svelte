@@ -8,6 +8,10 @@
 	} from 'flowbite-svelte';
 	import {masterCheckbox, searchFilter, users} from '$lib/users';
 	import TableBodyRow from './table-body-row.svelte';
+	import {page} from "$app/stores";
+
+	let userStore = $page.data.userStore
+
 </script>
 
 <Table divClass="w-full">
@@ -20,7 +24,7 @@
 		<TableHeadCell padding="px-4 py-3" scope="col">Enabled</TableHeadCell>
 	</TableHead>
 	<TableBody>
-		{#each $users as user}
+		{#each $userStore as user}
 			{#if !$searchFilter || user.Username.startsWith($searchFilter)}
 				<TableBodyRow {user} />
 			{/if}

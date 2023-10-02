@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Label, Input, Button, Modal, Checkbox, Tooltip } from 'flowbite-svelte';
-	import { createUser, createUserResponse } from '$lib/users';
-	import { onDestroy } from 'svelte';
+	import {page} from "$app/stores";
 	let defaultModal = false;
 	let createUserConfirmation = false;
-	const s = createUserResponse.subscribe((e) => (createUserConfirmation = e.status === 'ready'));
+	let response: string;
+	let userStore = $page.data.userStore
 
-	onDestroy(s);
+
+
 </script>
 
 <Button class="w-40" on:click={() => (defaultModal = true)}>New User</Button>
@@ -18,21 +19,19 @@
 	size="sm"
 	class="w-full"
 >
-	<p class="mb-4 text-gray-500 dark:text-gray-300 text-center">
-		{$createUserResponse.data}
-	</p>
+
 </Modal>
 
 <Modal title="Add User" bind:open={defaultModal} class="min-w-full">
-	{#if $createUserResponse.status === 'error'}
+	{#if response}
 		<h5 class="text-l font-medium text-red-600 p-2 bg-red-300 w-full rounded-lg border-red-600">
-			{$createUserResponse.data}
+			{response}
 		</h5>
 	{/if}
 	<form
-		on:submit={(e) => {
-			createUser(e);
-			defaultModal = false;
+		on:submit={async (e) => {
+			response = await userStore.create(e);
+			defaultModal = !!response;
 		}}
 	>
 		<div>

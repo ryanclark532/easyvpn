@@ -1,35 +1,30 @@
-2023-09-28 16:31:54 Note: cipher 'AES-256-CBC' in --data-ciphers is not supported by ovpn-dco, disabling data channel offload.
-2023-09-28 16:31:54 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
-2023-09-28 16:31:54 OpenVPN 2.6.4 [git:v2.6.4/b4f749f14a8edc75] Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on May 11 2023
-2023-09-28 16:31:54 Windows version 10.0 (Windows 10 or greater), amd64 executable
-2023-09-28 16:31:54 library versions: OpenSSL 3.1.0 14 Mar 2023, LZO 2.10
-2023-09-28 16:31:54 DCO version: v0
-2023-09-28 16:31:54 MANAGEMENT: TCP Socket listening on [AF_INET]127.0.0.1:7505
-2023-09-28 16:31:54 WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
-2023-09-28 16:31:54 NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.
-2023-09-28 16:31:54 NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
-2023-09-28 16:31:54 Diffie-Hellman initialized with 2048 bit key
-2023-09-28 16:31:54 interactive service msg_channel=0
-2023-09-28 16:31:54 open_tun
-2023-09-28 16:31:54 tap-windows6 device [OpenVPN TAP-Windows6] opened
-2023-09-28 16:31:54 TAP-Windows Driver Version 9.26 
-2023-09-28 16:31:54 Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.1/255.255.255.0 [SUCCEEDED]
-2023-09-28 16:31:54 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.8.0.1/255.255.255.0 on interface {A2114B01-D243-42AF-9FE5-AA8B230FB321} [DHCP-serv: 10.8.0.0, lease-time: 31536000]
-2023-09-28 16:31:54 Sleeping for 10 seconds...
-2023-09-28 16:32:04 NOTE: FlushIpNetTable failed on interface [22] {A2114B01-D243-42AF-9FE5-AA8B230FB321} (status=5) : Access is denied.  
-2023-09-28 16:32:04 TUN: Setting IPv4 mtu failed: Access is denied.   [status=5 if_index=22]
-2023-09-28 16:32:04 Could not determine IPv4/IPv6 protocol. Using AF_INET6
-2023-09-28 16:32:04 Socket Buffers: R=[65536->65536] S=[65536->65536]
-2023-09-28 16:32:04 setsockopt(IPV6_V6ONLY=0)
-2023-09-28 16:32:04 Listening for incoming TCP connection on [AF_INET6][undef]:1194
-2023-09-28 16:32:04 TCPv6_SERVER link local (bound): [AF_INET6][undef]:1194
-2023-09-28 16:32:04 TCPv6_SERVER link remote: [AF_UNSPEC]
-2023-09-28 16:32:04 MULTI: multi_init called, r=256 v=256
-2023-09-28 16:32:04 IFCONFIG POOL IPv4: base=10.8.0.2 size=253
-2023-09-28 16:32:04 IFCONFIG POOL LIST
-2023-09-28 16:32:04 MULTI: TCP INIT maxclients=59 maxevents=64
-2023-09-28 16:32:04 Initialization Sequence Completed
-2023-09-28 16:33:09 WARN: win_trigger_event: WriteConsoleInput: The handle is invalid.   (errno=6)
-2023-09-28 16:33:14 Closing TUN/TAP interface
-2023-09-28 16:33:15 TAP: DHCP address released
-2023-09-28 16:33:15 SIGTERM[hard,] received, process exiting
+2023-10-01 14:06:06 Note: cipher 'AES-256-CBC' in --data-ciphers is not supported by ovpn-dco, disabling data channel offload.
+2023-10-01 14:06:06 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
+2023-10-01 14:06:06 OpenVPN 2.6.4 [git:v2.6.4/b4f749f14a8edc75] Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on May 11 2023
+2023-10-01 14:06:06 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2023-10-01 14:06:06 library versions: OpenSSL 3.1.0 14 Mar 2023, LZO 2.10
+2023-10-01 14:06:06 DCO version: v0
+2023-10-01 14:06:06 MANAGEMENT: TCP Socket listening on [AF_INET]127.0.0.1:7505
+2023-10-01 14:06:06 WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
+2023-10-01 14:06:06 NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
+2023-10-01 14:06:06 Diffie-Hellman initialized with 2048 bit key
+2023-10-01 14:06:06 interactive service msg_channel=0
+2023-10-01 14:06:06 open_tun
+2023-10-01 14:06:06 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2023-10-01 14:06:06 TAP-Windows Driver Version 9.26 
+2023-10-01 14:06:06 Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.1/255.255.255.0 [SUCCEEDED]
+2023-10-01 14:06:06 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.8.0.1/255.255.255.0 on interface {A2114B01-D243-42AF-9FE5-AA8B230FB321} [DHCP-serv: 10.8.0.0, lease-time: 31536000]
+2023-10-01 14:06:06 Sleeping for 10 seconds...
+2023-10-01 14:06:16 NOTE: FlushIpNetTable failed on interface [22] {A2114B01-D243-42AF-9FE5-AA8B230FB321} (status=5) : Access is denied.  
+2023-10-01 14:06:16 TUN: Setting IPv4 mtu failed: Access is denied.   [status=5 if_index=22]
+2023-10-01 14:06:16 Could not determine IPv4/IPv6 protocol. Using AF_INET6
+2023-10-01 14:06:16 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2023-10-01 14:06:16 setsockopt(IPV6_V6ONLY=0)
+2023-10-01 14:06:16 Listening for incoming TCP connection on [AF_INET6][undef]:1194
+2023-10-01 14:06:16 TCPv6_SERVER link local (bound): [AF_INET6][undef]:1194
+2023-10-01 14:06:16 TCPv6_SERVER link remote: [AF_UNSPEC]
+2023-10-01 14:06:16 MULTI: multi_init called, r=256 v=256
+2023-10-01 14:06:16 IFCONFIG POOL IPv4: base=10.8.0.2 size=253
+2023-10-01 14:06:16 IFCONFIG POOL LIST
+2023-10-01 14:06:16 MULTI: TCP INIT maxclients=59 maxevents=64
+2023-10-01 14:06:16 Initialization Sequence Completed

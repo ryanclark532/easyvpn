@@ -11,11 +11,11 @@ import type {
 import { writable } from 'svelte/store';
 
 export const users = writable<User[]>([]);
-export const createUserResponse = writable<DataWithStatus<string | undefined>>({
+export const createUserResponse = writable<DataWithStatus<string>>({
 	status: 'initial',
 	data: undefined
 });
-export const actionResponse = writable<DataWithStatus<string | undefined>>();
+export const actionResponse = writable<DataWithStatus<string>>();
 export const searchFilter = writable<string>();
 export const selectedUsers = writable<User[]>([]);
 export const masterCheckbox = writable<boolean>(false);

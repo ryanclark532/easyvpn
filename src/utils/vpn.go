@@ -53,10 +53,7 @@ func checkVPNCertificates() bool {
 	}
 
 	_, err = os.Stat(KeyDir + "dh.pem")
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
+	return !os.IsNotExist(err)
 }
 
 func StartVPNServer() {
@@ -84,4 +81,10 @@ func StopVPNServer() error {
 
 	fmt.Println("OpenVPN process stopped successfully.")
 	return nil
+}
+
+func GetActiveUsers() {
+	// call telnet cmd
+
+	//format users
 }

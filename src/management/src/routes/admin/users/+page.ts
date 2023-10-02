@@ -1,6 +1,6 @@
 import { checkToken, getToken } from '$lib/auth';
-import { getUsers, users } from '$lib/users';
 import { redirect } from '@sveltejs/kit';
+import { createUserStore } from '$lib/stores/users';
 
 export const ssr = false;
 
@@ -18,9 +18,5 @@ export async function load() {
 		throw redirect(307, 'login');
 	}
 
-	const u = await getUsers(getToken());
-	if (!u.data?.users) {
-		return;
-	}
-	users.set(u.data.users);
+	return { userStore: await createUserStore() };
 }
