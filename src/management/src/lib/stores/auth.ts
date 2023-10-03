@@ -1,47 +1,65 @@
-import { getID, getToken, setID, setToken } from '$lib/auth';
 import { typedFetch } from '$lib/fetch';
 import { writable } from 'svelte/store';
 import type { AuthResponse, CheckTokenResponse } from '../../types/auth';
 import { redirect } from '@sveltejs/kit';
 
-export function createAuthStore() {
-	const { subscribe, set, update } = writable<{ token: string; id: string }>();
-
-	const token = getToken();
-	const id = getID();
-	if (token && id) {
-		set({
-			token,
-			id
-		});
+export function getToken(): string | undefined {
+	try {
+		if (localStorage) {
+			return localStorage.getItem('token') ?? undefined;
+		}
+	} catch (e) {
+		return undefined;
 	}
+}
+export function getID(): string | undefined {
+	try {
+		if (localStorage) {
+			return localStorage.getItem('ID') ?? undefined;
+		}
+	} catch (e) {
+		return undefined;
+	}
+}
+
+export function setToken(token: string) {
+	if (localStorage) {
+		localStorage.setItem('token', token);
+	}
+}
+export function setID(id: string) {
+	if (localStorage) {
+		localStorage.setItem('ID', id);
+	}
+}
+
+export async function createAuthStore() {
+	const { subscribe, set, update } = writable<{
+		passwordValid: boolean;
+		admin: boolean;
+		valid: boolean;
+	}>();
+
+	set(await checkToken());
 
 	return {
 		subscribe,
 		set,
 		update,
-		validate: () => validateToken(token),
+		check: checkToken(),
 		handleLogin: (e: Event) => handleLogin(e, set),
-		changePassword: (e: Event) => handleChangePassword(e, id, set)
+		changePassword: (e: Event) => handleChangePassword(e),
+		getCurrent: () => getCurrent(subscribe),
+		checkRoute: () => checkRoute(getCurrent(subscribe))
 	};
 }
 
-async function handleChangePassword(
-	e: Event,
-	ID: string | undefined,
-	set: (
-		this: void,
-		value: {
-			token: string;
-			id: string;
-		}
-	) => void
-) {
+async function handleChangePassword(e: Event) {
 	e.preventDefault();
 	const formData = new FormData(e.target as HTMLFormElement);
 	const password = formData.get('password') as string;
 	const passwordConfirmation = formData.get('confirmPassword') as string;
-
+	const ID = getID();
 	if (!validatePasswordChangeAttempt(password, passwordConfirmation)) {
 		return new Error('Invalid Password Change Attempt');
 	}
@@ -62,22 +80,20 @@ async function handleChangePassword(
 	}
 	setID('');
 	setToken('');
-
 	redirect(307, '/login');
 }
 
 async function validateToken(token: string | undefined) {
-	if (!token) return;
-
+	if (!token) return new Error('Token Not Provided');
 	const response = await typedFetch<CheckTokenResponse>(
 		'http://localhost:8080/api/auth/check-token',
 		{
-			body: JSON.stringify(token),
+			body: JSON.stringify({ token: token }),
 			method: 'POST'
 		}
 	);
 
-	if (response.status >= 400) {
+	if (response instanceof Error || response.status >= 400) {
 		return new Error('Error while checking token');
 	}
 
@@ -89,8 +105,9 @@ async function handleLogin(
 	set: (
 		this: void,
 		value: {
-			token: string;
-			id: string;
+			valid: boolean;
+			admin: boolean;
+			passwordValid: boolean;
 		}
 	) => void
 ) {
@@ -106,17 +123,30 @@ async function handleLogin(
 		method: 'POST'
 	});
 
-	if (response.status >= 400 || response.data.error || !response.data.token || !response.data.id) {
-		return new Error(response.data.error ? response.data.error : 'Error while processing login');
+	if (
+		response instanceof Error ||
+		response.status >= 400 ||
+		response.data?.error ||
+		!response.data.token ||
+		!response.data.id
+	) {
+		return new Error(
+			'data' in response && response.data.error
+				? response.data.error
+				: 'Error while processing login'
+		);
 	}
-	set({
-		token: response.data.token,
-		id: response.data.id
-	});
-	redirect(
-		307,
-		response.data.password_expired ? 'user/reset' : response.data.is_admin ? 'admin/status' : '/'
-	);
+	setID(response.data.id);
+	setToken(response.data.token);
+	set(await checkToken());
+	console.log('?');
+	const location = response.data.password_expired
+		? 'user/reset'
+		: response.data.is_admin
+		? 'admin/status'
+		: '/';
+	console.log(location);
+	redirect(307, location);
 }
 
 function validateLoginAttempt(username: string | undefined, password: string | undefined) {
@@ -125,4 +155,57 @@ function validateLoginAttempt(username: string | undefined, password: string | u
 
 function validatePasswordChangeAttempt(password: string | undefined, confirm: string | undefined) {
 	return !confirm || !password;
+}
+
+export async function checkToken() {
+	const token = getToken();
+	if (!token) {
+		console.log('exits here');
+		return {
+			valid: false,
+			admin: false,
+			passwordValid: false
+		};
+	}
+	const tokenCheck = await validateToken(token);
+	if (tokenCheck instanceof Error) {
+		console.log('Exits here?');
+		return {
+			valid: false,
+			admin: false,
+			passwordValid: false
+		};
+	}
+	return {
+		valid: tokenCheck?.is_admin,
+		admin: tokenCheck?.is_admin,
+		passwordValid: !tokenCheck?.password_expired
+	};
+}
+
+function checkRoute(check: { passwordValid: boolean; admin: boolean; valid: boolean }) {
+	const token = getToken();
+	if (!token) {
+		console.log('?');
+		//throw redirect(307, 'login');
+	}
+
+	if (!check.passwordValid && check.valid) {
+		//throw redirect(307, '/user/reset');
+	}
+	if (!check.admin && check.valid) {
+		//throw redirect(307, '/user');
+	}
+
+	if (!check.valid) {
+		//throw redirect(307, 'login');
+	}
+}
+
+function getCurrent(s: any) {
+	let c;
+
+	const unsub = s((e: any) => (c = e));
+	unsub();
+	return c as unknown as { admin: boolean; valid: boolean; passwordValid: boolean };
 }

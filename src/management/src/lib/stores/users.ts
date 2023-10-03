@@ -1,6 +1,5 @@
 import type { Updater } from 'svelte/store';
 import { writable } from 'svelte/store';
-import { getToken } from '$lib/auth';
 import { typedFetch } from '$lib/fetch';
 import type {
 	CreateUserRequest,
@@ -9,6 +8,7 @@ import type {
 	User,
 	UserCreationResponse
 } from '../../types/users';
+import { getToken } from './auth';
 
 export async function createUserStore() {
 	const { subscribe, set, update } = writable<User[]>([]);
@@ -20,6 +20,7 @@ export async function createUserStore() {
 		subscribe,
 		update,
 		set,
+		getUsers: () => getUsers(),
 		delete: (u: User[]) => deleteUser(u, update),
 		updateUser: (u: User[]) => updateUser(u, update),
 		setTempPw: (u: User[]) => setTempPw(u),
@@ -29,13 +30,17 @@ export async function createUserStore() {
 
 async function getUsers() {
 	const headers = new Headers();
-	headers.append('Authorization', `Bearer ${getToken()}`);
+	const token = getToken();
+	if (!token) {
+		return new Error('No Token Provided');
+	}
+	headers.append('Authorization', `Bearer ${token}`);
 	const response = await typedFetch<GetUsersResponse>('http://localhost:8080/api/user', {
 		method: 'GET',
 		headers
 	});
 
-	if (response.status >= 400) {
+	if (response instanceof Error || response.status >= 400) {
 		return new Error('Error retrieving users, please try again later');
 	}
 	return response.data.users;
@@ -82,7 +87,7 @@ async function updateUser(users: User[], update: (this: void, updater: Updater<U
 		headers
 	});
 
-	if (response.status >= 400) {
+	if (response instanceof Error || response.status >= 400) {
 		return new Error('Error updating users, please try again later');
 	}
 
@@ -139,6 +144,10 @@ async function create(e: Event, update: (this: void, updater: Updater<User[]>) =
 		method: 'POST',
 		headers
 	});
+
+	if (response instanceof Error) {
+		return new Error(`Something went wrong while creating ${body.username}`);
+	}
 	if (response.status === 409) {
 		return new Error(`User with username ${body.username} already exists`);
 	}

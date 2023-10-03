@@ -1,11 +1,10 @@
 <script lang="ts">
-	import {Button, Modal} from 'flowbite-svelte';
+	import { Button, Modal } from 'flowbite-svelte';
 
 	export let open: boolean;
 	export let title: string;
-	export let onConfirm: (...args: any) => Promise<void>;
+	export let onConfirm: (...args: any) => Promise<Error | undefined>;
 	export let data: any;
-
 </script>
 
 <Modal {title} bind:open autoclose size="sm" class="w-full">

@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { Label, Input, Button, Modal, Checkbox, Tooltip } from 'flowbite-svelte';
-	import {page} from "$app/stores";
+	import { page } from '$app/stores';
 	let defaultModal = false;
 	let createUserConfirmation = false;
 	let response: string;
-	let userStore = $page.data.userStore
-
-
-
+	let userStore = $page.data.userStore;
 </script>
 
 <Button class="w-40" on:click={() => (defaultModal = true)}>New User</Button>
@@ -18,9 +15,7 @@
 	autoclose
 	size="sm"
 	class="w-full"
->
-
-</Modal>
+/>
 
 <Modal title="Add User" bind:open={defaultModal} class="min-w-full">
 	{#if response}

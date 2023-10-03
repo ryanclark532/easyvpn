@@ -3,15 +3,10 @@
 	import CreateUserModal from './create-user-modal.svelte';
 	import Table from './table.svelte';
 	import { Button, Dropdown, DropdownItem, Heading, Input } from 'flowbite-svelte';
-	import {
-		masterCheckbox,
-		searchFilter,
-		selectedUsers,
-	} from '$lib/users';
+	import { masterCheckbox, searchFilter, selectedUsers } from '$lib/users';
 	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
-	import {page} from "$app/stores";
+	import { _userStore } from '../../+layout';
 
-	let userStore = $page.data.userStore
 	let deleteModal = false;
 	let tempPasswordModal = false;
 	let toggleAdmin = false;
@@ -69,21 +64,21 @@
 <ConfirmationModal
 	open={deleteModal}
 	title="Confirm User Updates"
-	onConfirm={userStore.delete}
+	onConfirm={_userStore.delete}
 	data={$selectedUsers}
 />
 
 <ConfirmationModal
 	open={tempPasswordModal}
 	title="Confirm User Updates"
-	onConfirm={userStore.setTempPw}
+	onConfirm={_userStore.setTempPw}
 	data={$selectedUsers}
 />
 
 <ConfirmationModal
 	open={toggleAdmin}
 	title="Confirm User Updates"
-	onConfirm={userStore.updateUser}
+	onConfirm={_userStore.updateUser}
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,
@@ -99,7 +94,7 @@
 	}}
 	open={toggleEnabled}
 	title="Confirm User Updates"
-	onConfirm={userStore.updateUser}
+	onConfirm={_userStore.updateUser}
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,

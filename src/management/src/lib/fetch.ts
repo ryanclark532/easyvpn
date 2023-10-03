@@ -7,10 +7,14 @@ interface TypedFetchResponse<T> {
 export async function typedFetch<T>(
 	url: string,
 	options?: RequestInit
-): Promise<TypedFetchResponse<T>> {
-	const response = await fetch(url, options);
-	const data = (await response.json()) as T;
-	const status = response.status;
+): Promise<TypedFetchResponse<T> | Error> {
+	try {
+		const response = await fetch(url, options);
+		const data = (await response.json()) as T;
+		const status = response.status;
 
-	return { data, status };
+		return { data, status };
+	} catch (e: any) {
+		return new Error(e);
+	}
 }

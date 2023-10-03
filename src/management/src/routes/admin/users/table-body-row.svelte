@@ -26,11 +26,7 @@
 </script>
 
 <TableBodyRow>
-	<TableBodyCell tdClass="px-4 py-3"
-		><Checkbox
-			bind:checked={$checked}
-		/></TableBodyCell
-	>
+	<TableBodyCell tdClass="px-4 py-3"><Checkbox bind:checked={$checked} /></TableBodyCell>
 	<TableBodyCell tdClass="px-4 py-3">{user.Name}</TableBodyCell>
 	<TableBodyCell tdClass="px-4 py-3">{user.Username}</TableBodyCell>
 	<TableBodyCell tdClass="px-4 py-3">Yesterday</TableBodyCell>
