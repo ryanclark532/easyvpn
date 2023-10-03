@@ -26,12 +26,12 @@ export function getID(): string | undefined {
 	console.log('localstorage undefined');
 }
 
-function setToken(token: string) {
+export function setToken(token: string) {
 	if (localStorage) {
 		localStorage.setItem('token', token);
 	}
 }
-function setID(id: string) {
+export function setID(id: string) {
 	if (localStorage) {
 		localStorage.setItem('ID', id);
 	}
