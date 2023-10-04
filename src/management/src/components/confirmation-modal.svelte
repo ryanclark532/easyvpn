@@ -3,7 +3,7 @@
 
 	export let open: boolean;
 	export let title: string;
-	export let onConfirm: (...args: any) => Promise<Error | undefined>;
+	export let onConfirm: (...args: any) => Promise<Error | any>;
 	export let data: any;
 </script>
 

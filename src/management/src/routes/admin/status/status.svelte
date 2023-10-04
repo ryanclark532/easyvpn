@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { ServerStatusMapping } from '../../../types/vpn';
 	import { Button } from 'flowbite-svelte';
-	import { getVpnStatus, status, vpnOperation } from '$lib/vpn';
 	import { redirect } from '@sveltejs/kit';
 	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
-
+import {_vpnStore} from '../../+layout'
 	let background: string;
 	let containerClass: string;
 	$: {
 		background =
-			$status === 'running'
+			$_vpnStore === 'running'
 				? 'bg-green-300 border-green-600'
-				: $status === 'notRunning'
+				: $_vpnStore === 'notRunning'
 				? 'bg-red-300 border-red-600'
 				: 'bg-orange-300 border-orange-600';
 
@@ -25,7 +24,7 @@
 
 <div class={containerClass}>
 	<div class="flex justify-center">
-		<h2 class="mt-5 text-2xl">{ServerStatusMapping[$status]}</h2>
+		<h2 class="mt-5 text-2xl">{ServerStatusMapping[$_vpnStore]}</h2>
 		<button class="ml-2 mt-6" on:click={async () => {}}>
 			<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512"
 				><style>
@@ -39,11 +38,11 @@
 		</button>
 	</div>
 	<div class="mt-7 mb-7">
-		{#if $status === 'running'}
+		{#if $_vpnStore === 'running'}
 			<Button class="w-40" on:click={() => (stop = !stop)}>Stop Server</Button>
 			<Button class="w-40" on:click={() => (restart = !restart)}>Restart Server</Button>
 		{/if}
-		{#if $status === 'starting'}
+		{#if $_vpnStore === 'starting'}
 			<Button
 				class="w-40"
 				on:click={() => {
@@ -54,7 +53,7 @@
 			</Button>
 			<Button class="w-40">Restart Server</Button>
 		{/if}
-		{#if $status === 'notRunning'}
+		{#if $_vpnStore === 'notRunning'}
 			<Button
 				class="w-40"
 				on:click={() => {
@@ -68,12 +67,12 @@
 	</div>
 </div>
 
-<ConfirmationModal open={stop} title="Stop VPN Server" onConfirm={vpnOperation} data={'stop'} />
+<ConfirmationModal open={stop} title="Stop VPN Server" onConfirm={_vpnStore.operation} data={'stop'} />
 
 <ConfirmationModal
 	open={restart}
 	title="Restart VPN Server"
-	onConfirm={vpnOperation}
+	onConfirm={_vpnStore.operation}
 	data={'restart'}
 />
-<ConfirmationModal open={start} title="Start VPN Server" onConfirm={vpnOperation} data={'start'} />
+<ConfirmationModal open={start} title="Start VPN Server" onConfirm={_vpnStore.operation} data={'start'} />

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { TableBody, TableHead, TableHeadCell, Table, Checkbox } from 'flowbite-svelte';
-	import { masterCheckbox, searchFilter, users } from '$lib/users';
+	import { masterCheckbox, searchFilter  } from '$lib/users';
 	import TableBodyRow from './table-body-row.svelte';
 	import { _userStore } from '../../+layout';
 </script>

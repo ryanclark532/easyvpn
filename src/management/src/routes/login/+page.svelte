@@ -12,7 +12,6 @@
 				class="flex flex-col space-y-6"
 				on:submit={async (e) => {
 					response = await _authStore.handleLogin(e);
-			
 				}}
 			>
 				<h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Sign In</h3>
