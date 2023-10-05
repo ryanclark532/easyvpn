@@ -46,3 +46,23 @@ func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	GetServerStatusEndpoint(w, r)
 }
+
+func GetActiveConnectionsEndpoint(w http.ResponseWriter, r *http.Request) {
+
+	err := GetActiveConnections()
+	if err != nil {
+		utils.HandleError(err, "VPNOperationEndpoint")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	responseData := "hello"
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	err = json.NewEncoder(w).Encode(responseData)
+	if err != nil {
+		utils.HandleError(err, "GetServerStatusEndpoint")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}

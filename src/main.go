@@ -77,7 +77,7 @@ func SetupRouter() *mux.Router {
 	adminRouter.HandleFunc("/auth/set-temporary-password", auth.SetTemporaryPasswordEndpoint).Methods(http.MethodPut, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn", vpn.GetServerStatusEndpoint).Methods(http.MethodGet, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn/operation", vpn.VpnOperationEndpoint).Methods(http.MethodPost, http.MethodOptions)
-
+	adminRouter.HandleFunc("/vpn/connections", vpn.GetActiveConnectionsEndpoint).Methods(http.MethodGet, http.MethodOptions)
 	userRouter := apiRouter.PathPrefix("/").Subrouter()
 	userRouter.Use(middleware.CorsMiddleware, middleware.CheckUserRoute)
 	userRouter.HandleFunc("/auth/change-password", auth.ChangeUserPasswordEndpoint).Methods(http.MethodPost, http.MethodOptions)

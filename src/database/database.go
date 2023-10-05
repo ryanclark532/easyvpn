@@ -8,8 +8,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var DB *sql.DB
-
 func InitializeDatabase() error {
 	_, err := os.Stat("database.db")
 	if err == nil {
@@ -28,8 +26,6 @@ func InitializeDatabase() error {
 	if err != nil {
 		return err
 	}
-
-	DB = db
 
 	// TODO extract this to a method
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS Users (

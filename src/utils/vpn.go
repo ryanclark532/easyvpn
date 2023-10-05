@@ -28,6 +28,11 @@ func SetupVPNServer() error {
 		return err
 	}
 
+	err = GenerateSignedCertificate("client1")
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

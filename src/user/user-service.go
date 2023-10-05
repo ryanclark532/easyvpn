@@ -13,9 +13,13 @@ import (
 func GetUser(username string) (*user_dtos.User, error) {
 	var user user_dtos.User
 
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+	defer db.Close()
 	query := fmt.Sprintf("SELECT id, username, name, password, is_admin, enabled, password_expiry FROM Users WHERE username ='%s'", username)
-
-	err := database.DB.QueryRow(query).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
+	err = db.QueryRow(query).Scan(&user.ID, &user.Username, &user.Name, &user.Password, &user.IsAdmin, &user.Enabled, &user.PasswordExpiry)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -28,7 +32,13 @@ func GetUser(username string) (*user_dtos.User, error) {
 
 func GetUsers() (*[]user_dtos.User, error) {
 
-	rows, err := database.DB.Query("SELECT * FROM Users")
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM Users")
 	if err != nil {
 		return nil, err
 	}
@@ -60,8 +70,15 @@ func GetUsers() (*[]user_dtos.User, error) {
 }
 
 func CreateUser(user *user_dtos.CreateUserRequest) (*user_dtos.User, error) {
+
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
 	query := "INSERT INTO Users (username, name, password, is_admin, enabled, password_expiry) VALUES (?, ?, ?, ?, ?, ?)"
-	_, err := database.DB.Exec(query, user.Username, user.Name, user.Password, user.IsAdmin, user.Enabled, time.Now().Add(30*24*time.Hour))
+	_, err = db.Exec(query, user.Username, user.Name, user.Password, user.IsAdmin, user.Enabled, time.Now().Add(30*24*time.Hour))
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +95,14 @@ func DeleteUsers(IDs []int) error {
 
 	tableName := "users"
 
+	db, err := database.GetDB()
+	if err != nil {
+		return err
+	}
+
+	defer db.Close()
 	query := fmt.Sprintf("DELETE FROM %s WHERE ID IN (%v)", tableName, utils.JoinInts(IDs, ", "))
-	_, err := database.DB.Exec(query)
+	_, err = db.Exec(query)
 	if err != nil {
 		return err
 	}
@@ -88,8 +111,14 @@ func DeleteUsers(IDs []int) error {
 }
 
 func UpdateUser(user user_dtos.FrontEndUser) (*user_dtos.User, error) {
+	db, err := database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+
+	defer db.Close()
 	query := fmt.Sprintf("UPDATE Users SET username='%s', name='%s', is_admin='%t', enabled='%t' WHERE id='%d'", user.Username, user.Name, user.IsAdmin, user.Enabled, user.ID)
-	_, err := database.DB.Exec(query)
+	_, err = db.Exec(query)
 	if err != nil {
 		return nil, err
 	}

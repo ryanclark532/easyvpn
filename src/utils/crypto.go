@@ -94,6 +94,7 @@ func GenerateSignedCertificate(name string) error {
 		SerialNumber: big.NewInt(2),
 		Subject: pkix.Name{
 			Organization: []string{"Example Organization"},
+			CommonName:   name,
 		},
 		NotBefore:   time.Now(),
 		NotAfter:    time.Now().AddDate(1, 0, 0),

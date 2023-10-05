@@ -38,3 +38,12 @@ func VpnOperation(operation string) error {
 	}
 	return nil
 }
+
+func GetActiveConnections() error {
+	result, err := utils.TelnetCMD("status")
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
+	return nil
+}
