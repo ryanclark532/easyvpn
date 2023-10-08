@@ -49,14 +49,15 @@ func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func GetActiveConnectionsEndpoint(w http.ResponseWriter, r *http.Request) {
 
-	err := GetActiveConnections()
+	response, err := GetActiveConnections()
 	if err != nil {
 		utils.HandleError(err, "VPNOperationEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	responseData := "hello"
+	responseData := map[string]interface{}{}
+	responseData["connections"] = response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(responseData)

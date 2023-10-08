@@ -34,8 +34,8 @@ func main() {
 		err := utils.SetupVPNServer()
 		vpn <- err
 
-		utils.StartVPNServer()
-
+		err = utils.StartVPNServer()
+		vpn <- err
 	}()
 
 	dberr := <-db

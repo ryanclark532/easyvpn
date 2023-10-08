@@ -3,7 +3,7 @@
 	import { Button } from 'flowbite-svelte';
 	import { redirect } from '@sveltejs/kit';
 	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
-import {_vpnStore} from '../../+layout'
+	import { _vpnStore } from '../../+layout';
 	let background: string;
 	let containerClass: string;
 	$: {
@@ -25,7 +25,12 @@ import {_vpnStore} from '../../+layout'
 <div class={containerClass}>
 	<div class="flex justify-center">
 		<h2 class="mt-5 text-2xl">{ServerStatusMapping[$_vpnStore]}</h2>
-		<button class="ml-2 mt-6" on:click={async () => {}}>
+		<button
+			class="ml-2 mt-6"
+			on:click={async () => {
+				_vpnStore.getStatus();
+			}}
+		>
 			<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512"
 				><style>
 					svg {
@@ -67,7 +72,12 @@ import {_vpnStore} from '../../+layout'
 	</div>
 </div>
 
-<ConfirmationModal open={stop} title="Stop VPN Server" onConfirm={_vpnStore.operation} data={'stop'} />
+<ConfirmationModal
+	open={stop}
+	title="Stop VPN Server"
+	onConfirm={_vpnStore.operation}
+	data={'stop'}
+/>
 
 <ConfirmationModal
 	open={restart}
@@ -75,4 +85,9 @@ import {_vpnStore} from '../../+layout'
 	onConfirm={_vpnStore.operation}
 	data={'restart'}
 />
-<ConfirmationModal open={start} title="Start VPN Server" onConfirm={_vpnStore.operation} data={'start'} />
+<ConfirmationModal
+	open={start}
+	title="Start VPN Server"
+	onConfirm={_vpnStore.operation}
+	data={'start'}
+/>

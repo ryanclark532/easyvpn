@@ -61,9 +61,14 @@ func checkVPNCertificates() bool {
 	return !os.IsNotExist(err)
 }
 
-func StartVPNServer() {
+func StartVPNServer() error {
 	cmd := exec.Command("openvpn", "src/server-dev.conf")
-	_ = cmd.Run()
+
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func StopVPNServer() error {

@@ -1,65 +1,281 @@
-2023-10-05 22:23:21 Note: cipher 'AES-256-CBC' in --data-ciphers is not supported by ovpn-dco, disabling data channel offload.
-2023-10-05 22:23:21 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
-2023-10-05 22:23:21 OpenVPN 2.6.4 [git:v2.6.4/b4f749f14a8edc75] Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on May 11 2023
-2023-10-05 22:23:21 Windows version 10.0 (Windows 10 or greater), amd64 executable
-2023-10-05 22:23:21 library versions: OpenSSL 3.1.0 14 Mar 2023, LZO 2.10
-2023-10-05 22:23:21 DCO version: v0
-2023-10-05 22:23:21 setsockopt(IPV6_V6ONLY=0)
-2023-10-05 22:23:21 MANAGEMENT: TCP Socket listening on [AF_INET6]::1:7505
-2023-10-05 22:23:21 WARNING: --ifconfig-pool-persist will not work with --duplicate-cn
-2023-10-05 22:23:21 NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.
-2023-10-05 22:23:21 NOTE: the current --script-security setting may allow this configuration to call user-defined scripts
-2023-10-05 22:23:21 Diffie-Hellman initialized with 2048 bit key
-2023-10-05 22:23:21 interactive service msg_channel=0
-2023-10-05 22:23:21 open_tun
-2023-10-05 22:23:21 tap-windows6 device [OpenVPN TAP-Windows6] opened
-2023-10-05 22:23:21 TAP-Windows Driver Version 9.26 
-2023-10-05 22:23:21 Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.1/255.255.255.0 [SUCCEEDED]
-2023-10-05 22:23:21 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.8.0.1/255.255.255.0 on interface {BC4B84AA-8153-4C0C-9B16-C40C2BD4785F} [DHCP-serv: 10.8.0.0, lease-time: 31536000]
-2023-10-05 22:23:21 Sleeping for 10 seconds...
-2023-10-05 22:23:31 NOTE: FlushIpNetTable failed on interface [17] {BC4B84AA-8153-4C0C-9B16-C40C2BD4785F} (status=5) : Access is denied.  
-2023-10-05 22:23:31 TUN: Setting IPv4 mtu failed: Access is denied.   [status=5 if_index=17]
-2023-10-05 22:23:31 Could not determine IPv4/IPv6 protocol. Using AF_INET6
-2023-10-05 22:23:31 Socket Buffers: R=[65536->65536] S=[65536->65536]
-2023-10-05 22:23:31 setsockopt(IPV6_V6ONLY=0)
-2023-10-05 22:23:31 Listening for incoming TCP connection on [AF_INET6][undef]:1194
-2023-10-05 22:23:31 TCPv6_SERVER link local (bound): [AF_INET6][undef]:1194
-2023-10-05 22:23:31 TCPv6_SERVER link remote: [AF_UNSPEC]
-2023-10-05 22:23:31 MULTI: multi_init called, r=256 v=256
-2023-10-05 22:23:31 IFCONFIG POOL IPv4: base=10.8.0.2 size=253
-2023-10-05 22:23:31 IFCONFIG POOL LIST
-2023-10-05 22:23:31 MULTI: TCP INIT maxclients=59 maxevents=64
-2023-10-05 22:23:31 Initialization Sequence Completed
-2023-10-05 22:23:32 TCP connection established with [AF_INET6]::ffff:127.0.0.1:55156
-2023-10-05 22:23:32 127.0.0.1:55156 TLS: Initial packet from [AF_INET6]::ffff:127.0.0.1:55156, sid=0e38c8ef b9802c45
-2023-10-05 22:23:32 127.0.0.1:55156 VERIFY OK: depth=1, O=Root CA
-2023-10-05 22:23:32 127.0.0.1:55156 VERIFY KU OK
-2023-10-05 22:23:32 127.0.0.1:55156 NOTE: --mute triggered...
-2023-10-05 22:23:32 127.0.0.1:55156 4 variation(s) on previous 10 message(s) suppressed by --mute
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_VER=2.6.4
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_PLAT=win
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_TCPNL=1
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_MTU=1600
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_NCP=2
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_CIPHERS=AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_PROTO=990
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_HWADDR=b4:2e:99:f5:28:6b
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_SSL=OpenSSL_3.1.0_14_Mar_2023
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_PLAT_VER=10.0,_amd64_executable
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_GUI_VER=OpenVPN_GUI_11
-2023-10-05 22:23:32 127.0.0.1:55156 peer info: IV_SSO=openurl,webauth,crtext
-2023-10-05 22:23:32 127.0.0.1:55156 env_block: add PATH=C:\Windows\System32;C:\Windows;C:\Windows\System32\Wbem
-2023-10-05 22:23:32 127.0.0.1:55156 TLS: Username/Password authentication deferred for username 'test' [CN SET]
-2023-10-05 22:23:32 127.0.0.1:55156 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
-2023-10-05 22:23:32 127.0.0.1:55156 TLS: tls_multi_process: initial untrusted session promoted to semi-trusted
-2023-10-05 22:23:32 127.0.0.1:55156 NOTE: --mute triggered...
-2023-10-05 22:23:32 127.0.0.1:55156 1 variation(s) on previous 10 message(s) suppressed by --mute
-2023-10-05 22:23:32 127.0.0.1:55156 [test] Peer Connection Initiated with [AF_INET6]::ffff:127.0.0.1:55156
-2023-10-05 22:23:33 127.0.0.1:55156 PUSH: Received control message: 'PUSH_REQUEST'
-2023-10-05 22:23:39 127.0.0.1:55156 PUSH: Received control message: 'PUSH_REQUEST'
-2023-10-05 22:23:44 127.0.0.1:55156 PUSH: Received control message: 'PUSH_REQUEST'
-2023-10-05 22:23:49 127.0.0.1:55156 NOTE: --mute triggered...
-2023-10-05 22:23:59 3 variation(s) on previous 10 message(s) suppressed by --mute
-2023-10-05 22:23:59 Closing TUN/TAP interface
-2023-10-05 22:23:59 TAP: DHCP address released
-2023-10-05 22:23:59 SIGTERM[hard,] received, process exiting
+2023-10-08 15:10:32 Note: cipher 'AES-256-CBC' in --data-ciphers is not supported by ovpn-dco, disabling data channel offload.
+2023-10-08 15:10:32 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
+2023-10-08 15:10:32 OpenVPN 2.6.4 [git:v2.6.4/b4f749f14a8edc75] Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on May 11 2023
+2023-10-08 15:10:32 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2023-10-08 15:10:32 library versions: OpenSSL 3.1.0 14 Mar 2023, LZO 2.10
+2023-10-08 15:10:32 DCO version: v0
+2023-10-08 15:10:32 setsockopt(IPV6_V6ONLY=0)
+2023-10-08 15:10:32 MANAGEMENT: TCP Socket listening on [AF_INET6]::1:7505
+2023-10-08 15:10:32 NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.
+2023-10-08 15:10:32 Diffie-Hellman initialized with 2048 bit key
+2023-10-08 15:10:32 interactive service msg_channel=0
+2023-10-08 15:10:32 open_tun
+2023-10-08 15:10:32 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2023-10-08 15:10:32 TAP-Windows Driver Version 9.26 
+2023-10-08 15:10:32 Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.1/255.255.255.0 [SUCCEEDED]
+2023-10-08 15:10:32 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.8.0.1/255.255.255.0 on interface {BC4B84AA-8153-4C0C-9B16-C40C2BD4785F} [DHCP-serv: 10.8.0.0, lease-time: 31536000]
+2023-10-08 15:10:32 Sleeping for 10 seconds...
+2023-10-08 15:10:42 NOTE: FlushIpNetTable failed on interface [17] {BC4B84AA-8153-4C0C-9B16-C40C2BD4785F} (status=5) : Access is denied.  
+2023-10-08 15:10:42 TUN: Setting IPv4 mtu failed: Access is denied.   [status=5 if_index=17]
+2023-10-08 15:10:42 Could not determine IPv4/IPv6 protocol. Using AF_INET6
+2023-10-08 15:10:42 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2023-10-08 15:10:42 setsockopt(IPV6_V6ONLY=0)
+2023-10-08 15:10:42 Listening for incoming TCP connection on [AF_INET6][undef]:1194
+2023-10-08 15:10:42 TCPv6_SERVER link local (bound): [AF_INET6][undef]:1194
+2023-10-08 15:10:42 TCPv6_SERVER link remote: [AF_UNSPEC]
+2023-10-08 15:10:42 MULTI: multi_init called, r=256 v=256
+2023-10-08 15:10:42 IFCONFIG POOL IPv4: base=10.8.0.2 size=253
+2023-10-08 15:10:42 ifconfig_pool_read(), in='client1,10.8.0.2,'
+2023-10-08 15:10:42 succeeded -> ifconfig_pool_set(hand=0)
+2023-10-08 15:10:42 IFCONFIG POOL LIST
+2023-10-08 15:10:42 client1,10.8.0.2,
+2023-10-08 15:10:42 MULTI: TCP INIT maxclients=59 maxevents=64
+2023-10-08 15:10:42 Initialization Sequence Completed
+2023-10-08 15:11:22 MANAGEMENT: Client connected from [AF_INET6]::1:64560
+2023-10-08 15:11:22 MANAGEMENT: CMD 'status'
+2023-10-08 15:11:22 MANAGEMENT: Client disconnected
+2023-10-08 15:11:39 MANAGEMENT: Client connected from [AF_INET6]::1:64578
+2023-10-08 15:11:39 MANAGEMENT: CMD 'status'
+2023-10-08 15:11:39 MANAGEMENT: Client disconnected
+2023-10-08 15:17:56 MANAGEMENT: Client connected from [AF_INET6]::1:64916
+2023-10-08 15:17:56 MANAGEMENT: CMD 'status'
+2023-10-08 15:17:56 MANAGEMENT: Client disconnected
+2023-10-08 15:19:25 MANAGEMENT: Client connected from [AF_INET6]::1:65001
+2023-10-08 15:19:25 MANAGEMENT: CMD 'status'
+2023-10-08 15:19:25 MANAGEMENT: Client disconnected
+2023-10-08 15:20:09 MANAGEMENT: Client connected from [AF_INET6]::1:65060
+2023-10-08 15:20:09 MANAGEMENT: CMD 'status'
+2023-10-08 15:20:09 MANAGEMENT: Client disconnected
+2023-10-08 15:20:23 MANAGEMENT: Client connected from [AF_INET6]::1:65078
+2023-10-08 15:20:23 MANAGEMENT: CMD 'status'
+2023-10-08 15:20:23 MANAGEMENT: Client disconnected
+2023-10-08 15:21:21 MANAGEMENT: Client connected from [AF_INET6]::1:65132
+2023-10-08 15:21:21 MANAGEMENT: CMD 'status'
+2023-10-08 15:21:21 MANAGEMENT: Client disconnected
+2023-10-08 15:21:31 MANAGEMENT: Client connected from [AF_INET6]::1:65149
+2023-10-08 15:21:31 MANAGEMENT: CMD 'status'
+2023-10-08 15:21:31 MANAGEMENT: Client disconnected
+2023-10-08 15:21:42 MANAGEMENT: Client connected from [AF_INET6]::1:65160
+2023-10-08 15:21:42 MANAGEMENT: CMD 'status'
+2023-10-08 15:21:42 MANAGEMENT: Client disconnected
+2023-10-08 15:23:21 MANAGEMENT: Client connected from [AF_INET6]::1:65261
+2023-10-08 15:23:21 MANAGEMENT: CMD 'status'
+2023-10-08 15:23:21 MANAGEMENT: Client disconnected
+2023-10-08 15:23:41 MANAGEMENT: Client connected from [AF_INET6]::1:65292
+2023-10-08 15:23:41 MANAGEMENT: CMD 'status'
+2023-10-08 15:23:41 MANAGEMENT: Client disconnected
+2023-10-08 15:23:47 MANAGEMENT: Client connected from [AF_INET6]::1:65306
+2023-10-08 15:23:47 MANAGEMENT: CMD 'status'
+2023-10-08 15:23:47 MANAGEMENT: Client disconnected
+2023-10-08 15:24:05 MANAGEMENT: Client connected from [AF_INET6]::1:65345
+2023-10-08 15:24:05 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:05 MANAGEMENT: Client disconnected
+2023-10-08 15:24:28 MANAGEMENT: Client connected from [AF_INET6]::1:65377
+2023-10-08 15:24:28 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:28 MANAGEMENT: Client disconnected
+2023-10-08 15:24:28 MANAGEMENT: Client connected from [AF_INET6]::1:65378
+2023-10-08 15:24:28 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:28 MANAGEMENT: Client disconnected
+2023-10-08 15:24:49 MANAGEMENT: Client connected from [AF_INET6]::1:65406
+2023-10-08 15:24:49 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:49 MANAGEMENT: Client disconnected
+2023-10-08 15:24:49 MANAGEMENT: Client connected from [AF_INET6]::1:65407
+2023-10-08 15:24:49 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:49 MANAGEMENT: Client disconnected
+2023-10-08 15:24:49 MANAGEMENT: Client connected from [AF_INET6]::1:65408
+2023-10-08 15:24:49 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:49 MANAGEMENT: Client disconnected
+2023-10-08 15:24:58 MANAGEMENT: Client connected from [AF_INET6]::1:65430
+2023-10-08 15:24:58 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:58 MANAGEMENT: Client disconnected
+2023-10-08 15:24:58 MANAGEMENT: Client connected from [AF_INET6]::1:65431
+2023-10-08 15:24:58 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:58 MANAGEMENT: Client disconnected
+2023-10-08 15:24:58 MANAGEMENT: Client connected from [AF_INET6]::1:65432
+2023-10-08 15:24:58 MANAGEMENT: CMD 'status'
+2023-10-08 15:24:58 MANAGEMENT: Client disconnected
+2023-10-08 15:25:39 MANAGEMENT: Client connected from [AF_INET6]::1:65478
+2023-10-08 15:25:39 MANAGEMENT: CMD 'status'
+2023-10-08 15:25:39 MANAGEMENT: Client disconnected
+2023-10-08 15:25:50 MANAGEMENT: Client connected from [AF_INET6]::1:65491
+2023-10-08 15:25:50 MANAGEMENT: CMD 'status'
+2023-10-08 15:25:50 MANAGEMENT: Client disconnected
+2023-10-08 15:26:27 MANAGEMENT: Client connected from [AF_INET6]::1:65534
+2023-10-08 15:26:27 MANAGEMENT: CMD 'status'
+2023-10-08 15:26:27 MANAGEMENT: Client disconnected
+2023-10-08 15:26:36 MANAGEMENT: Client connected from [AF_INET6]::1:49172
+2023-10-08 15:26:36 MANAGEMENT: CMD 'status'
+2023-10-08 15:26:36 MANAGEMENT: Client disconnected
+2023-10-08 15:26:55 MANAGEMENT: Client connected from [AF_INET6]::1:49287
+2023-10-08 15:26:55 MANAGEMENT: CMD 'status'
+2023-10-08 15:26:55 MANAGEMENT: Client disconnected
+2023-10-08 15:27:17 MANAGEMENT: Client connected from [AF_INET6]::1:49316
+2023-10-08 15:27:17 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:17 MANAGEMENT: Client disconnected
+2023-10-08 15:27:17 MANAGEMENT: Client connected from [AF_INET6]::1:49317
+2023-10-08 15:27:17 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:17 MANAGEMENT: Client disconnected
+2023-10-08 15:27:17 MANAGEMENT: Client connected from [AF_INET6]::1:49319
+2023-10-08 15:27:17 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:17 MANAGEMENT: Client disconnected
+2023-10-08 15:27:28 MANAGEMENT: Client connected from [AF_INET6]::1:49336
+2023-10-08 15:27:28 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:28 MANAGEMENT: Client disconnected
+2023-10-08 15:27:28 MANAGEMENT: Client connected from [AF_INET6]::1:49337
+2023-10-08 15:27:28 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:28 MANAGEMENT: Client disconnected
+2023-10-08 15:27:28 MANAGEMENT: Client connected from [AF_INET6]::1:49338
+2023-10-08 15:27:28 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:28 MANAGEMENT: Client disconnected
+2023-10-08 15:27:53 MANAGEMENT: Client connected from [AF_INET6]::1:49373
+2023-10-08 15:27:53 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:53 MANAGEMENT: Client disconnected
+2023-10-08 15:27:53 MANAGEMENT: Client connected from [AF_INET6]::1:49374
+2023-10-08 15:27:53 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:53 MANAGEMENT: Client disconnected
+2023-10-08 15:27:53 MANAGEMENT: Client connected from [AF_INET6]::1:49375
+2023-10-08 15:27:53 MANAGEMENT: CMD 'status'
+2023-10-08 15:27:53 MANAGEMENT: Client disconnected
+2023-10-08 15:28:16 TCP connection established with [AF_INET6]::1:49401
+2023-10-08 15:28:16 ::1 TLS: Initial packet from [AF_INET6]::1:49401, sid=5a36793d 919900f5
+2023-10-08 15:28:16 ::1 VERIFY OK: depth=1, O=Root CA
+2023-10-08 15:28:16 ::1 VERIFY KU OK
+2023-10-08 15:28:16 ::1 NOTE: --mute triggered...
+2023-10-08 15:28:16 ::1 4 variation(s) on previous 10 message(s) suppressed by --mute
+2023-10-08 15:28:16 ::1 peer info: IV_VER=2.6.4
+2023-10-08 15:28:16 ::1 peer info: IV_PLAT=win
+2023-10-08 15:28:16 ::1 peer info: IV_TCPNL=1
+2023-10-08 15:28:16 ::1 peer info: IV_MTU=1600
+2023-10-08 15:28:16 ::1 peer info: IV_NCP=2
+2023-10-08 15:28:16 ::1 peer info: IV_CIPHERS=AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305
+2023-10-08 15:28:16 ::1 peer info: IV_PROTO=990
+2023-10-08 15:28:16 ::1 peer info: IV_HWADDR=b4:2e:99:f5:28:6b
+2023-10-08 15:28:16 ::1 peer info: IV_SSL=OpenSSL_3.1.0_14_Mar_2023
+2023-10-08 15:28:16 ::1 peer info: IV_PLAT_VER=10.0,_amd64_executable
+2023-10-08 15:28:16 ::1 peer info: IV_GUI_VER=OpenVPN_GUI_11
+2023-10-08 15:28:16 ::1 peer info: IV_SSO=openurl,webauth,crtext
+2023-10-08 15:28:16 ::1 TLS: move_session: dest=TM_ACTIVE src=TM_INITIAL reinit_src=1
+2023-10-08 15:28:16 ::1 TLS: tls_multi_process: initial untrusted session promoted to trusted
+2023-10-08 15:28:16 ::1 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 bit ECsecp384r1, signature: ecdsa-with-SHA384
+2023-10-08 15:28:16 ::1 [client1] Peer Connection Initiated with [AF_INET6]::1:49401
+2023-10-08 15:28:16 client1/::1 MULTI_sva: pool returned IPv4=10.8.0.2, IPv6=(Not enabled)
+2023-10-08 15:28:16 client1/::1 MULTI: Learn: 10.8.0.2 -> client1/::1
+2023-10-08 15:28:16 client1/::1 MULTI: primary virtual IP for client1/::1: 10.8.0.2
+2023-10-08 15:28:16 client1/::1 SENT CONTROL [client1]: 'PUSH_REPLY,dhcp-option DNS 1.1.1.1,dhcp-option DNS 1.0.0.1,route 192.168.0.0 255.255.255.0,route-gateway 10.8.0.1,topology subnet,ping 10,ping-restart 120,ifconfig 10.8.0.2 255.255.255.0,peer-id 0,cipher AES-256-GCM,protocol-flags cc-exit tls-ekm dyn-tls-crypt,tun-mtu 1500' (status=1)
+2023-10-08 15:28:17 client1/::1 Data Channel: cipher 'AES-256-GCM', peer-id: 0
+2023-10-08 15:28:17 client1/::1 Timers: ping 10, ping-restart 240
+2023-10-08 15:28:17 client1/::1 Protocol options: protocol-flags cc-exit tls-ekm dyn-tls-crypt
+2023-10-08 15:28:22 MANAGEMENT: Client connected from [AF_INET6]::1:49416
+2023-10-08 15:28:22 MANAGEMENT: CMD 'status'
+2023-10-08 15:28:22 MANAGEMENT: Client disconnected
+2023-10-08 15:28:32 MANAGEMENT: Client connected from [AF_INET6]::1:49441
+2023-10-08 15:28:32 MANAGEMENT: CMD 'status'
+2023-10-08 15:28:32 MANAGEMENT: Client disconnected
+2023-10-08 15:28:32 MANAGEMENT: Client connected from [AF_INET6]::1:49442
+2023-10-08 15:28:32 MANAGEMENT: CMD 'status'
+2023-10-08 15:28:32 MANAGEMENT: Client disconnected
+2023-10-08 15:28:32 MANAGEMENT: Client connected from [AF_INET6]::1:49443
+2023-10-08 15:28:32 MANAGEMENT: CMD 'status'
+2023-10-08 15:28:32 MANAGEMENT: Client disconnected
+2023-10-08 15:29:03 MANAGEMENT: Client connected from [AF_INET6]::1:49482
+2023-10-08 15:29:03 MANAGEMENT: CMD 'status'
+2023-10-08 15:29:03 MANAGEMENT: Client disconnected
+2023-10-08 15:31:20 MANAGEMENT: Client connected from [AF_INET6]::1:49614
+2023-10-08 15:31:20 MANAGEMENT: CMD 'status'
+2023-10-08 15:31:20 MANAGEMENT: Client disconnected
+2023-10-08 15:31:41 MANAGEMENT: Client connected from [AF_INET6]::1:49642
+2023-10-08 15:31:41 MANAGEMENT: CMD 'status'
+2023-10-08 15:31:41 MANAGEMENT: Client disconnected
+2023-10-08 15:31:45 MANAGEMENT: Client connected from [AF_INET6]::1:49647
+2023-10-08 15:31:45 MANAGEMENT: CMD 'status'
+2023-10-08 15:31:45 MANAGEMENT: Client disconnected
+2023-10-08 15:31:51 MANAGEMENT: Client connected from [AF_INET6]::1:49660
+2023-10-08 15:31:51 MANAGEMENT: CMD 'status'
+2023-10-08 15:31:51 MANAGEMENT: Client disconnected
+2023-10-08 15:31:51 MANAGEMENT: Client connected from [AF_INET6]::1:49661
+2023-10-08 15:31:51 MANAGEMENT: CMD 'status'
+2023-10-08 15:31:51 MANAGEMENT: Client disconnected
+2023-10-08 15:32:09 MANAGEMENT: Client connected from [AF_INET6]::1:49694
+2023-10-08 15:32:09 MANAGEMENT: CMD 'status'
+2023-10-08 15:32:09 MANAGEMENT: Client disconnected
+2023-10-08 15:32:09 MANAGEMENT: Client connected from [AF_INET6]::1:49695
+2023-10-08 15:32:09 MANAGEMENT: CMD 'status'
+2023-10-08 15:32:09 MANAGEMENT: Client disconnected
+2023-10-08 15:32:22 MANAGEMENT: Client connected from [AF_INET6]::1:49714
+2023-10-08 15:32:22 MANAGEMENT: CMD 'status'
+2023-10-08 15:32:22 MANAGEMENT: Client disconnected
+2023-10-08 15:39:35 MANAGEMENT: Client connected from [AF_INET6]::1:50166
+2023-10-08 15:39:35 MANAGEMENT: CMD 'status'
+2023-10-08 15:39:35 MANAGEMENT: Client disconnected
+2023-10-08 15:41:41 MANAGEMENT: Client connected from [AF_INET6]::1:50279
+2023-10-08 15:41:41 MANAGEMENT: CMD 'status'
+2023-10-08 15:41:41 MANAGEMENT: Client disconnected
+2023-10-08 15:41:52 MANAGEMENT: Client connected from [AF_INET6]::1:50297
+2023-10-08 15:41:52 MANAGEMENT: CMD 'status'
+2023-10-08 15:41:52 MANAGEMENT: Client disconnected
+2023-10-08 15:42:17 MANAGEMENT: Client connected from [AF_INET6]::1:50335
+2023-10-08 15:42:17 MANAGEMENT: CMD 'status'
+2023-10-08 15:42:17 MANAGEMENT: Client disconnected
+2023-10-08 15:46:50 MANAGEMENT: Client connected from [AF_INET6]::1:50535
+2023-10-08 15:46:50 MANAGEMENT: CMD 'status'
+2023-10-08 15:46:50 MANAGEMENT: Client disconnected
+2023-10-08 15:48:03 MANAGEMENT: Client connected from [AF_INET6]::1:50608
+2023-10-08 15:48:03 MANAGEMENT: CMD 'status'
+2023-10-08 15:48:03 MANAGEMENT: Client disconnected
+2023-10-08 15:51:53 MANAGEMENT: Client connected from [AF_INET6]::1:50798
+2023-10-08 15:51:53 MANAGEMENT: CMD 'status'
+2023-10-08 15:51:53 MANAGEMENT: Client disconnected
+2023-10-08 15:56:56 MANAGEMENT: Client connected from [AF_INET6]::1:51026
+2023-10-08 15:56:56 MANAGEMENT: CMD 'status'
+2023-10-08 15:56:56 MANAGEMENT: Client disconnected
+2023-10-08 15:57:39 MANAGEMENT: Client connected from [AF_INET6]::1:51065
+2023-10-08 15:57:39 MANAGEMENT: CMD 'status'
+2023-10-08 15:57:39 MANAGEMENT: Client disconnected
+2023-10-08 15:58:12 MANAGEMENT: Client connected from [AF_INET6]::1:51109
+2023-10-08 15:58:12 MANAGEMENT: CMD 'status'
+2023-10-08 15:58:12 MANAGEMENT: Client disconnected
+2023-10-08 15:58:15 MANAGEMENT: Client connected from [AF_INET6]::1:51114
+2023-10-08 15:58:15 MANAGEMENT: CMD 'status'
+2023-10-08 15:58:15 MANAGEMENT: Client disconnected
+2023-10-08 15:58:48 MANAGEMENT: Client connected from [AF_INET6]::1:51145
+2023-10-08 15:58:48 MANAGEMENT: CMD 'status'
+2023-10-08 15:58:48 MANAGEMENT: Client disconnected
+2023-10-08 16:04:15 MANAGEMENT: Client connected from [AF_INET6]::1:51431
+2023-10-08 16:04:15 MANAGEMENT: CMD 'status'
+2023-10-08 16:04:15 MANAGEMENT: Client disconnected
+2023-10-08 16:09:01 MANAGEMENT: Client connected from [AF_INET6]::1:51692
+2023-10-08 16:09:01 MANAGEMENT: CMD 'status'
+2023-10-08 16:09:01 MANAGEMENT: Client disconnected
+2023-10-08 16:09:08 MANAGEMENT: Client connected from [AF_INET6]::1:51705
+2023-10-08 16:09:08 MANAGEMENT: CMD 'status'
+2023-10-08 16:09:08 MANAGEMENT: Client disconnected
+2023-10-08 16:15:23 MANAGEMENT: Client connected from [AF_INET6]::1:52037
+2023-10-08 16:15:23 MANAGEMENT: CMD 'status'
+2023-10-08 16:15:23 MANAGEMENT: Client disconnected
+2023-10-08 16:20:15 MANAGEMENT: Client connected from [AF_INET6]::1:52285
+2023-10-08 16:20:15 MANAGEMENT: CMD 'status'
+2023-10-08 16:20:15 MANAGEMENT: Client disconnected
+2023-10-08 16:26:09 client1/::1 TLS: soft reset sec=3473/3473 bytes=173003/-1 pkts=1594/0
+2023-10-08 16:26:09 client1/::1 VERIFY OK: depth=1, O=Root CA
+2023-10-08 16:26:09 client1/::1 VERIFY KU OK
+2023-10-08 16:26:09 client1/::1 NOTE: --mute triggered...
+2023-10-08 16:26:09 client1/::1 4 variation(s) on previous 10 message(s) suppressed by --mute
+2023-10-08 16:26:09 client1/::1 peer info: IV_VER=2.6.4
+2023-10-08 16:26:09 client1/::1 peer info: IV_PLAT=win
+2023-10-08 16:26:09 client1/::1 peer info: IV_TCPNL=1
+2023-10-08 16:26:09 client1/::1 peer info: IV_MTU=1600
+2023-10-08 16:26:09 client1/::1 peer info: IV_NCP=2
+2023-10-08 16:26:09 client1/::1 peer info: IV_CIPHERS=AES-256-GCM:AES-128-GCM:CHACHA20-POLY1305
+2023-10-08 16:26:09 client1/::1 peer info: IV_PROTO=990
+2023-10-08 16:26:09 client1/::1 peer info: IV_HWADDR=b4:2e:99:f5:28:6b
+2023-10-08 16:26:09 client1/::1 peer info: IV_SSL=OpenSSL_3.1.0_14_Mar_2023
+2023-10-08 16:26:09 client1/::1 peer info: IV_PLAT_VER=10.0,_amd64_executable
+2023-10-08 16:26:09 client1/::1 peer info: IV_GUI_VER=OpenVPN_GUI_11
+2023-10-08 16:26:09 client1/::1 peer info: IV_SSO=openurl,webauth,crtext
+2023-10-08 16:26:09 client1/::1 Control Channel: TLSv1.3, cipher TLSv1.3 TLS_AES_256_GCM_SHA384, peer certificate: 384 bit ECsecp384r1, signature: ecdsa-with-SHA384
+2023-10-08 16:48:59 MANAGEMENT: Client connected from [AF_INET6]::1:53788
+2023-10-08 16:48:59 MANAGEMENT: CMD 'status'
+2023-10-08 16:48:59 MANAGEMENT: Client disconnected
+2023-10-08 16:51:35 MANAGEMENT: Client connected from [AF_INET6]::1:53952
+2023-10-08 16:51:35 MANAGEMENT: CMD 'status'
+2023-10-08 16:51:35 MANAGEMENT: Client disconnected

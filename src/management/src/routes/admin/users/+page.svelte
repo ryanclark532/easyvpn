@@ -15,8 +15,8 @@
 
 <div class="flex">
 	<Sidepanel />
-	<div class="w-full p-5">
-		<Heading tag={'h2'}>Users</Heading>
+	<div class="w-full p-5 ml-64">
+		<Heading tag={'h3'}>Users</Heading>
 		<div class="my-6 w-100 float-left">
 			<Input
 				id="default-input"
