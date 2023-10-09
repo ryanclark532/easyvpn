@@ -11,7 +11,6 @@ import (
 	"fmt"
 
 	"net/http"
-	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -21,7 +20,6 @@ var svelte embed.FS
 
 func main() {
 
-	fmt.Println(os.Getwd())
 	db := make(chan error)
 	vpn := make(chan error)
 

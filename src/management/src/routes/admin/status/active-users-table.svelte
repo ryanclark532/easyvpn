@@ -61,8 +61,8 @@
 									>{connection.CommonName}</th
 								>
 								<td class="px-4 py-3 w-1/6">{connection.Address}</td>
-								<td class="px-4 py-3 w-1/6">{Number(connection.BytesSent) / 100 } mb(s)</td>
-								<td class="px-4 py-3 w-1/6">{Number(connection.BytesRec) / 100 } mb(s)</td>
+								<td class="px-4 py-3 w-1/6">{Number(connection.BytesSent) / 100} mb(s)</td>
+								<td class="px-4 py-3 w-1/6">{Number(connection.BytesRec) / 100} mb(s)</td>
 								<td class="px-4 py-3 w-1/6">{connection.ConnectedSince}</td>
 								<td class="px-4 py-3 w-1/6"
 									><button
