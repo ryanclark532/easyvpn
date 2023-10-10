@@ -45,6 +45,16 @@ func InitializeDatabase() error {
 	if err != nil {
 		return err
 	}
+	_, err = db.Exec(`INSERT INTO Groups (name,member_count, enabled,is_admin)
+                      VALUES (?, ?, ?, ?);`,
+		"test",
+		0,
+		true,
+		true,
+	)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -68,8 +78,8 @@ func setupTables(db *sql.DB) error {
 		username VARCHAR(255) UNIQUE NOT NULL,
 		name VARCHAR(255) NOT NULL,
 		password VARCHAR(255) NOT NULL,
-		is_admin BOOLEAN NOT NULL,
-	    enabled BOOLEAN NOT NULL,
+		is_admin BOOLEAN,
+	    enabled BOOLEAN,
 		password_expiry DATE NOT NULL
 	);`)
 
@@ -79,6 +89,7 @@ func setupTables(db *sql.DB) error {
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS Groups (
 		id INTEGER PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
+		member_count INTEGER NOT NULL,
 		enabled BOOLEAN NOT NULL,
 		is_admin BOOLEAN NOT NULL
 	);`)
@@ -88,7 +99,9 @@ func setupTables(db *sql.DB) error {
 	}
 	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS GroupMembership (
 		id INTEGER PRIMARY KEY,
-		userId INTEGER,
+		groupId INTEGER NOT NULL,
+		FOREIGN KEY (groupId) REFERENCES Groups(id)
+		userId INTEGER NOT NULL,
 		FOREIGN KEY(userId) REFERENCES Users(id)
 	);`)
 	if err != nil {

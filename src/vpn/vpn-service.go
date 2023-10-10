@@ -3,7 +3,6 @@ package vpn
 import (
 	"easyvpn/src/utils"
 	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
-	"fmt"
 	"strings"
 	"time"
 )
@@ -26,7 +25,6 @@ func GetVpnServerStatus() (string, error) {
 
 func VpnOperation(operation string) error {
 	var err error
-	fmt.Println(operation)
 	switch operation {
 	case "start":
 		go utils.StartVPNServer()
@@ -51,7 +49,6 @@ func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(formatted)
 
 	return formatted, nil
 

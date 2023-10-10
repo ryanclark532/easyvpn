@@ -3,6 +3,7 @@ package main
 import (
 	"easyvpn/src/auth"
 	"easyvpn/src/database"
+	"easyvpn/src/groups"
 	"easyvpn/src/middleware"
 	"easyvpn/src/user"
 	"easyvpn/src/utils"
@@ -76,6 +77,8 @@ func SetupRouter() *mux.Router {
 	adminRouter.HandleFunc("/vpn", vpn.GetServerStatusEndpoint).Methods(http.MethodGet, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn/operation", vpn.VpnOperationEndpoint).Methods(http.MethodPost, http.MethodOptions)
 	adminRouter.HandleFunc("/vpn/connections", vpn.GetActiveConnectionsEndpoint).Methods(http.MethodGet, http.MethodOptions)
+	adminRouter.HandleFunc("/groups", groups.GetGroupsEndpoint).Methods(http.MethodOptions, http.MethodGet)
+
 	userRouter := apiRouter.PathPrefix("/").Subrouter()
 	userRouter.Use(middleware.CorsMiddleware, middleware.CheckUserRoute)
 	userRouter.HandleFunc("/auth/change-password", auth.ChangeUserPasswordEndpoint).Methods(http.MethodPost, http.MethodOptions)

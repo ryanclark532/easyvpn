@@ -1,4 +1,5 @@
 import { createAuthStore } from '$lib/stores/auth';
+import { createGroupsStore } from '$lib/stores/groups';
 import { createUserStore } from '$lib/stores/users';
 import { createConnectionsStore, createVpnStore } from '$lib/stores/vpn';
 
@@ -8,4 +9,5 @@ const _authStore = await createAuthStore();
 const _userStore = await createUserStore();
 const _vpnStore = await createVpnStore();
 const _connectionsStore = await createConnectionsStore();
-export { _authStore, _userStore, _vpnStore, _connectionsStore };
+const _groupsStore = await createGroupsStore();
+export { _authStore, _userStore, _vpnStore, _connectionsStore, _groupsStore };
