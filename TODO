@@ -1,0 +1,4 @@
+1. Switch router to Chi
+2. Switch auth to "auth", link in your messanger
+3. Use GORM
+4. Refactor custom stores on the fronend to regular http calls (see svelte documentation for more details about hwo to use their fetch solutions)
