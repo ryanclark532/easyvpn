@@ -1,9 +1,19 @@
 <script lang="ts">
-	import { masterCheckbox, searchFilter, selectedUsers } from '$lib/users';
-	import { _userStore } from '../../+layout';
+	import {
+		deleteUser,
+		masterCheckbox,
+		searchFilter,
+		selectedUsers,
+		setTempPw,
+		updateUser
+	} from '$lib/users';
+	import type { PageData } from './$types';
+
 	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
 	import CreateUserModal from './create-user-modal.svelte';
 	import TableBodyRow from './table-body-row.svelte';
+
+	export let data: PageData;
 
 	let showActionOptions: boolean = false;
 	let deleteModal = false;
@@ -136,7 +146,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each $_userStore as user}
+						{#each data.users as user}
 							{#if !$searchFilter || user.Username.startsWith($searchFilter)}
 								<TableBodyRow {user} />
 							{/if}
@@ -152,7 +162,7 @@
 					Showing
 					<span class="font-semibold text-gray-900 dark:text-white">1-10</span>
 					of
-					<span class="font-semibold text-gray-900 dark:text-white">{$_userStore.length}</span>
+					<span class="font-semibold text-gray-900 dark:text-white">{data.users.length}</span>
 				</span>
 				<ul class="inline-flex items-stretch -space-x-px">
 					<li>
@@ -239,21 +249,21 @@
 <ConfirmationModal
 	open={deleteModal}
 	title="Confirm User Updates"
-	onConfirm={_userStore.delete}
+	onConfirm={deleteUser}
 	data={$selectedUsers}
 />
 
 <ConfirmationModal
 	open={tempPasswordModal}
 	title="Confirm User Updates"
-	onConfirm={_userStore.setTempPw}
+	onConfirm={setTempPw}
 	data={$selectedUsers}
 />
 
 <ConfirmationModal
 	open={toggleAdmin}
 	title="Confirm User Updates"
-	onConfirm={_userStore.updateUser}
+	onConfirm={updateUser}
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,
@@ -269,7 +279,7 @@
 	}}
 	open={toggleEnabled}
 	title="Confirm User Updates"
-	onConfirm={_userStore.updateUser}
+	onConfirm={updateUser}
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,

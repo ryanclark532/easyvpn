@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { activeConnectionsFilter } from '$lib/stores/vpn';
-	import { _connectionsStore } from '../../+layout';
+	import { activeConnectionsFilter } from '$lib/vpn';
+	import type { PageData } from './$types';
+	export let data: PageData;
 </script>
 
 <section class="bg-gray-50 dark:bg-gray-900">
@@ -52,7 +53,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each $_connectionsStore as connection}
+					{#each data.connections as connection}
 						{#if !$activeConnectionsFilter || connection.CommonName.startsWith($activeConnectionsFilter)}
 							<tr class="border-b dark:border-gray-700">
 								<th
@@ -85,7 +86,7 @@
 				Showing
 				<span class="font-semibold text-gray-900 dark:text-white">1-10</span>
 				of
-				<span class="font-semibold text-gray-900 dark:text-white">{$_connectionsStore.length}</span>
+				<span class="font-semibold text-gray-900 dark:text-white">{data.connections.length}</span>
 			</span>
 			<ul class="inline-flex items-stretch -space-x-px">
 				<li>

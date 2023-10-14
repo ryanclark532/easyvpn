@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Section, Register } from 'flowbite-svelte-blocks';
 	import { Button, Checkbox, Label, Input } from 'flowbite-svelte';
-	import { _authStore } from '../+layout';
+	import { handleLogin } from '$lib/auth';
+
 	let response: Error | undefined;
 </script>
 
@@ -11,7 +12,7 @@
 			<form
 				class="flex flex-col space-y-6"
 				on:submit={async (e) => {
-					response = await _authStore.handleLogin(e);
+					response = await handleLogin(e);
 				}}
 			>
 				<h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Sign In</h3>

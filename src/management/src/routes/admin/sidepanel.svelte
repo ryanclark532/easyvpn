@@ -60,7 +60,6 @@
 					>
 					<span class="ml-3">Groups</span>
 				</a>
-			
 			</li>
 		</ul>
 	</div>

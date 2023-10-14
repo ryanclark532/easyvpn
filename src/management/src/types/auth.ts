@@ -1,13 +1,12 @@
-export interface AuthResponse {
-	token: string;
-	is_admin: boolean;
-	error?: string;
-	password_expired?: boolean;
-	id?: string;
+export interface AuthUser {
+	name: string;
+	id: string;
+	picture: string;
+	attrs: {
+		admin: boolean;
+	};
 }
 
-export interface CheckTokenResponse {
-	is_admin: boolean;
-	token_valid: boolean;
-	password_expired: boolean;
+export interface AuthError {
+	error: string;
 }

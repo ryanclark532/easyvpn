@@ -1,10 +1,10 @@
-export type serverStatus = 'notRunning' | 'running' | 'starting' | 'unknown';
+export type ServerStatus = 'notRunning' | 'running' | 'starting' | 'unknown';
 
 export type ServerStatusResponse = {
-	status: serverStatus;
+	status: ServerStatus;
 };
 
-export const ServerStatusMapping: Record<serverStatus, string> = {
+export const ServerStatusMapping: Record<ServerStatus, string> = {
 	running: 'The VPN Server Is Running',
 	notRunning: 'The VPN Server Is Not Running',
 	starting: 'The VPN Server Is Starting',

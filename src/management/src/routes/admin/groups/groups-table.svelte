@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { groupsFilter } from '$lib/stores/groups';
-	import { activeConnectionsFilter } from '$lib/stores/vpn';
-	import { _groupsStore } from '../../+layout';
+	import { groupsFilter } from '$lib/groups';
+	import type { PageData } from './$types';
+	export let data: PageData;
 </script>
 
 <section class="bg-gray-50 dark:bg-gray-900">
@@ -51,7 +51,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each $_groupsStore as group}
+					{#each data.groups as group}
 						{#if !$groupsFilter || group.name.startsWith($groupsFilter)}
 							<tr class="border-b dark:border-gray-700">
 								<th
@@ -76,7 +76,7 @@
 				Showing
 				<span class="font-semibold text-gray-900 dark:text-white">1-10</span>
 				of
-				<span class="font-semibold text-gray-900 dark:text-white">{$_groupsStore.length}</span>
+				<span class="font-semibold text-gray-900 dark:text-white">{data.groups.length}</span>
 			</span>
 			<ul class="inline-flex items-stretch -space-x-px">
 				<li>
