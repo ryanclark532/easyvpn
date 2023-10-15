@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-var KeyDir = "./src/keys/"
+var KeyDir = "./keys/"
 
 func GenerateRootCACertificate() error {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
