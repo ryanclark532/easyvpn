@@ -16,8 +16,9 @@ export async function handleLogin(e: Event) {
 
 	const response = await fetch('http://localhost:8080/auth/local/login', {
 		body: JSON.stringify({
-			username,
-			password
+			user: username,
+			passwd: password,
+			aud: username
 		}),
 		method: 'POST',
 		credentials: 'include'

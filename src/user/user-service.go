@@ -4,8 +4,7 @@ import (
 	"context"
 	"easyvpn/src/database"
 	user_dtos "easyvpn/src/user/user-dtos"
-	"easyvpn/src/utils"
-	"fmt"
+	"time"
 )
 
 func GetUser(username string) (*user_dtos.User, error) {
@@ -19,7 +18,7 @@ func GetUser(username string) (*user_dtos.User, error) {
 
 func GetUsers() (*[]user_dtos.User, error) {
 	var users = new([]user_dtos.User)
-	err := database.DB.NewSelect().Model(users).Limit(1).Scan(context.Background())
+	err := database.DB.NewSelect().Model(users).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -27,63 +26,45 @@ func GetUsers() (*[]user_dtos.User, error) {
 }
 
 func CreateUser(user *user_dtos.User) (*user_dtos.User, error) {
+	user.PasswordExpiry = time.Now().Add(time.Hour * 1000)
 	_, err := database.DB.NewInsert().Model(user).Exec(context.Background())
 	if err != nil {
 		return nil, err
 	}
-
+	return user, nil
 }
 
-func DeleteUsers(IDs []int) error {
-
-	tableName := "users"
-
-	db, err := database.GetDB()
-	if err != nil {
-		return err
+func DeleteUsers(users []user_dtos.FrontEndUser) error {
+	var ids []uint
+	for _, user := range users {
+		ids = append(ids, user.ID)
 	}
 
-	defer db.Close()
-	query := fmt.Sprintf("DELETE FROM %s WHERE ID IN (%v)", tableName, utils.JoinInts(IDs, ", "))
-	_, err = db.Exec(query)
+	_, err := database.DB.NewDelete().Model((*user_dtos.User)(nil)).Where("id IN (?)", ids).Exec(context.Background())
 	if err != nil {
-		return err
+		return nil
 	}
-
 	return nil
 }
 
-func UpdateUser(user user_dtos.FrontEndUser) (*user_dtos.User, error) {
-	db, err := database.GetDB()
+func UpdateUser(user user_dtos.FrontEndUser) (*user_dtos.FrontEndUser, error) {
+	_, err := database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("username = ?, name = ?, is_admin = ?, enabled = ?", user.Username, user.Name, user.IsAdmin, user.Enabled).Where("id = ?", user.ID).Exec(context.Background())
 	if err != nil {
 		return nil, err
 	}
-
-	defer db.Close()
-	query := fmt.Sprintf("UPDATE Users SET username='%s', name='%s', is_admin='%t', enabled='%t' WHERE id='%d'", user.Username, user.Name, user.IsAdmin, user.Enabled, user.ID)
-	_, err = db.Exec(query)
-	if err != nil {
-		return nil, err
-	}
-
-	u, err := GetUser(user.Username)
-	if err != nil {
-		return nil, err
-	}
-
-	return u, nil
+	return &user, nil
 }
 
 func FormatUsers(users []user_dtos.User) []user_dtos.FrontEndUser {
 	var formattedUsers []user_dtos.FrontEndUser
 	for i := range users {
 		u := users[i]
-		formattedUsers = append(formattedUsers, FormatUser(&u))
+		formattedUsers = append(formattedUsers, FormatUser(u))
 	}
 	return formattedUsers
 }
 
-func FormatUser(u *user_dtos.User) user_dtos.FrontEndUser {
+func FormatUser(u user_dtos.User) user_dtos.FrontEndUser {
 	return user_dtos.FrontEndUser{
 		ID:       u.ID,
 		Username: u.Username,

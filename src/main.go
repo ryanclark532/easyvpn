@@ -1,11 +1,9 @@
 package main
 
 import (
-	"context"
 	"easyvpn/src/database"
 	"easyvpn/src/groups"
 	"easyvpn/src/user"
-	user_dtos "easyvpn/src/user/user-dtos"
 	"easyvpn/src/vpn"
 	"net/http"
 	"time"
@@ -28,12 +26,7 @@ var svelte embed.FS
 
 func main() {
 
-	err := database.Test()
-	_, err = database.DB.NewCreateTable().Model((*user_dtos.User)(nil)).Exec(context.Background())
-
-	if err != nil {
-		panic(err)
-	}
+	database.Test()
 
 	db := make(chan error)
 	vpn := make(chan error)
@@ -77,7 +70,11 @@ func main() {
 		ClaimsUpd: token.ClaimsUpdFunc(func(claims token.Claims) token.Claims {
 			if claims.User != nil {
 				claims.User.SetAdmin(true)
-				claims.User.SetStrAttr("custom-key", "some value")
+
+				user, err := user.GetUser(claims.User.Name)
+				if err == nil {
+					claims.User.SetStrAttr("password_expiry", user.PasswordExpiry.Format(time.DateTime))
+				}
 			}
 			return claims
 		}),
@@ -92,7 +89,7 @@ func main() {
 
 	port := "8080"
 	fmt.Printf("Server is listening on port %s...\n", port)
-	err = http.ListenAndServe(":"+port, r)
+	err := http.ListenAndServe(":"+port, r)
 
 	if err != nil {
 		panic(err)
@@ -127,7 +124,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	m := service.Middleware()
 
 	r.Route("/user", func(r chi.Router) {
-		r.Use(m.Auth)
 		r.Use(m.AdminOnly)
 		r.Get("/", user.GetUsersEndpoint)
 		r.Post("/", user.CreateUserEndpoint)

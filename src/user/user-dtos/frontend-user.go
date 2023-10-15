@@ -1,13 +1,9 @@
 package user_dtos
 
 type FrontEndUser struct {
-	ID       uint
-	Username string
-	Name     string
-	IsAdmin  bool
-	Enabled  bool
-}
-
-type FrontEndUsers struct {
-	Users []FrontEndUser `json:"users"`
+	ID       uint   `json:"id"`
+	Username string `json:"username"`
+	Name     string `json:"name"`
+	IsAdmin  bool   `json:"is_admin"`
+	Enabled  bool   `json:"enabled"`
 }

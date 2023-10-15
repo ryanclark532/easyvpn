@@ -13,7 +13,7 @@ import (
 )
 
 func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *user_dtos.CreateUserRequest
+	var req *user_dtos.User
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "CreateUser")
@@ -39,21 +39,17 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	frontendUser := FormatUser(user)
-
-	responseData := map[string]interface{}{}
-	responseData["user"] = frontendUser
+	frontendUser := FormatUser(*user)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(frontendUser)
 	if err != nil {
 		utils.HandleError(err, "CreateUser")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	return
 }
 
 func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -68,11 +64,9 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	u := FormatUsers(*users)
 
-	responseData := map[string]interface{}{}
-	responseData["users"] = u
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(u)
 	if err != nil {
 		utils.HandleError(err, "GetUsers")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -81,7 +75,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *user_dtos.UserID
+	var req *[]user_dtos.FrontEndUser
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
@@ -89,18 +83,17 @@ func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = DeleteUsers(req.ID)
+	err = DeleteUsers(*req)
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
-	return
 }
 
 func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *user_dtos.FrontEndUsers
+	var req *[]user_dtos.FrontEndUser
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
@@ -109,27 +102,23 @@ func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var users []user_dtos.FrontEndUser
-	for _, user := range req.Users {
+	for _, user := range *req {
 		u, err := UpdateUser(user)
 		if err != nil {
 			utils.HandleError(err, "UpdateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		users = append(users, FormatUser(u))
+		users = append(users, *u)
 	}
-
-	responseData := map[string]interface{}{}
-	responseData["users"] = users
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(users)
 	if err != nil {
 		utils.HandleError(err, "UpdateUser")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	return
 }

@@ -30,19 +30,17 @@ export async function setTempPw(u: User[]) {
 }
 
 export async function deleteUser(u: User[]) {
-	const body = {
-		ID: u.map((u) => u.ID)
-	};
-	if (body.ID.length === 0) {
+	if (u.length === 0) {
 		return new Error('No Users Selected');
 	}
 	const headers = new Headers();
 	headers.append('JWT', getToken() ?? '');
 
 	const response = await fetch('http://localhost:8080/user', {
-		body: JSON.stringify(body),
+		body: JSON.stringify(u),
 		method: 'DELETE',
-		headers
+		headers,
+		credentials: "include"
 	});
 
 	if (response.status >= 400) {
@@ -59,7 +57,7 @@ export async function updateUser(users: User[]) {
 	const headers = new Headers();
 	headers.append('Authorization', `Bearer ${getToken()}`);
 	const response = await fetch('http://localhost:8080/user', {
-		body: JSON.stringify({ users }),
+		body: JSON.stringify(users),
 		method: 'PUT',
 		headers,
 		credentials: 'include'
@@ -68,4 +66,5 @@ export async function updateUser(users: User[]) {
 	if (response.status >= 400) {
 		return new Error('Error updating users, please try again later');
 	}
+	invalidate('http://localhost:8080/user');
 }
