@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"easyvpn/src/database"
 	"easyvpn/src/groups"
 	"easyvpn/src/user"
+	user_dtos "easyvpn/src/user/user-dtos"
 	"easyvpn/src/vpn"
 	"net/http"
 	"time"
@@ -25,6 +27,13 @@ import (
 var svelte embed.FS
 
 func main() {
+
+	err := database.Test()
+	_, err = database.DB.NewCreateTable().Model((*user_dtos.User)(nil)).Exec(context.Background())
+
+	if err != nil {
+		panic(err)
+	}
 
 	db := make(chan error)
 	vpn := make(chan error)
@@ -83,7 +92,7 @@ func main() {
 
 	port := "8080"
 	fmt.Printf("Server is listening on port %s...\n", port)
-	err := http.ListenAndServe(":"+port, r)
+	err = http.ListenAndServe(":"+port, r)
 
 	if err != nil {
 		panic(err)

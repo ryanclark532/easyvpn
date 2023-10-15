@@ -7,7 +7,50 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/uptrace/bun"
+	"github.com/uptrace/bun/dialect/sqlitedialect"
 )
+
+var DB *bun.DB
+
+func Test() error {
+	_, err := os.Stat("test.db")
+	if err == nil {
+		err = TestGetDB()
+		if err != nil {
+			return err
+		}
+		return nil
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	file, err := os.Create("test.db")
+	if err != nil {
+		return err
+	}
+	file.Close()
+
+	err = TestGetDB()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func TestGetDB() error {
+	sqldb, err := sql.Open("sqlite3", "test.db")
+	if err != nil {
+		return err
+	}
+
+	db := bun.NewDB(sqldb, sqlitedialect.New())
+
+	DB = db
+	return nil
+}
 
 func InitializeDatabase() error {
 	_, err := os.Stat("database.db")

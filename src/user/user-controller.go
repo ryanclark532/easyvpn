@@ -1,12 +1,12 @@
 package user
 
 import (
+	"easyvpn/src/database"
 	user_dtos "easyvpn/src/user/user-dtos"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/go-pkgz/auth/token"
 	"github.com/go-sql-driver/mysql"
 
 	"easyvpn/src/utils"
@@ -57,9 +57,8 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
-	xu, err := token.GetUserInfo(r)
-	fmt.Println(err)
-	fmt.Println(xu)
+	fmt.Println(database.DB)
+
 	users, err := GetUsers()
 	if err != nil {
 		utils.HandleError(err, "GetUsers")
