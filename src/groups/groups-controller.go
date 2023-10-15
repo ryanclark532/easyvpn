@@ -28,7 +28,7 @@ func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *groups_dtos.GetGroupMembershipRequest
+	var req *groups_dtos.Group
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "CreateUser")
