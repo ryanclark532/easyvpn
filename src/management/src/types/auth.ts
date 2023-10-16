@@ -4,6 +4,7 @@ export interface AuthUser {
 	picture: string;
 	attrs: {
 		admin: boolean;
+		password_expiry: string;
 	};
 }
 

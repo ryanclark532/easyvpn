@@ -1,11 +1,10 @@
 import { redirect } from '@sveltejs/kit';
 import type { AuthError, AuthUser } from '../types/auth';
+import { goto } from '$app/navigation';
 
-export function getToken(){
-	return localStorage ? localStorage.getItem("JWT") : undefined;
+export function getToken() {
+	return localStorage ? localStorage.getItem('JWT') : undefined;
 }
-
-
 
 export async function handleLogin(e: Event) {
 	e.preventDefault();
@@ -14,7 +13,7 @@ export async function handleLogin(e: Event) {
 	const username = formData.get('username');
 	const password = formData.get('password');
 
-	const response = await fetch('http://localhost:8080/auth/local/login', {
+	return await fetch('http://localhost:8080/auth/local/login', {
 		body: JSON.stringify({
 			user: username,
 			passwd: password,
@@ -22,25 +21,37 @@ export async function handleLogin(e: Event) {
 		}),
 		method: 'POST',
 		credentials: 'include'
+	}).then(async (response) => {
+		if (!response.ok) {
+			return new Error('Error while processing login');
+		}
+
+		localStorage.setItem('jwt', response.headers.get('jwt') ?? '');
+		document.cookie = `JWT=${response.headers.get('jwt') ?? ''}`;
+
+		const json = await response.json();
+
+		const expiry = new Date(json.attrs.password_expiry);
+		if (expiry < new Date()) {
+			goto('/login/reset');
+		}
+		goto(json.attrs.admin ? '/admin/status' : '/');
 	});
-	if (!response.ok) {
-		return new Error('Error while processing login');
-	}
-	localStorage.setItem('jwt', response.headers.get('jwt') ?? '');
 }
 
 export function handleRedirects(input: AuthUser | AuthError) {
 	if (isAuthError(input)) {
 		throw redirect(307, '/login');
 	}
-	if(!input.attrs.admin){
-		throw redirect(307,'/');
+	if (new Date(input.attrs.password_expiry) < new Date()) {
+		throw redirect(307, '/login/reset');
+	}
+
+	if (!input.attrs.admin) {
+		throw redirect(307, '/');
 	}
 }
 
-function isAuthUser(input: AuthUser | AuthError): input is AuthUser {
-	return 'name' in input;
-}
 function isAuthError(input: AuthUser | AuthError): input is AuthError {
 	return 'error' in input;
 }

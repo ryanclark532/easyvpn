@@ -8,7 +8,7 @@ export async function load({ fetch, cookies }) {
 		},
 		credentials: 'include'
 	}).then((response) => response.json());
-    handleRedirects(authcheck)
+	handleRedirects(authcheck);
 
 	const statusResponse = await fetch('http://localhost:8080/vpn', {
 		headers: {
