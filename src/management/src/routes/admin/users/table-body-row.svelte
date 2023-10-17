@@ -17,7 +17,7 @@
 			if (checked) {
 				return [user, ...prev];
 			}
-			return prev.filter((u) => u.ID !== user.ID);
+			return prev.filter((u) => u.id !== user.id);
 		});
 	}
 
@@ -35,10 +35,10 @@
 		/></th
 	>
 	<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-		{user.Username}</th
+		{user.username}</th
 	>
-	<td class="px-4 py-3">{user.Name}</td>
+	<td class="px-4 py-3">{user.name}</td>
 	<td class="px-4 py-3">Today</td>
-	<td class="px-4 py-3">{user.Enabled}</td>
-	<td class="px-4 py-3">{user.IsAdmin}</td>
+	<td class="px-4 py-3">{user.enabled}</td>
+	<td class="px-4 py-3">{user.is_admin}</td>
 </tr>

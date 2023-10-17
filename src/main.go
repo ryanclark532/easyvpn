@@ -26,15 +26,12 @@ var svelte embed.FS
 
 func main() {
 
-	database.Test()
+	err := database.Test()
+	if err != nil {
+		panic(err)
+	}
 
-	db := make(chan error)
 	vpn := make(chan error)
-
-	go func() {
-		err := database.InitializeDatabase()
-		db <- err
-	}()
 
 	go func() {
 		err := utils.SetupVPNServer()
@@ -44,12 +41,7 @@ func main() {
 		vpn <- err
 	}()
 
-	dberr := <-db
 	vpnerr := <-vpn
-
-	if dberr != nil {
-		panic(dberr)
-	}
 
 	if vpnerr != nil {
 		panic(vpnerr)
@@ -89,7 +81,7 @@ func main() {
 
 	port := "8080"
 	fmt.Printf("Server is listening on port %s...\n", port)
-	err := http.ListenAndServe(":"+port, r)
+	err = http.ListenAndServe(":"+port, r)
 
 	if err != nil {
 		panic(err)
@@ -118,7 +110,8 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Mount("/avatar", avaRoutes)
 
 	service.AddDirectProvider("local", provider.CredCheckerFunc(func(username, password string) (ok bool, err error) {
-		return user.AuthUser(username, password)
+		//	return user.AuthUser(username, password)
+		return true, nil
 	}))
 
 	m := service.Middleware()

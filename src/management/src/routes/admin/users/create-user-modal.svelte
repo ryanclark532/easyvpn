@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { Label, Input, Button, Modal, Checkbox, Tooltip } from 'flowbite-svelte';
 	import { page } from '$app/stores';
+	import { createUser } from '$lib/users';
 	let defaultModal = false;
 	let createUserConfirmation = false;
-	let response: string;
-	let userStore = $page.data.userStore;
+	let response: any;
 </script>
 
 <button
@@ -42,7 +42,7 @@
 	{/if}
 	<form
 		on:submit={async (e) => {
-			response = await userStore.create(e);
+			response = await createUser(e)
 			defaultModal = !!response;
 		}}
 	>

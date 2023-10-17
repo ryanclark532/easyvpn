@@ -16,10 +16,3 @@ type User struct {
 	Enabled        bool      `json:"enabled"`
 	PasswordExpiry time.Time `json:"password_expiry"`
 }
-
-type UserTest struct {
-	bun.BaseModel `bun:"table:users,alias:u"`
-
-	ID   int64 `bun:",pk,autoincrement"`
-	Name string
-}

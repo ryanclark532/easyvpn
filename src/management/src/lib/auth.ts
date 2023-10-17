@@ -3,7 +3,7 @@ import type { AuthError, AuthUser } from '../types/auth';
 import { goto } from '$app/navigation';
 
 export function getToken() {
-	return localStorage ? localStorage.getItem('JWT') : undefined;
+	return localStorage ? localStorage.getItem('jwt') : undefined;
 }
 
 export async function handleLogin(e: Event) {

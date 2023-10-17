@@ -1,0 +1,50 @@
+2023-10-17 12:42:21 Note: cipher 'AES-256-CBC' in --data-ciphers is not supported by ovpn-dco, disabling data channel offload.
+2023-10-17 12:42:21 WARNING: Using --management on a TCP port WITHOUT passwords is STRONGLY discouraged and considered insecure
+2023-10-17 12:42:21 OpenVPN 2.6.4 [git:v2.6.4/b4f749f14a8edc75] Windows-MSVC [SSL (OpenSSL)] [LZO] [LZ4] [PKCS11] [AEAD] [DCO] built on May 11 2023
+2023-10-17 12:42:21 Windows version 10.0 (Windows 10 or greater), amd64 executable
+2023-10-17 12:42:21 library versions: OpenSSL 3.1.0 14 Mar 2023, LZO 2.10
+2023-10-17 12:42:21 DCO version: v0
+2023-10-17 12:42:21 MANAGEMENT: TCP Socket listening on [AF_INET]127.0.0.1:7505
+2023-10-17 12:42:21 NOTE: your local LAN uses the extremely common subnet address 192.168.0.x or 192.168.1.x.  Be aware that this might create routing conflicts if you connect to the VPN server from public locations such as internet cafes that use the same subnet.
+2023-10-17 12:42:21 Diffie-Hellman initialized with 2048 bit key
+2023-10-17 12:42:21 interactive service msg_channel=0
+2023-10-17 12:42:21 open_tun
+2023-10-17 12:42:21 tap-windows6 device [OpenVPN TAP-Windows6] opened
+2023-10-17 12:42:21 TAP-Windows Driver Version 9.26 
+2023-10-17 12:42:21 Set TAP-Windows TUN subnet mode network/local/netmask = 10.8.0.0/10.8.0.1/255.255.255.0 [SUCCEEDED]
+2023-10-17 12:42:21 Notified TAP-Windows driver to set a DHCP IP/netmask of 10.8.0.1/255.255.255.0 on interface {A2114B01-D243-42AF-9FE5-AA8B230FB321} [DHCP-serv: 10.8.0.0, lease-time: 31536000]
+2023-10-17 12:42:21 Sleeping for 10 seconds...
+2023-10-17 12:42:31 NOTE: FlushIpNetTable failed on interface [22] {A2114B01-D243-42AF-9FE5-AA8B230FB321} (status=5) : Access is denied.  
+2023-10-17 12:42:31 TUN: Setting IPv4 mtu failed: Access is denied.   [status=5 if_index=22]
+2023-10-17 12:42:31 Could not determine IPv4/IPv6 protocol. Using AF_INET6
+2023-10-17 12:42:31 Socket Buffers: R=[65536->65536] S=[65536->65536]
+2023-10-17 12:42:31 setsockopt(IPV6_V6ONLY=0)
+2023-10-17 12:42:31 Listening for incoming TCP connection on [AF_INET6][undef]:1194
+2023-10-17 12:42:31 TCPv6_SERVER link local (bound): [AF_INET6][undef]:1194
+2023-10-17 12:42:31 TCPv6_SERVER link remote: [AF_UNSPEC]
+2023-10-17 12:42:31 MULTI: multi_init called, r=256 v=256
+2023-10-17 12:42:31 IFCONFIG POOL IPv4: base=10.8.0.2 size=253
+2023-10-17 12:42:31 ifconfig_pool_read(), in='client1,10.8.0.2,'
+2023-10-17 12:42:31 succeeded -> ifconfig_pool_set(hand=0)
+2023-10-17 12:42:31 IFCONFIG POOL LIST
+2023-10-17 12:42:31 client1,10.8.0.2,
+2023-10-17 12:42:31 MULTI: TCP INIT maxclients=59 maxevents=64
+2023-10-17 12:42:31 Initialization Sequence Completed
+2023-10-17 12:42:35 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:58914
+2023-10-17 12:42:35 MANAGEMENT: CMD 'status'
+2023-10-17 12:42:35 MANAGEMENT: Client disconnected
+2023-10-17 12:42:49 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:58684
+2023-10-17 12:42:49 MANAGEMENT: CMD 'status'
+2023-10-17 12:42:49 MANAGEMENT: Client disconnected
+2023-10-17 12:43:07 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:54037
+2023-10-17 12:43:07 MANAGEMENT: CMD 'status'
+2023-10-17 12:43:07 MANAGEMENT: Client disconnected
+2023-10-17 15:20:00 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:51545
+2023-10-17 15:20:00 MANAGEMENT: CMD 'status'
+2023-10-17 15:20:00 MANAGEMENT: Client disconnected
+2023-10-17 15:31:25 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:52012
+2023-10-17 15:31:25 MANAGEMENT: CMD 'status'
+2023-10-17 15:31:25 MANAGEMENT: Client disconnected
+2023-10-17 15:32:48 MANAGEMENT: Client connected from [AF_INET]127.0.0.1:52052
+2023-10-17 15:32:48 MANAGEMENT: CMD 'status'
+2023-10-17 15:32:48 MANAGEMENT: Client disconnected

@@ -1,9 +1,9 @@
 export type User = {
-	ID: number;
-	Username: string;
-	Name: string;
-	IsAdmin: boolean;
-	Enabled: boolean;
+	id: number;
+	username: string;
+	name: string;
+	is_admin: boolean;
+	enabled: boolean;
 };
 
 export type GetUsersResponse = {

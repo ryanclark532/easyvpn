@@ -147,7 +147,7 @@
 					</thead>
 					<tbody>
 						{#each data.users as user}
-							{#if !$searchFilter || user.Username.startsWith($searchFilter)}
+							{#if !$searchFilter || user.username.startsWith($searchFilter)}
 								<TableBodyRow {user} />
 							{/if}
 						{/each}
@@ -267,7 +267,7 @@
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,
-			admin: !u.IsAdmin
+			admin: !u.is_admin
 		};
 	})}
 />
@@ -283,7 +283,7 @@
 	data={$selectedUsers.map((u) => {
 		return {
 			...u,
-			enabled: !u.Enabled
+			enabled: !u.enabled
 		};
 	})}
 />

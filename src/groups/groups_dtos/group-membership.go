@@ -9,6 +9,6 @@ import (
 type GroupMembership struct {
 	bun.BaseModel `bun:"table:group_membership,alias:gm"`
 	ID            uint            `bun:",pk,autoincrement" json:"id"`
-	User          *user_dtos.User `bun:"rel:has-one,join:id=user_id"`
-	Group         *Group          `bun:"rel:has-one,join:id=group_id"`
+	User          *user_dtos.User `bun:"rel:has-one,join:id=id"`
+	Group         *Group          `bun:"rel:has-one,join:id=id"`
 }
