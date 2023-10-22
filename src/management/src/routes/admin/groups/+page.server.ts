@@ -1,6 +1,5 @@
 import { handleRedirects } from '$lib/auth';
 import type { Group } from '../../../types/groups';
-
 export async function load({ fetch, cookies }) {
 	const authcheck = await fetch('http://localhost:8080/auth/user', {
 		headers: {

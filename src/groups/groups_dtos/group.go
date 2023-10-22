@@ -3,8 +3,8 @@ package groups_dtos
 import "github.com/uptrace/bun"
 
 type Group struct {
-	bun.BaseModel `bun:"table:groups,alias:u"`
-	ID            string `bun:",pk,autoincrement" json:"id"`
+	bun.BaseModel `bun:"table:groups,alias:g"`
+	ID            uint `bun:",pk,autoincrement" json:"id"`
 	Name          string `bun:",notnull" json:"name"`
 	MemberCount   int    `json:"member_count"`
 	IsAdmin       bool   `bun:",notnull" json:"is_admin"`

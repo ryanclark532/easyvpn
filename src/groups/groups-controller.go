@@ -1,10 +1,11 @@
 package groups
 
 import (
-	"easyvpn/src/groups/groups_dtos"
 	"easyvpn/src/utils"
 	"encoding/json"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -28,26 +29,16 @@ func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *groups_dtos.Group
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		utils.HandleError(err, "CreateUser")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	response, err := GetMemberships(req.ID)
+	response, err := GetMembershipsForGroup(chi.URLParam(r, "id"))
 	if err != nil {
 		utils.HandleError(err, "GetGroupMembershipEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	responseData := map[string]interface{}{}
-	responseData["members"] = response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		utils.HandleError(err, "GetGroupMembershipEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)

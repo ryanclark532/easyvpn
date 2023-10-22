@@ -2,6 +2,8 @@
 	import { groupsFilter } from '$lib/groups';
 	import type { PageData } from './$types';
 	import AddGroupModal from './add-group-modal.svelte';
+    import { getGroupMemberships} from "$lib/group-membership"
+	import GroupUsersModal from './group-users-modal.svelte';
 	export let data: PageData;
 </script>
 
@@ -60,16 +62,7 @@
 				<tbody>
 					{#each data.groups as group}
 						{#if !$groupsFilter || group.name.startsWith($groupsFilter)}
-							<tr class="border-b dark:border-gray-700">
-								<th
-									scope="row"
-									class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white w-1/6"
-									>{group.name}</th
-								>
-								<td class="px-4 py-3 w-1/6">{group.member_count}</td>
-								<td class="px-4 py-3 w-1/6">{group.is_admin}</td>
-								<td class="px-4 py-3 w-1/6">{group.enabled}</td>
-							</tr>
+                            <GroupUsersModal {group} />
 						{/if}
 					{/each}
 				</tbody>

@@ -121,7 +121,10 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Get("/", user.GetUsersEndpoint)
 		r.Post("/", user.CreateUserEndpoint)
 		r.Delete("/", user.DeleteUserEndpoint)
-		r.Put("/", user.UpdateUserEndpoint)
+		r.Put("/", user.UpdateUserEndpoint)/*
+        r.Route("/groups/{id}", func(r chi.Router) {
+            r.Get("/")
+        }) */
 	})
 
 	r.Route("/vpn", func(r chi.Router) {
@@ -134,7 +137,9 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Route("/group", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", groups.GetGroupsEndpoint)
-		r.Get("/memberships", groups.GetGroupMembershipEndpoint)
+        r.Route("/{id}", func(r chi.Router) {
+            r.Get("/", groups.GetGroupMembershipEndpoint)
+        })
 	})
 
 	return r
