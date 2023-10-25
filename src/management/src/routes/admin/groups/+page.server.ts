@@ -7,7 +7,7 @@ export async function load({ fetch, cookies }) {
 		},
 		credentials: 'include'
 	}).then((response) => response.json());
-	handleRedirects(authcheck);
+	//	handleRedirects(authcheck);
 	const groupResponse = await fetch('http://localhost:8080/group', {
 		headers: {
 			JWT: cookies.get('JWT')

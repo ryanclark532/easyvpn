@@ -3,8 +3,6 @@
 	import type { PageData } from './$types';
 	import GroupsTable from './groups-table.svelte';
 	export let data: PageData;
-
-
 </script>
 
 <div class="flex">

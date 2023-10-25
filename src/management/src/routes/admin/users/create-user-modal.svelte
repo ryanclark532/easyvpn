@@ -42,7 +42,7 @@
 	{/if}
 	<form
 		on:submit={async (e) => {
-			response = await createUser(e)
+			response = await createUser(e);
 			defaultModal = !!response;
 		}}
 	>

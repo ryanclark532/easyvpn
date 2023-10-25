@@ -2,8 +2,7 @@
 	import { groupsFilter } from '$lib/groups';
 	import type { PageData } from './$types';
 	import AddGroupModal from './add-group-modal.svelte';
-    import { getGroupMemberships} from "$lib/group-membership"
-	import GroupUsersModal from './group-users-modal.svelte';
+	import GroupsTableRow from './groups-table-row.svelte';
 	export let data: PageData;
 </script>
 
@@ -40,13 +39,13 @@
 					</div>
 				</form>
 			</div>
-	<div
-					class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0"
-				>
-		<AddGroupModal />	
-				</div>
+			<div
+				class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0"
+			>
+				<AddGroupModal />
+			</div>
 		</div>
-			
+
 		<div class="overflow-x-auto">
 			<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 				<thead
@@ -62,7 +61,7 @@
 				<tbody>
 					{#each data.groups as group}
 						{#if !$groupsFilter || group.name.startsWith($groupsFilter)}
-                            <GroupUsersModal {group} />
+							<GroupsTableRow {group} />
 						{/if}
 					{/each}
 				</tbody>
