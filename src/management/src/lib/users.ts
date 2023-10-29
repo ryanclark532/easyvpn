@@ -47,7 +47,7 @@ export async function deleteUser(u: User[]) {
 		return new Error('Error retrieving users, please try again later');
 	}
 
-	invalidate('http://localhost:8080/user');
+	invalidate('admin:users');
 }
 
 export async function updateUser(users: User[]) {
@@ -66,7 +66,7 @@ export async function updateUser(users: User[]) {
 	if (response.status >= 400) {
 		return new Error('Error updating users, please try again later');
 	}
-	invalidate('http://localhost:8080/user');
+	invalidate('admin:users');
 }
 
 export async function createUser(e: Event) {
@@ -95,5 +95,5 @@ export async function createUser(e: Event) {
 	if (response.status >= 400) {
 		return new Error(`Something went wrong while creating ${body.username}`);
 	}
-	invalidate('http://localhost:8080/user');
+	invalidate('admin:users');
 }

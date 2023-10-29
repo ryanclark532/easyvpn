@@ -1,6 +1,7 @@
 package groups
 
 import (
+	"easyvpn/src/groups/groups_dtos"
 	"easyvpn/src/utils"
 	"encoding/json"
 	"net/http"
@@ -16,11 +17,9 @@ func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseData := map[string]interface{}{}
-	responseData["groups"] = response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		utils.HandleError(err, "GetServerStatusEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -44,4 +43,69 @@ func GetGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+
+
+func CreateGroupEndpoint(w http.ResponseWriter, r *http.Request){
+	var req *groups_dtos.Group
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "CreateGroupEndpoint")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+    
+    err = CreateGroup(req);
+    if err != nil {
+        utils.HandleError(err, "CreateGroupEndpoint")
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusCreated)
+    return
+
+}
+
+
+func CreateGroupMembershipEndpoint(w http.ResponseWriter, r * http.Request){
+    var req *[]uint
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "CreateGroupMembersipEndpoint")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+    err = CreateGroupMembership(*req, chi.URLParam(r, "id"))
+    if err != nil {
+        utils.HandleError(err, "CreateGroupMembershipEndpoint")
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+
+    w.WriteHeader(http.StatusCreated)
+    return
+}
+func DeleteGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request){ 
+    var req *[]uint
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "DeleteGroupMembershipEndpoint")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+
+    err = DeleteGroupMembership(*req, chi.URLParam(r,"id"))
+    if err !=nil {
+        utils.HandleError(err, "DeleteGroupMembershipEndpoint")
+        w.WriteHeader(http.StatusInternalServerError)
+        return
+    }
+    w.WriteHeader(http.StatusOK)
+    return
 }

@@ -137,8 +137,11 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Route("/group", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", groups.GetGroupsEndpoint)
+        r.Post("/", groups.CreateGroupEndpoint)
         r.Route("/{id}", func(r chi.Router) {
             r.Get("/", groups.GetGroupMembershipEndpoint)
+            r.Post("/",groups.CreateGroupMembershipEndpoint)
+            r.Delete("/", groups.DeleteGroupMembershipEndpoint)
         })
 	})
 

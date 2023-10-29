@@ -1,6 +1,7 @@
 import { handleRedirects } from '$lib/auth';
 import type { Group } from '../../../types/groups';
-export async function load({ fetch, cookies }) {
+import type { User } from '../../../types/users';
+export async function load({ fetch, cookies, depends }) {
 	const authcheck = await fetch('http://localhost:8080/auth/user', {
 		headers: {
 			JWT: cookies.get('JWT')
@@ -14,8 +15,17 @@ export async function load({ fetch, cookies }) {
 		},
 		credentials: 'include'
 	}).then((response) => response.json());
+	depends('admin:group');
+
+	const usersResponse = await fetch('http://localhost:8080/user', {
+		headers: {
+			JWT: cookies.get('JWT')
+		},
+		credentials: 'include'
+	}).then((res) => res.json());
 
 	return {
-		groups: (groupResponse.groups as Group[]) ?? []
+		groups: (groupResponse as Group[]) ?? [],
+		users: (usersResponse as User[]) ?? []
 	};
 }

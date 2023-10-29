@@ -61,7 +61,7 @@
 				<tbody>
 					{#each data.groups as group}
 						{#if !$groupsFilter || group.name.startsWith($groupsFilter)}
-							<GroupsTableRow {group} />
+							<GroupsTableRow {group} {data} />
 						{/if}
 					{/each}
 				</tbody>

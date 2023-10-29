@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { Label, Input, Button, Modal, Checkbox, Tooltip } from 'flowbite-svelte';
-	import { page } from '$app/stores';
 	import { createUser } from '$lib/users';
 	let defaultModal = false;
 	let createUserConfirmation = false;
