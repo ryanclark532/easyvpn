@@ -5,8 +5,9 @@
 		getGroupMembers,
 		createGroupMembership,
 		groupMembershipMasterCheckbox,
-selectedGroupMemberships,
-deleteGroupMembership
+		selectedGroupMemberships,
+		deleteGroupMembership,
+		selectedGroups
 	} from '$lib/groups';
 	import type { PageData } from '../../$types';
 	import GroupMembershipTableRow from './group-membership-table-row.svelte';
@@ -16,7 +17,7 @@ deleteGroupMembership
 	let addingUser: boolean;
 	let selectedUsers: string[] = [];
 
-	function toggleSelected(id: string) {
+	function toggleMembershipSelected(id: string) {
 		const index = selectedUsers.findIndex((i) => i === id);
 		if (index === -1) {
 			selectedUsers.push(id);
@@ -24,13 +25,29 @@ deleteGroupMembership
 			selectedUsers.splice(index, 1);
 		}
 	}
+
+	function toggleSelectedGroups() {
+		selectedGroups.update((prev) => {
+			const index = prev.findIndex((i) => i.id === group.id);
+			if (index === -1) {
+				prev.push(group);
+			} else {
+				prev.splice(index, 1);
+			}
+			return prev;
+		});
+	}
 </script>
 
-<tr class="border-b last:border-b-0" on:click={() => (open = !open)}>
+<tr class="border-b last:border-b-0">
+	<td class="px-4 py-3"><Checkbox on:change={toggleSelectedGroups} /></td>
 	<td class="px-4 py-3">{group.name}</td>
 	<td class="px-4 py-3">{group.member_count}</td>
 	<td class="px-4 py-3">{group.is_admin}</td>
 	<td class="px-4 py-3">{group.enabled}</td>
+	<td class="px-4 py-3"
+		><Button color="alternative" on:click={() => (open = !open)}>Add Users</Button></td
+	>
 </tr>
 
 <Modal title={`${group.name} Users`} bind:open class="min-w-full">
@@ -79,7 +96,14 @@ deleteGroupMembership
 				<Button class="w-1/2 m-1" on:click={() => (addingUser = !addingUser)}
 					>Add Users To Group</Button
 				>
-				<Button class="w-1/2 m-1" on:click={()=>deleteGroupMembership($selectedGroupMemberships, group.id)}>Delete Selected Users</Button>
+				<Button
+					class="w-1/2 m-1"
+					on:click={() => {
+						deleteGroupMembership($selectedGroupMemberships, group.id);
+						selectedGroupMemberships.set([]);
+						open = false;
+					}}>Delete Selected Users</Button
+				>
 			</div>
 		{/if}
 	{:else}
@@ -99,7 +123,7 @@ deleteGroupMembership
 					<td class="px-4 py-3"
 						><Checkbox
 							on:change={() => {
-								toggleSelected(user.id);
+								toggleMembershipSelected(user.id);
 							}}
 						/></td
 					>
@@ -111,8 +135,12 @@ deleteGroupMembership
 				</tr>
 			{/each}
 		</Table>
-		<Button class="w-1/2 m-1" on:click={() => createGroupMembership(selectedUsers, group.id)}
-			>Add Selected Users</Button
+		<Button
+			class="w-full m-1"
+			on:click={() => {
+				createGroupMembership(selectedUsers, group.id);
+				open = false;
+			}}>Add Selected Users</Button
 		>
 	{/if}
 </Modal>

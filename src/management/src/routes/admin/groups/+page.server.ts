@@ -7,14 +7,14 @@ export async function load({ fetch, cookies, depends }) {
 			JWT: cookies.get('JWT')
 		},
 		credentials: 'include'
-	}).then((response) => response.json());
+	}).then((response: { json: () => any }) => response.json());
 	//	handleRedirects(authcheck);
 	const groupResponse = await fetch('http://localhost:8080/group', {
 		headers: {
 			JWT: cookies.get('JWT')
 		},
 		credentials: 'include'
-	}).then((response) => response.json());
+	}).then((response: { json: () => any }) => response.json());
 	depends('admin:group');
 
 	const usersResponse = await fetch('http://localhost:8080/user', {
@@ -22,7 +22,7 @@ export async function load({ fetch, cookies, depends }) {
 			JWT: cookies.get('JWT')
 		},
 		credentials: 'include'
-	}).then((res) => res.json());
+	}).then((res: { json: () => any }) => res.json());
 
 	return {
 		groups: (groupResponse as Group[]) ?? [],
