@@ -4,6 +4,7 @@ import (
 	"context"
 	"easyvpn/src/database"
 	user_dtos "easyvpn/src/user/user-dtos"
+	"fmt"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -11,7 +12,7 @@ import (
 
 func GetUser(username string) (*user_dtos.User, error) {
 	user := new(user_dtos.User)
-	err := database.DB.NewSelect().Model(user).Limit(1).Scan(context.Background())
+	err := database.DB.NewSelect().Model(user).Where("username = ?", username).Limit(1).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
@@ -82,12 +83,15 @@ func FormatUser(u user_dtos.User) user_dtos.FrontEndUser {
 }
 
 func AuthUser(username string, password string) (bool, error) {
+	fmt.Println(username)
 	user, err := GetUser(username)
 	if err != nil {
+		fmt.Println(err)
 		return false, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
+		fmt.Println(err)
 		return false, err
 	}
 	return true, nil

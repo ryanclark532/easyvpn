@@ -8,17 +8,19 @@ export function getToken() {
 
 export async function handleLogin(e: Event) {
 	e.preventDefault();
-
 	const formData = new FormData(e.target as HTMLFormElement);
-	const username = formData.get('username');
-	const password = formData.get('password');
+	const username = formData.get('username')?.toString();
+	const password = formData.get('password')?.toString();
 
+	const headers = new Headers();
+	headers.append('Content-Type', 'application/json');
 	return await fetch('http://localhost:8080/auth/local/login', {
 		body: JSON.stringify({
-			user: username,
-			passwd: password,
-			aud: username
+			"user": username,
+			"passwd": password,
+			"aud": username
 		}),
+		headers,
 		method: 'POST',
 		credentials: 'include'
 	}).then(async (response) => {

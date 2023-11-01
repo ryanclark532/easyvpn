@@ -110,8 +110,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Mount("/avatar", avaRoutes)
 
 	service.AddDirectProvider("local", provider.CredCheckerFunc(func(username, password string) (ok bool, err error) {
-		//	return user.AuthUser(username, password)
-		return true, nil
+		return user.AuthUser(username, password)
 	}))
 
 	m := service.Middleware()
