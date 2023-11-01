@@ -1,5 +1,15 @@
 <script lang="ts">
-	import { Table, Modal, Button, Checkbox } from 'flowbite-svelte';
+	import {
+		Table,
+		Modal,
+		Button,
+		Checkbox,
+		TableBodyRow,
+		TableBodyCell,
+		TableHead,
+		TableHeadCell,
+		TableBody
+	} from 'flowbite-svelte';
 	import type { Group } from '../../../types/groups';
 	import {
 		getGroupMembers,
@@ -9,10 +19,10 @@
 		deleteGroupMembership,
 		selectedGroups
 	} from '$lib/groups';
-	import type { PageData } from '../../$types';
 	import GroupMembershipTableRow from './group-membership-table-row.svelte';
+	import type { User } from '../../../types/users';
 	export let group: Group;
-	export let data: PageData;
+	export let users: User[];
 	let open: boolean;
 	let addingUser: boolean;
 	let selectedUsers: string[] = [];
@@ -39,54 +49,52 @@
 	}
 </script>
 
-<tr class="border-b last:border-b-0">
-	<td class="px-4 py-3"><Checkbox on:change={toggleSelectedGroups} /></td>
-	<td class="px-4 py-3">{group.name}</td>
-	<td class="px-4 py-3">{group.member_count}</td>
-	<td class="px-4 py-3">{group.is_admin}</td>
-	<td class="px-4 py-3">{group.enabled}</td>
-	<td class="px-4 py-3"
-		><Button color="alternative" on:click={() => (open = !open)}>Add Users</Button></td
+<TableBodyRow class="border-b last:border-b-0">
+	<TableBodyCell class="px-4 py-3"><Checkbox on:change={toggleSelectedGroups} /></TableBodyCell>
+	<TableBodyCell class="px-4 py-3">{group.name}</TableBodyCell>
+	<TableBodyCell class="px-4 py-3">{group.member_count}</TableBodyCell>
+	<TableBodyCell class="px-4 py-3">{group.is_admin}</TableBodyCell>
+	<TableBodyCell class="px-4 py-3">{group.enabled}</TableBodyCell>
+	<TableBodyCell class="px-4 py-3"
+		><Button color="alternative" on:click={() => (open = !open)}>Add Users</Button></TableBodyCell
 	>
-</tr>
+</TableBodyRow>
 
 <Modal title={`${group.name} Users`} bind:open class="min-w-full">
 	{#if !addingUser}
 		<Table>
-			<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-				<tr>
-					<th scope="col" class="px-4 py-3"
-						><Checkbox bind:checked={$groupMembershipMasterCheckbox} /></th
-					>
-					<th scope="col" class="px-4 py-3">Username</th>
-					<th scope="col" class="px-4 py-3">Name</th>
-					<th scope="col" class="px-4 py-3">Last Logged In</th>
-					<th scope="col" class="px-4 py-3">Enabled</th>
-					<th scope="col" class="px-4 py-3">Is Admin</th>
-				</tr>
-			</thead>
+			<TableHead class="bg-gray-200">
+				<TableHeadCell scope="col" class="px-4 py-3"
+					><Checkbox bind:checked={$groupMembershipMasterCheckbox} /></TableHeadCell
+				>
+				<TableHeadCell scope="col" class="px-4 py-3">Username</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Name</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Last Logged In</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Enabled</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Is Admin</TableHeadCell>
+			</TableHead>
 			{#await getGroupMembers(group.id)}
-				<tr class="border-b last:border-b-0">
-					<td class="px-4 py-3"><Checkbox /></td>
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-				</tr>
+				<TableBody>
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+				</TableBody>
 			{:then users}
 				{#each users as user}
 					<GroupMembershipTableRow {user} />
 				{/each}
-			{:catch}
-				<tr class="border-b last:border-b-0">
-					<td class="px-4 py-3"><Checkbox /></td>
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-					<td class="px-4 py-3" />
-				</tr>
+			{:catch error}
+				<TableBody>
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+					<TableBodyCell class="px-4 py-3" />
+				</TableBody>
 			{/await}
 		</Table>
 		{#if $selectedGroupMemberships.length === 0}
@@ -107,40 +115,43 @@
 			</div>
 		{/if}
 	{:else}
-		<Table>
-			<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-				<tr>
-					<th scope="col" class="px-4 py-3"> <Checkbox /></th>
-					<th scope="col" class="px-4 py-3">Username</th>
-					<th scope="col" class="px-4 py-3">Name</th>
-					<th scope="col" class="px-4 py-3">Last Logged In</th>
-					<th scope="col" class="px-4 py-3">Enabled</th>
-					<th scope="col" class="px-4 py-3">Is Admin</th>
-				</tr>
-			</thead>
-			{#each data.users as user}
-				<tr>
-					<td class="px-4 py-3"
+		<Table divClass="text-black">
+			<TableHead class="bg-gray-200">
+				<TableHeadCell scope="col" class="px-4 py-3"><Checkbox /></TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Username</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Name</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Last Logged In</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Enabled</TableHeadCell>
+				<TableHeadCell scope="col" class="px-4 py-3">Is Admin</TableHeadCell>
+			</TableHead>
+			{#each users as user}
+				<TableBodyRow>
+					<TableBodyCell class="px-4 py-3 text-black"
 						><Checkbox
 							on:change={() => {
-								toggleMembershipSelected(user.id);
+								toggleMembershipSelected(user.id.toString());
 							}}
-						/></td
+						/></TableBodyCell
 					>
-					<td class="px-4 py-3">{user.username}</td>
-					<td class="px-4 py-3">{user.name}</td>
-					<td class="px-4 py-3">today</td>
-					<td class="px-4 py-3">{user.enabled}</td>
-					<td class="px-4 py-3">{user.is_admin}</td>
-				</tr>
+					<TableBodyCell class="px-4 py-3">{user.username}</TableBodyCell>
+					<TableBodyCell class="px-4 py-3">{user.name}</TableBodyCell>
+					<TableBodyCell class="px-4 py-3">today</TableBodyCell>
+					<TableBodyCell class="px-4 py-3">{user.enabled}</TableBodyCell>
+					<TableBodyCell class="px-4 py-3">{user.is_admin}</TableBodyCell>
+				</TableBodyRow>
 			{/each}
 		</Table>
-		<Button
-			class="w-full m-1"
-			on:click={() => {
-				createGroupMembership(selectedUsers, group.id);
-				open = false;
-			}}>Add Selected Users</Button
-		>
+		<div class="flex">
+			<Button class="w-1/2 m-1" on:click={() => (addingUser = !addingUser)}
+				>Back To Memberships</Button
+			>
+			<Button
+				class="w-1/2 m-1"
+				on:click={() => {
+					createGroupMembership(selectedUsers, group.id);
+					open = false;
+				}}>Add Selected Users</Button
+			>
+		</div>
 	{/if}
 </Modal>
