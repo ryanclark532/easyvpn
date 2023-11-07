@@ -1,6 +1,8 @@
 module easyvpn
 
-go 1.20
+go 1.21
+
+toolchain go1.21.3
 
 require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
@@ -11,6 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/shirou/gopsutil v3.21.11+incompatible
+	github.com/uptrace/bun/dialect/sqlitedialect v1.1.16
 	github.com/ziutek/telnet v0.0.0-20180329124119-c3b780dc415b
 	gorm.io/driver/sqlite v1.5.3
 	gorm.io/gorm v1.25.4
@@ -22,7 +25,6 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
-	github.com/uptrace/bun/dialect/sqlitedialect v1.1.16 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	lukechampine.com/uint128 v1.3.0 // indirect
@@ -45,7 +47,7 @@ require (
 	github.com/dghubble/oauth1 v0.7.2 // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/go-chi/chi v1.5.5 // indirect
-	github.com/go-chi/cors v1.2.1 // indirect
+	github.com/go-chi/cors v1.2.1
 	github.com/go-oauth2/oauth2/v4 v4.5.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-pkgz/repeater v1.1.3 // indirect
@@ -69,7 +71,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
-	github.com/uptrace/bun v1.1.16 // indirect
+	github.com/uptrace/bun v1.1.16
 	github.com/uptrace/bun/driver/sqliteshim v1.1.16
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
@@ -80,7 +82,7 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.mongodb.org/mongo-driver v1.12.1 // indirect
-	golang.org/x/crypto v0.14.0 // indirect
+	golang.org/x/crypto v0.14.0
 	golang.org/x/image v0.13.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect

@@ -6,9 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
 	"github.com/go-sql-driver/mysql"
-
 	"easyvpn/src/utils"
 )
 
@@ -93,7 +91,7 @@ func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *[]user_dtos.FrontEndUser
+	var req *user_dtos.User
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
@@ -101,20 +99,11 @@ func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var users []user_dtos.FrontEndUser
-	for _, user := range *req {
-		u, err := UpdateUser(user)
-		if err != nil {
-			utils.HandleError(err, "UpdateUser")
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		users = append(users, *u)
-	}
+	user, err := UpdateUser(req)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(users)
+	err = json.NewEncoder(w).Encode(user)
 	if err != nil {
 		utils.HandleError(err, "UpdateUser")
 		w.WriteHeader(http.StatusInternalServerError)

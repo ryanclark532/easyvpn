@@ -1,5 +1,6 @@
 package main
 
+
 import (
 	"easyvpn/src/database"
 	"easyvpn/src/groups"
@@ -125,6 +126,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		       r.Get("/")
 		   }) */
 	})
+
 
 	r.Route("/vpn", func(r chi.Router) {
 		r.Use(m.AdminOnly)

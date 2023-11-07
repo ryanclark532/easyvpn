@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Label, Input, Button, Modal, Checkbox, Tooltip } from 'flowbite-svelte';
-	import { icons } from 'flowbite-svelte-icons'
+	import { icons } from 'flowbite-svelte-icons';
 	import { createUser } from '$lib/users';
 	let defaultModal = false;
 	let createUserConfirmation = false;
 	let response: any;
 
-console.log(	icons["plus-outline"]);
+	console.log(icons['plus-outline']);
 </script>
 
 <button
@@ -14,7 +14,15 @@ console.log(	icons["plus-outline"]);
 	type="button"
 	class="flex items-center justify-center text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
 >
-	<svg>{icons["plus-outline"].svg}</svg>
+	<svg class="w-5 h-5">
+		<path
+			stroke="currentColor"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			stroke-width="2"
+			d="M9 1v16M1 9h16"
+		/></svg
+	>
 	Add User
 </button>
 <Modal

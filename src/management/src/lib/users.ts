@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 import { getToken } from './auth';
 import { invalidate } from '$app/navigation';
 
-export const searchFilter = writable<string>();
+export const userFilter = writable<string>();
 export const selectedUsers = writable<User[]>([]);
 export const masterCheckbox = writable<boolean>(false);
 

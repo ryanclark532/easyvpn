@@ -55,12 +55,26 @@ func DeleteUsers(users []user_dtos.FrontEndUser) error {
 	return nil
 }
 
-func UpdateUser(user user_dtos.FrontEndUser) (*user_dtos.FrontEndUser, error) {
+func UpdateUser(user *user_dtos.User) (*user_dtos.User, error) {
 	_, err := database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("username = ?, name = ?, is_admin = ?, enabled = ?", user.Username, user.Name, user.IsAdmin, user.Enabled).Where("id = ?", user.ID).Exec(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	return &user, nil
+	return user, nil
+}
+
+func SempTempPW(userId uint, password string, confirm string) error{
+	if password != confirm {
+		return fmt.Errorf("Password and Confirmation do not match")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		return err
+	}
+
+	_, err =database.DB.NewUpdate().Table("User").Set("password = ? ", hash).Where("id = ?", userId).Exec(context.Background())
+	return err	
 }
 
 func FormatUsers(users []user_dtos.User) []user_dtos.FrontEndUser {
@@ -83,12 +97,12 @@ func FormatUser(u user_dtos.User) user_dtos.FrontEndUser {
 }
 
 func AuthUser(username string, password string) (bool, error) {
-	fmt.Println(username)
 	user, err := GetUser(username)
 	if err != nil {
 		fmt.Println(err)
 		return false, err
 	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		fmt.Println(err)
