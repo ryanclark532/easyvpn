@@ -7,57 +7,29 @@ export const userFilter = writable<string>();
 export const selectedUsers = writable<User[]>([]);
 export const masterCheckbox = writable<boolean>(false);
 
-export async function setTempPw(u: User[]) {
-	const body = {
-		ID: u.map((u) => u.id)
-	};
-	if (body.ID.length === 0) {
-		return new Error('No Users Selected');
-	}
+
+export async function deleteUser(userId: number) {
 	const headers = new Headers();
 	headers.append('JWT', getToken() ?? '');
-
-	const response = await fetch('http://localhost:8080/user/set-temporary-password', {
-		body: JSON.stringify(body),
-		method: 'PUT',
-		headers,
-		credentials: 'include'
-	});
-
-	if (response.status >= 400) {
-		return new Error('Error setting users temporary password, please try again later');
-	}
-}
-
-export async function deleteUser(u: User[]) {
-	if (u.length === 0) {
-		return new Error('No Users Selected');
-	}
-	const headers = new Headers();
-	headers.append('JWT', getToken() ?? '');
-
-	const response = await fetch('http://localhost:8080/user', {
-		body: JSON.stringify(u),
+	const response = await fetch(`http://localhost:8080/user/${userId}`, {
 		method: 'DELETE',
 		headers,
 		credentials: 'include'
 	});
 
 	if (response.status >= 400) {
-		return new Error('Error retrieving users, please try again later');
+		return new Error('Error updating users, please try again later');
 	}
-
 	invalidate('admin:users');
+	selectedUsers.set([])
 }
 
-export async function updateUser(users: User[]) {
-	if (users.length === 0) {
-		return new Error('No Users Selected');
-	}
+
+export async function updateUser(user: User) {
 	const headers = new Headers();
-	headers.append('Authorization', `Bearer ${getToken()}`);
-	const response = await fetch('http://localhost:8080/user', {
-		body: JSON.stringify(users),
+	headers.append('JWT', getToken() ?? '');
+	const response = await fetch(`http://localhost:8080/user/${user.id}`, {
+		body: JSON.stringify(user),
 		method: 'PUT',
 		headers,
 		credentials: 'include'
@@ -73,9 +45,9 @@ export async function createUser(e: Event) {
 	e.preventDefault();
 	const formData = new FormData(e.target as HTMLFormElement);
 	const body = {
-		username: formData.get('username') as string,
-		name: formData.get('name') as string,
-		password: formData.get('password') as string,
+		username: formData.get('username').toString(),
+		name: formData.get('name').toString(),
+		password: formData.get('password').toString(),
 		is_admin: (formData.get('isAdmin') as string) === 'on',
 		enabled: (formData.get('enabled') as string) === 'on'
 	};
@@ -97,3 +69,28 @@ export async function createUser(e: Event) {
 	}
 	invalidate('admin:users');
 }
+
+export async function changePassword(e: Event, userId: number){
+	e.preventDefault()
+	const formData = new FormData(e.target as HTMLFormElement);
+	const password = formData.get("password").toString();
+	const confirm = formData.get("confirm").toString();
+	if(password !== confirm){
+		return new Error("Please enter matching passwords");
+	}
+
+	const headers = new Headers();
+	headers.append('JWT', getToken() ?? '');
+
+	const response = await fetch(`http://localhost:8080/user/${userId}/set-pw`, {
+		body: JSON.stringify({password, confirm}),
+		method: "POST",
+		headers, 
+		credentials:'include'
+	}).then((res)=> res.status);
+
+	if(response >=400){
+		return new Error("Something went wrong while changing the password. Please try again")
+	}
+}
+

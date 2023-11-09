@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { changePassword } from '$lib/users';
 	import { Input, DropdownItem, Label, Modal, Button } from 'flowbite-svelte';
 
 	let open: boolean;
@@ -15,14 +16,14 @@
 	<div class="text-center">
 		Users will need to login to the user panel and reset their password to continue using easypn
 	</div>
-	<form>
+	<form on:submit={(e)=>{changePassword(e, userId)}}>
 		<Label for="password">Password</Label>
 		<Input class="mb-4" id="password" name="password" placeholder="Password..." />
 		<Label for="confirmPassword">Confirm Password</Label>
 		<Input
 			class="mb-4"
-			id="confirmPassword"
-			name="confirmPassword"
+			id="confirm"
+			name="confirm"
 			placeholder="Confirm Password..."
 		/>
 		<Button class="w-full" type="submit">Set Temporary Password</Button>

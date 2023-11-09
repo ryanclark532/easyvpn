@@ -3,11 +3,13 @@ package user
 import (
 	"easyvpn/src/database"
 	user_dtos "easyvpn/src/user/user-dtos"
+	"easyvpn/src/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 	"github.com/go-sql-driver/mysql"
-	"easyvpn/src/utils"
 )
 
 func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -73,15 +75,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *[]user_dtos.FrontEndUser
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		utils.HandleError(err, "DeleteUser")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = DeleteUsers(*req)
+	err := DeleteUser(chi.URLParam(r, "id"))
 	if err != nil {
 		utils.HandleError(err, "DeleteUser")
 		w.WriteHeader(http.StatusBadRequest)
@@ -98,16 +92,29 @@ func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	user, err := UpdateUser(req)
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(user)
-	if err != nil {
+	 err = UpdateUser(req, chi.URLParam(r, "id"))
+	if err !=nil {
 		utils.HandleError(err, "UpdateUser")
-		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
+
+func SetPWEndpoint(w http.ResponseWriter, r *http.Request){
+	var req *user_dtos.PasswordResetRequest
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		utils.HandleError(err, "DeleteUser")
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
+	err = SetPassword(chi.URLParam(r, "id"), req)
+	if err !=nil {
+		utils.HandleError(err, "SetPWEndpoint")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -42,38 +42,33 @@ func CreateUser(user *user_dtos.User) (*user_dtos.User, error) {
 	return user, nil
 }
 
-func DeleteUsers(users []user_dtos.FrontEndUser) error {
-	var ids []uint
-	for _, user := range users {
-		ids = append(ids, user.ID)
-	}
-
-	_, err := database.DB.NewDelete().Model((*user_dtos.User)(nil)).Where("id IN (?)", ids).Exec(context.Background())
+func DeleteUser(id string) error {
+	_, err := database.DB.NewDelete().Model((*user_dtos.User)(nil)).Where("id = ?", id).Exec(context.Background())
 	if err != nil {
-		return nil
+		return err
 	}
 	return nil
 }
 
-func UpdateUser(user *user_dtos.User) (*user_dtos.User, error) {
-	_, err := database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("username = ?, name = ?, is_admin = ?, enabled = ?", user.Username, user.Name, user.IsAdmin, user.Enabled).Where("id = ?", user.ID).Exec(context.Background())
+func UpdateUser(user *user_dtos.User, id string) error {
+	_, err := database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("username = ?, name = ?, is_admin = ?, enabled = ?", user.Username, user.Name, user.IsAdmin, user.Enabled).Where("id = ?", id).Exec(context.Background())
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return user, nil
+	return nil
 }
 
-func SempTempPW(userId uint, password string, confirm string) error{
-	if password != confirm {
+func SetPassword(userId string, ps *user_dtos.PasswordResetRequest) error{
+	if ps.Password != ps.Confirm {
 		return fmt.Errorf("Password and Confirmation do not match")
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	hash, err := bcrypt.GenerateFromPassword([]byte(ps.Password), 10)
 	if err != nil {
 		return err
 	}
 
-	_, err =database.DB.NewUpdate().Table("User").Set("password = ? ", hash).Where("id = ?", userId).Exec(context.Background())
+	_, err =database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("password = ?, password_expiry = ?", hash, time.Now().Format(time.DateTime)).Where("id = ?", userId).Exec(context.Background())
 	return err	
 }
 

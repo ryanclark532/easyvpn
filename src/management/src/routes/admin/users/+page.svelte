@@ -9,7 +9,7 @@
 	<Sidepanel />
 	<div class="w-full p-5 ml-64">
 		<div class="border-b-2 border-primary-700 mb-1">
-			<h2 class="text-2xl mt-5 pb-1">User Groups</h2>
+			<h2 class="text-2xl mt-5 pb-1">Users</h2>
 		</div>
 		<Table {data} />
 	</div>

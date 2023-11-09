@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { selectedUsers, userFilter } from '$lib/users';
+	import { deleteUser, selectedUsers, userFilter } from '$lib/users';
 	import type { PageData } from './$types';
 	import UserTableRow from './user-table-row.svelte';
 	import CreateUserModal from './create-user-modal.svelte';
@@ -15,8 +15,11 @@
 	} from 'flowbite-svelte';
 	import UpdateUserModal from './update-user-modal.svelte';
 	import SetTempPwModal from './set-temp-pw-modal.svelte';
+	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
 
 	export let data: PageData;
+
+	let deleteConfirmation: boolean = false;
 </script>
 
 <div class="rounded relative shadow-md overflow-hidden">
@@ -45,7 +48,7 @@
 					<Dropdown>
 						<SetTempPwModal userId={$selectedUsers[0].id} />
 						<UpdateUserModal user={$selectedUsers[0]} />
-						<DropdownItem on:click={() => {}}>Delete Group</DropdownItem>
+						<DropdownItem on:click={() => {deleteConfirmation = !deleteConfirmation}}>Delete User</DropdownItem>
 					</Dropdown>
 				</div>
 			{/if}
@@ -70,3 +73,11 @@
 		</TableBody>
 	</Table>
 </div>
+
+
+<ConfirmationModal
+	title="Confirm User Deletion"
+	subtext="Deleting this user is permanent and cannot be recovered. Please confirm the deletion."
+	onConfirm={() => deleteUser($selectedUsers[0].id)}
+	open={deleteConfirmation}
+/>

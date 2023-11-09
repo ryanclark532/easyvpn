@@ -120,11 +120,11 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Use(m.AdminOnly)
 		r.Get("/", user.GetUsersEndpoint)
 		r.Post("/", user.CreateUserEndpoint)
-		r.Delete("/", user.DeleteUserEndpoint)
-		r.Put("/", user.UpdateUserEndpoint) /*
-		   r.Route("/groups/{id}", func(r chi.Router) {
-		       r.Get("/")
-		   }) */
+		r.Route("/{id}", func(r chi.Router) {
+			r.Delete("/", user.DeleteUserEndpoint)
+			r.Put("/", user.UpdateUserEndpoint)
+			r.Post("/set-pw", user.SetPWEndpoint)
+		})
 	})
 
 
