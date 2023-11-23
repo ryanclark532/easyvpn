@@ -13,9 +13,7 @@ import (
 	"time"
 )
 
-var KeyDir = "./keys/"
-
-func GenerateRootCACertificate() error {
+func GenerateRootCACertificate(dir string) error {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
 	if err != nil {
 		return err
@@ -43,13 +41,13 @@ func GenerateRootCACertificate() error {
 		return err
 	}
 
-	certFile, err := os.Create(KeyDir + "root.crt")
+	certFile, err := os.Create(dir + "root.crt")
 	if err != nil {
 		return err
 	}
 	defer certFile.Close()
 
-	keyFile, err := os.Create(KeyDir + "root.key")
+	keyFile, err := os.Create(dir + "root.key")
 	if err != nil {
 		return err
 	}
@@ -61,13 +59,13 @@ func GenerateRootCACertificate() error {
 	return nil
 }
 
-func GenerateSignedCertificate(name string) error {
-	rootCACertData, err := os.ReadFile(KeyDir + "root.crt")
+func GenerateSignedCertificate(dir string, name string) error {
+	rootCACertData, err := os.ReadFile(dir + "root.crt")
 	if err != nil {
 		return err
 	}
 
-	rootCAKeyData, err := os.ReadFile(KeyDir + "root.key")
+	rootCAKeyData, err := os.ReadFile(dir + "root.key")
 	if err != nil {
 		return err
 	}
@@ -112,13 +110,13 @@ func GenerateSignedCertificate(name string) error {
 		return err
 	}
 
-	certFile, err := os.Create(KeyDir + name + ".crt")
+	certFile, err := os.Create(dir + name + ".crt")
 	if err != nil {
 		return err
 	}
 	defer certFile.Close()
 
-	keyFile, err := os.Create(KeyDir + name + ".key")
+	keyFile, err := os.Create(dir + name + ".key")
 	if err != nil {
 		return err
 	}
@@ -130,10 +128,10 @@ func GenerateSignedCertificate(name string) error {
 	return nil
 }
 
-func GenerateDHKey() error {
-	_, err := os.Stat(KeyDir + "dh.pem")
+func GenerateDHKey(dir string) error {
+	_, err := os.Stat(dir + "dh.pem")
 	if os.IsNotExist(err) {
-		cmd := exec.Command("openssl", "dhparam", "-out", KeyDir+"dh.pem", "2048")
+		cmd := exec.Command("openssl", "dhparam", "-out", dir+"dh.pem", "2048")
 		err = cmd.Run()
 		return err
 	}

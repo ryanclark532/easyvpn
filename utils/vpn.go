@@ -4,92 +4,60 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"runtime"
-	"strings"
 )
 
 func SetupVPNServer() error {
-	if checkVPNCertificates() {
-		return nil
-	}
+	path := `C:\Program Files\OpenVPN\config-auto\`
+	if _, err := os.Stat(path + `keys\`); os.IsNotExist(err) {
+		err := os.Mkdir(path+`keys\`, 0777)
+		keychan := make(chan error)
+		defer close(keychan)
+		go func() {
+			err := GenerateDHKey(path + `keys\`)
+			if err != nil {
+				keychan <- err
+			}
+			err = GenerateRootCACertificate(path + `keys\`)
+			if err != nil {
+				keychan <- err
+			}
+			err = GenerateSignedCertificate(path+`keys\`, "server")
+			if err != nil {
+				keychan <- err
+			}
+		}()
 
-	err := GenerateDHKey()
-	if err != nil {
+		err = <-keychan
 		return err
 	}
 
-	err = GenerateRootCACertificate()
+	err := CopyFile(`.\server-dev.ovpn`, path+`\server-dev.ovpn`)
 	if err != nil {
 		return err
 	}
-
-	err = GenerateSignedCertificate("server")
+	err = StopVPNServer()
 	if err != nil {
 		return err
 	}
-
-	err = GenerateSignedCertificate("client1")
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func checkVPNCertificates() bool {
-	_, err := os.Stat(KeyDir + "root.crt")
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	_, err = os.Stat(KeyDir + "root.key")
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	_, err = os.Stat(KeyDir + "server.crt")
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	_, err = os.Stat(KeyDir + "server.key")
-	if os.IsNotExist(err) {
-		return false
-	}
-
-	_, err = os.Stat(KeyDir + "dh.pem")
-	return !os.IsNotExist(err)
+	err = StartVPNServer()
+	return err
 }
 
 func StartVPNServer() error {
-	cmd := exec.Command("openvpn", "src/server-dev.conf")
-
-	if err := cmd.Start(); err != nil {
-		return err
+	cmd := exec.Command("sc", "start", "OpenVPNService")
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to start service: %v", err)
 	}
-
 	return nil
 }
 
 func StopVPNServer() error {
-	var cmd *exec.Cmd
-
-	if runtime.GOOS == "windows" {
-		cmd = exec.Command("taskkill", "/F", "/IM", "openvpn.exe")
-	} else {
-		cmd = exec.Command("killall", "openvpn")
-	}
-
-	output, err := cmd.CombinedOutput()
+	cmd := exec.Command("sc", "stop", "OpenVPNService")
+	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("error stopping OpenVPN process: %v\n%s", err, output)
+		return fmt.Errorf("failed to stop service: %v", err)
 	}
-
-	if strings.Contains(string(output), "no process found") {
-		return fmt.Errorf("OpenVPN process not found")
-	}
-
-	fmt.Println("OpenVPN process stopped successfully.")
 	return nil
 }
 

@@ -27,7 +27,12 @@ var svelte embed.FS
 
 func main() {
 
-	err := database.Test()
+	err := utils.SetupVPNServer()
+	if err != nil {
+		panic(err)
+	}
+
+	err = database.Test()
 	if err != nil {
 		panic(err)
 	}
@@ -65,9 +70,9 @@ func main() {
 				user, err := user.GetUser(claims.User.Name)
 				if err == nil {
 					claims.User.SetAdmin(user.IsAdmin)
-					claims.User.SetStrAttr("password_expiry", user.PasswordExpiry.Format(time.DateTime))  
+					claims.User.SetStrAttr("password_expiry", user.PasswordExpiry.Format(time.DateTime))
 					claims.User.SetStrAttr("id", strconv.Itoa(int(user.ID)))
-					claims.User.SetBoolAttr("enabled",user.Enabled )
+					claims.User.SetBoolAttr("enabled", user.Enabled)
 				}
 			}
 			return claims
@@ -128,7 +133,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		})
 	})
 
-
 	r.Route("/vpn", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", vpn.GetServerStatusEndpoint)
@@ -153,7 +157,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	/*r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/web/dist/", http.StatusPermanentRedirect)
 	}) */
-	r.Handle("/web/dist/",http.FileServer(http.FS(svelte)))
+	r.Handle("/web/dist/", http.FileServer(http.FS(svelte)))
 
 	return r
 }

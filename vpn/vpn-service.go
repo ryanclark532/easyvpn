@@ -3,24 +3,30 @@ package vpn
 import (
 	"easyvpn/utils"
 	vpn_dtos "easyvpn/vpn/vpn-dtos"
+	"os/exec"
 	"strings"
 	"time"
 )
 
 func GetVpnServerStatus() (string, error) {
-	running, err := utils.IsProcessRunning("openvpn")
+	cmd := exec.Command("sc", "query", "OpenVPNService")
+	output, err := cmd.Output()
 	if err != nil {
 		return "unknown", err
 	}
-	if !running {
-		return "notRunning", nil
-	}
 
-	containsInit, err := utils.ContainsSequence("src/log/openvpn.log", "Initialization Sequence Completed")
-	if containsInit {
-		return "running", err
+	if strings.Contains(string(output), "RUNNING") {
+		initFinished, err := utils.ContainsSequence("src/log/openvpn.log", "Initialization Sequence Completed")
+		if err != nil {
+			return "unknown", err
+		}
+		if initFinished {
+			return "running", nil
+		} else {
+			return "starting", nil
+		}
 	}
-	return "starting", nil
+	return "stopped", nil
 }
 
 func VpnOperation(operation string) error {
@@ -41,17 +47,7 @@ func VpnOperation(operation string) error {
 }
 
 func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
-	result, err := utils.TelnetCMD("status")
-	if err != nil {
-		return nil, err
-	}
-	formatted, err := formatServerConnection(result)
-	if err != nil {
-		return nil, err
-	}
-
-	return formatted, nil
-
+	return nil, nil
 }
 
 func formatServerConnection(output string) (*[]vpn_dtos.ServerConnection, error) {
