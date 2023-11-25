@@ -7,7 +7,7 @@ export async function load({ fetch, cookies, depends }) {
 	const authcheck = await fetch('http://localhost:8080/auth/user', {
 		headers,
 		credentials: 'include'
-	}).then((response) => response.json());	
+	}).then((response) => response.json());
 	handleRedirects(authcheck);
 
 	const users = await fetch('http://localhost:8080/user', {

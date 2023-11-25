@@ -14,13 +14,18 @@
 	}}>Update User</DropdownItem
 >
 <Modal title="Add User" bind:open class="min-w-full">
-	<form on:submit={async(e)=>{e.preventDefault();response = await updateUser(user)}}>
+	<form
+		on:submit={async (e) => {
+			e.preventDefault();
+			response = await updateUser(user);
+		}}
+	>
 		<div>
-	{#if response}
-		<div class="bg-red-300 p-1 rounded text-center">
-			<p class="text-base text-red-600">{response.message}</p>
-		</div>
-	{/if}
+			{#if response}
+				<div class="bg-red-300 p-1 rounded text-center">
+					<p class="text-base text-red-600">{response.message}</p>
+				</div>
+			{/if}
 			<div class="mb-4">
 				<Label for="name" class="mb-2">Name</Label>
 				<Input

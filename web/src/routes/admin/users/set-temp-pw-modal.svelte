@@ -16,16 +16,15 @@
 	<div class="text-center">
 		Users will need to login to the user panel and reset their password to continue using easypn
 	</div>
-	<form on:submit={(e)=>{changePassword(e, userId, true)}}>
+	<form
+		on:submit={(e) => {
+			changePassword(e, userId, true);
+		}}
+	>
 		<Label for="password">Password</Label>
 		<Input class="mb-4" id="password" name="password" placeholder="Password..." />
 		<Label for="confirmPassword">Confirm Password</Label>
-		<Input
-			class="mb-4"
-			id="confirm"
-			name="confirm"
-			placeholder="Confirm Password..."
-		/>
+		<Input class="mb-4" id="confirm" name="confirm" placeholder="Confirm Password..." />
 		<Button class="w-full" type="submit">Set Temporary Password</Button>
 	</form>
 </Modal>

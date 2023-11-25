@@ -1,4 +1,3 @@
-import { handleRedirects } from '$lib/auth';
 import type { Group } from '../../../types/groups';
 import type { User } from '../../../types/users';
 export async function load({ fetch, cookies, depends }) {

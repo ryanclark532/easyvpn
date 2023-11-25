@@ -7,7 +7,6 @@ export const userFilter = writable<string>();
 export const selectedUsers = writable<User[]>([]);
 export const masterCheckbox = writable<boolean>(false);
 
-
 export async function deleteUser(userId: number) {
 	const headers = new Headers();
 	headers.append('JWT', getToken() ?? '');
@@ -21,9 +20,8 @@ export async function deleteUser(userId: number) {
 		return new Error('Error updating users, please try again later');
 	}
 	invalidate('admin:users');
-	selectedUsers.set([])
+	selectedUsers.set([]);
 }
-
 
 export async function updateUser(user: User) {
 	const headers = new Headers();
@@ -70,27 +68,26 @@ export async function createUser(e: Event) {
 	invalidate('admin:users');
 }
 
-export async function changePassword(e: Event, userId: number, temp: bool){
-	e.preventDefault()
+export async function changePassword(e: Event, userId: number, temp: bool) {
+	e.preventDefault();
 	const formData = new FormData(e.target as HTMLFormElement);
-	const password = formData.get("password").toString();
-	const confirm = formData.get("confirm").toString();
-	if(password !== confirm){
-		return new Error("Please enter matching passwords");
+	const password = formData.get('password').toString();
+	const confirm = formData.get('confirm').toString();
+	if (password !== confirm) {
+		return new Error('Please enter matching passwords');
 	}
 
 	const headers = new Headers();
 	headers.append('JWT', getToken() ?? '');
 
 	const response = await fetch(`http://localhost:8080/user/${userId}/set-pw`, {
-		body: JSON.stringify({password, confirm, temp}),
-		method: "POST",
-		headers, 
-		credentials:'include'
-	}).then((res)=> res.status);
+		body: JSON.stringify({ password, confirm, temp }),
+		method: 'POST',
+		headers,
+		credentials: 'include'
+	}).then((res) => res.status);
 
-	if(response >=400){
-		return new Error("Something went wrong while changing the password. Please try again")
+	if (response >= 400) {
+		return new Error('Something went wrong while changing the password. Please try again');
 	}
 }
-

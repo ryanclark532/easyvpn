@@ -35,7 +35,7 @@ export async function handleLogin(e: Event) {
 		document.cookie = `JWT=${response.headers.get('jwt') ?? ''}`;
 
 		const json = await response.json();
-		localStorage.setItem("id", json.attrs.id)
+		localStorage.setItem('id', json.attrs.id);
 		const expiry = new Date(json.attrs.password_expiry);
 		if (expiry < new Date()) {
 			goto('/login/reset');

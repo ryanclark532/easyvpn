@@ -48,7 +48,11 @@
 					<Dropdown>
 						<SetTempPwModal userId={$selectedUsers[0].id} />
 						<UpdateUserModal user={$selectedUsers[0]} />
-						<DropdownItem on:click={() => {deleteConfirmation = !deleteConfirmation}}>Delete User</DropdownItem>
+						<DropdownItem
+							on:click={() => {
+								deleteConfirmation = !deleteConfirmation;
+							}}>Delete User</DropdownItem
+						>
 					</Dropdown>
 				</div>
 			{/if}
@@ -73,7 +77,6 @@
 		</TableBody>
 	</Table>
 </div>
-
 
 <ConfirmationModal
 	title="Confirm User Deletion"

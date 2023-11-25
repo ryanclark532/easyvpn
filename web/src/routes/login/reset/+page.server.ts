@@ -1,4 +1,3 @@
 import { handleRedirects } from '$lib/auth';
 
-export async function load({ fetch, cookies }) {
-}
+export async function load({ fetch, cookies }) {}

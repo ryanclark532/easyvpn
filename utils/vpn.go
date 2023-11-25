@@ -34,7 +34,7 @@ func SetupVPNServer() error {
 		return err
 	}
 
-	err := CopyFile(`.\server-dev.ovpn`, path+`\server-dev.ovpn`)
+	err := CopyFile(`.\vpn-config\server-dev.ovpn`, path+`\server-dev.ovpn`)
 	if err != nil {
 		return err
 	}

@@ -26,7 +26,7 @@ func GetVpnServerStatus() (string, error) {
 			return "starting", nil
 		}
 	}
-	return "stopped", nil
+	return "notRunning", nil
 }
 
 func VpnOperation(operation string) error {

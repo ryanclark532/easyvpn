@@ -31,7 +31,7 @@
 <div class={containerClass}>
 	<div class="flex justify-center">
 		<h2 class="mt-5 text-2xl">{ServerStatusMapping[$page.data.status]}</h2>
-		<button class="ml-2 mt-6" on:click={() => invalidate('http://localhost:8080/vpn')}>
+		<button class="ml-2 mt-6" on:click={() => invalidate('admin:vpn')}>
 			<svg xmlns="http://www.w3.org/2000/svg" height="2em" viewBox="0 0 512 512"
 				><style>
 					svg {
@@ -73,12 +73,22 @@
 	</div>
 </div>
 
-<ConfirmationModal open={stop} title="Stop VPN Server" onConfirm={vpnOperation} data={'stop'} />
+<ConfirmationModal
+	open={stop}
+	title="Confirm Server Stop"
+	subtext="This will stop the VPN server and disconnect any connected clients. Please confirm this actions"
+	onConfirm={() => vpnOperation('stop')}
+/>
 
 <ConfirmationModal
 	open={restart}
-	title="Restart VPN Server"
-	onConfirm={vpnOperation}
-	data={'restart'}
+	title="Confirm Server Restart"
+	subtext="This will stop the VPN server and disconnect any connected clients. Please confirm this actions"
+	onConfirm={() => vpnOperation('restart')}
 />
-<ConfirmationModal open={start} title="Start VPN Server" onConfirm={vpnOperation} data={'start'} />
+<ConfirmationModal
+	open={start}
+	title="Confirm Start VPN Server"
+	subtext="This will start the VPN server. Please confirm this action"
+	onConfirm={vpnOperation}
+/>
