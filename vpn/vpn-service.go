@@ -16,7 +16,7 @@ func GetVpnServerStatus() (string, error) {
 	}
 
 	if strings.Contains(string(output), "RUNNING") {
-		initFinished, err := utils.ContainsSequence("src/log/openvpn.log", "Initialization Sequence Completed")
+		initFinished, err := utils.ContainsSequence(`C:\Program Files\OpenVPN\log\server-dev.log`, "Initialization Sequence Completed")
 		if err != nil {
 			return "unknown", err
 		}

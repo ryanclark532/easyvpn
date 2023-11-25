@@ -10,6 +10,9 @@ func SetupVPNServer() error {
 	path := `C:\Program Files\OpenVPN\config-auto\`
 	if _, err := os.Stat(path + `keys\`); os.IsNotExist(err) {
 		err := os.Mkdir(path+`keys\`, 0777)
+		if err != nil {
+			return err
+		}
 		keychan := make(chan error)
 		defer close(keychan)
 		go func() {
@@ -35,11 +38,13 @@ func SetupVPNServer() error {
 	if err != nil {
 		return err
 	}
-	err = StopVPNServer()
-	if err != nil {
-		return err
-	}
-	err = StartVPNServer()
+	/*
+		err = StopVPNServer()
+		if err != nil {
+			return err
+		}
+		err = StartVPNServer()
+	*/
 	return err
 }
 

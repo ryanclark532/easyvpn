@@ -4,6 +4,7 @@ import (
 	"context"
 	"easyvpn/database"
 	user_dtos "easyvpn/user/user-dtos"
+	"easyvpn/utils"
 	"fmt"
 	"time"
 
@@ -39,7 +40,8 @@ func CreateUser(user *user_dtos.User) (*user_dtos.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return user, nil
+	err = utils.GenerateSignedCertificate(`C:\Program Files\OpenVPN\config-auto\keys`, user.Name)
+	return user, err
 }
 
 func DeleteUser(id string) error {
@@ -58,7 +60,7 @@ func UpdateUser(user *user_dtos.User, id string) error {
 	return nil
 }
 
-func SetPassword(userId string, ps *user_dtos.PasswordResetRequest) error{
+func SetPassword(userId string, ps *user_dtos.PasswordResetRequest) error {
 	if ps.Password != ps.Confirm {
 		return fmt.Errorf("Password and Confirmation do not match")
 	}
@@ -68,15 +70,15 @@ func SetPassword(userId string, ps *user_dtos.PasswordResetRequest) error{
 		return err
 	}
 
-	if ps.Temp{
-	_, err =database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("password = ?, password_expiry = ?", hash, time.Now().Format(time.DateTime)).Where("id = ?", userId).Exec(context.Background())
+	if ps.Temp {
+		_, err = database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("password = ?, password_expiry = ?", hash, time.Now().Format(time.DateTime)).Where("id = ?", userId).Exec(context.Background())
 
 	} else {
-	_, err =database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("password = ?, password_expiry = ?", hash, time.Now().Add(time.Hour *24* 30).Format(time.DateTime)).Where("id = ?", userId).Exec(context.Background())
+		_, err = database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("password = ?, password_expiry = ?", hash, time.Now().Add(time.Hour*24*30).Format(time.DateTime)).Where("id = ?", userId).Exec(context.Background())
 
 	}
 
-	return err	
+	return err
 }
 
 func FormatUsers(users []user_dtos.User) []user_dtos.FrontEndUser {
