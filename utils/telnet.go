@@ -1,38 +1,52 @@
 package utils
 
 import (
+	"bufio"
+	"fmt"
+	"io"
+	"net"
 	"strings"
-
-	"github.com/ziutek/telnet"
 )
 
-func TelnetCMD(cmd string) (string, error) {
-	conn, err := telnet.Dial("tcp", "localhost:7505")
+
+func ConnectTelnet(address string) (net.Conn, error){ 
+	return net.Dial("tcp", address)
+}
+
+
+func CommandTelnet( command string, conn net.Conn) error {
+	writer := bufio.NewWriter(conn)
+	_, err := writer.WriteString(command + "\n")
 	if err != nil {
-		return "", err
+		return err
 	}
-	defer conn.Close()
 
-	_, err = conn.Write([]byte(cmd + "\r\n"))
+	err = writer.Flush()
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	var resultBuilder strings.Builder
+	return nil
+}
 
-	buf := make([]byte, 1024)
+
+func ReadTelnet(conn net.Conn)([]string, error){
+	reader := bufio.NewReader(conn)
+	ret := []string{}
 	for {
-		n, err := conn.Read(buf)
-		if err != nil {
-			return "", err
-		}
+		data, err := reader.ReadString('\n')
+if err == io.EOF {
+    // Connection closed
+    break
+} else if err != nil {
+    fmt.Println("Error reading:", err)
+    break
+}
 
-		resultBuilder.Write(buf[:n])
-
-		if strings.Contains(resultBuilder.String(), "END") {
+		ret = append(ret, data+"\n")
+		if(strings.TrimSpace(data) == "END"){
 			break
 		}
 	}
-
-	return resultBuilder.String(), nil
+	return ret, nil 
 }

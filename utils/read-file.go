@@ -6,6 +6,14 @@ import (
 	"strings"
 )
 
+func ReadFile(filePath string) ([]byte, error) {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+	return content, nil
+}
+
 func ContainsSequence(filePath string, sequence string) (bool, error) {
 	file, err := os.Open(filePath)
 	if err != nil {

@@ -3,6 +3,7 @@ package vpn
 import (
 	"easyvpn/utils"
 	vpn_dtos "easyvpn/vpn/vpn-dtos"
+	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -46,8 +47,19 @@ func VpnOperation(operation string) error {
 	return nil
 }
 
-func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
-	return nil, nil
+func GetActiveConnections() ([]string, error) {
+	conn, err := utils.ConnectTelnet("localhost:7505")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("Conn Okay")
+	defer conn.Close()
+	err = utils.CommandTelnet("status", conn)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("cmd okay")
+	return utils.ReadTelnet(conn)
 }
 
 func formatServerConnection(output string) (*[]vpn_dtos.ServerConnection, error) {

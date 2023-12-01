@@ -40,7 +40,11 @@ func CreateUser(user *user_dtos.User) (*user_dtos.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = utils.GenerateSignedCertificate(`C:\Program Files\OpenVPN\config-auto\keys`, user.Name)
+	err = utils.GenerateSignedCertificate(`C:\Program Files\OpenVPN\config-auto\keys\`, user.Username)
+	if err != nil {
+		return nil, err
+	}
+	err = utils.GenerateClientConfig(user.Username)
 	return user, err
 }
 

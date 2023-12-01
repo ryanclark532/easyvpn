@@ -28,6 +28,8 @@ func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
+
 func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *vpn_dtos.VpnOperationRequest
 	err := json.NewDecoder(r.Body).Decode(&req)

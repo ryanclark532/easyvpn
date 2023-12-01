@@ -1,6 +1,5 @@
 dist
 .idea
-src/app
-src/database.db
 database.db
 log
+vpn-config/temp

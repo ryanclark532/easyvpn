@@ -5,6 +5,7 @@ import (
 	"easyvpn/groups"
 	"easyvpn/user"
 	"easyvpn/vpn"
+	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -24,7 +25,7 @@ import (
 
 //go:embed web/dist/*
 var svelte embed.FS
-
+var conn *net.Conn
 func main() {
 
 	err := utils.SetupVPNServer()
@@ -86,13 +87,15 @@ func main() {
 
 	r := setupRouter(service)
 
+	
+
 	fmt.Print("Startup Successful")
 	port := "8080"
 	err = http.ListenAndServe(":"+port, r)
-
 	if err != nil {
 		panic(err)
 	}
+
 }
 
 func setupRouter(service *auth.Service) *chi.Mux {
