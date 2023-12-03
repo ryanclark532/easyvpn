@@ -35,15 +35,15 @@ func ReadTelnet(conn net.Conn)([]string, error){
 	ret := []string{}
 	for {
 		data, err := reader.ReadString('\n')
-if err == io.EOF {
-    // Connection closed
-    break
-} else if err != nil {
-    fmt.Println("Error reading:", err)
-    break
-}
+	if err == io.EOF {
+ 	   // Connection closed
+  	  break
+	} else if err != nil {
+ 	   fmt.Println("Error reading:", err)
+  	  break
+	}
 
-		ret = append(ret, data+"\n")
+		ret = append(ret, data)
 		if(strings.TrimSpace(data) == "END"){
 			break
 		}

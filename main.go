@@ -5,7 +5,6 @@ import (
 	"easyvpn/groups"
 	"easyvpn/user"
 	"easyvpn/vpn"
-	"net"
 	"net/http"
 	"strconv"
 	"time"
@@ -25,7 +24,6 @@ import (
 
 //go:embed web/dist/*
 var svelte embed.FS
-var conn *net.Conn
 func main() {
 
 	err := utils.SetupVPNServer()
@@ -86,8 +84,6 @@ func main() {
 	service := auth.NewService(options)
 
 	r := setupRouter(service)
-
-	
 
 	fmt.Print("Startup Successful")
 	port := "8080"
