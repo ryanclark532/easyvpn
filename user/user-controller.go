@@ -1,11 +1,9 @@
 package user
 
 import (
-	"easyvpn/database"
 	user_dtos "easyvpn/user/user-dtos"
 	"easyvpn/utils"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -53,7 +51,6 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(database.DB)
 
 	users, err := GetUsers()
 	if err != nil {

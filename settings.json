@@ -1,0 +1,1 @@
+{"network":{"ip_address":"127.0.0.1","protocol":"tcp","web_server_port":"8080"},"vpn":{"vpn_subnet":"172.27.224.0","vpn_subnet_mask":20,"private_access":true,"use_as_gateway":true,"dnsserver1":"1.1.1.1","dnsserver2":"8.8.8.4"},"auth":{"allow_change_pw":true,"enforce_strong_pw":false,"max_auth_attempts":5,"lockout_timeout":1}}

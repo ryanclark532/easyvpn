@@ -13,8 +13,8 @@
 	import type { PageData } from './$types';
 	import AddGroupModal from './add-group-modal.svelte';
 	import GroupsTableRow from './groups-table-row.svelte';
-	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
 	import UpdateGroupModal from './update-group-modal.svelte';
+	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
 	export let data: PageData;
 
 	let deleteConfirmation: boolean;

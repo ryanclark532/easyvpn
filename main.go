@@ -3,6 +3,7 @@ package main
 import (
 	"easyvpn/database"
 	"easyvpn/groups"
+	"easyvpn/settings"
 	"easyvpn/user"
 	"easyvpn/vpn"
 	"net/http"
@@ -121,6 +122,12 @@ func setupRouter(service *auth.Service) *chi.Mux {
 
 	m := service.Middleware()
 
+	r.Route("/settings", func(r chi.Router) {
+		r.Use(m.AdminOnly)
+		r.Get("/", settings.GetSettingsEndpoint)
+		r.Put("/", settings.SetSettingsEndpoint)
+	})
+
 	r.Route("/user", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", user.GetUsersEndpoint)
@@ -153,9 +160,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Delete("/", groups.DeleteGroupMembershipEndpoint)
 		})
 	})
-	/*r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/web/dist/", http.StatusPermanentRedirect)
-	}) */
 	r.Handle("/web/dist/", http.FileServer(http.FS(svelte)))
 
 	return r
