@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Heading } from 'flowbite-svelte';
 	import Sidepanel from '../sidepanel.svelte';
 	import type { PageData } from './$types';
 	import Table from './table.svelte';
@@ -8,8 +9,8 @@
 <div class="flex">
 	<Sidepanel />
 	<div class="w-full p-5">
-		<div class="border-b-2 border-primary-700 mb-1">
-			<h2 class="text-2xl mt-5 pb-1">Users</h2>
+		<div class="border-b-2 border-primary-700 mb-3">
+			<Heading tag="h2" class=" pb-1">Users</Heading>
 		</div>
 		<Table {data} />
 	</div>
