@@ -1,13 +1,7 @@
 <script lang="ts">
 	import type { PageData } from './$types';
-	import {
-		Input,
-		Table,
-		TableBody,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte';
-	import ActiveUserTableRow from "./active-user-table-row.svelte"
+	import { Input, Table, TableBody, TableHead, TableHeadCell } from 'flowbite-svelte';
+	import ActiveUserTableRow from './active-user-table-row.svelte';
 	import { activeConnectionsFilter } from '$lib/vpn';
 	export let data: PageData;
 </script>
@@ -17,7 +11,6 @@
 		<div class="w-1/2">
 			<Input bind:value={$activeConnectionsFilter} placeholder="Search Active Connections..." />
 		</div>
-		
 	</div>
 	<Table>
 		<TableHead class="bg-gray-200">
@@ -33,7 +26,7 @@
 			{#each data.connections as connection}
 				{#if !$activeConnectionsFilter || connection.CommonName.startsWith($activeConnectionsFilter)}
 					<ActiveUserTableRow {connection} />
-					{/if}
+				{/if}
 			{/each}
 		</TableBody>
 	</Table>

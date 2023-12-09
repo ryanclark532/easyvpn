@@ -2,14 +2,18 @@
 	import { Badge, Button, Heading, Input, Label, P, Toggle, Tooltip } from 'flowbite-svelte';
 	import Sidepanel from '../../sidepanel.svelte';
 	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
+	import type { NetworkSettings } from '../../../../types/settings';
 	let open: boolean = false;
+	export let data: NetworkSettings;
+	let tcp = data.protocol === 'tcp';
+	let udp = data.protocol === 'udp';
 </script>
 
 <div class="flex">
 	<Sidepanel />
 	<div class="w-full p-5">
 		<div class="mb-4">
-			<Heading tag="h2">Network Settings</Heading>
+			<Heading tag="h2" class="mb-2">Network Settings</Heading>
 			<P
 				>This page contains the Network settings for the VPN Server, the Admin Web Server and the
 				Client Web Server</P
@@ -37,7 +41,7 @@
 			></Badge
 		>
 		<Heading tag="h4" class="mb-1">Hostname or IP Address</Heading>
-		<Input placeholder="IP Address..." class="mb-4" />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.ip_address} />
 		<Tooltip
 			>This is the Public IP Address Or Hostname that VPN clients will use to connect to the Server</Tooltip
 		>
@@ -45,11 +49,27 @@
 		<div class="border border-gray-300 rounded mb-4">
 			<div class="flex my-6 mx-2">
 				<P class="justify-start w-1/2">TCP</P>
-				<Toggle size="large" class="w-1/2 justify-end" checked />
+				<Toggle
+					size="large"
+					class="w-1/2 justify-end"
+					bind:checked={tcp}
+					on:click={() => {
+						tcp = !tcp;
+						udp = !tcp;
+					}}
+				/>
 			</div>
 			<div class="flex my-6 mx-2">
 				<P tag="h5" class="justify-start w-1/2">UDP</P>
-				<Toggle size="large" class="w-1/2 justify-end" checked />
+				<Toggle
+					size="large"
+					class="w-1/2 justify-end"
+					bind:checked={udp}
+					on:click={() => {
+						udp = !udp;
+						tcp = !udp;
+					}}
+				/>
 			</div>
 		</div>
 		<Tooltip
@@ -78,7 +98,7 @@
 			</P></Badge
 		>
 		<Heading tag="h4" class="mb-1">Web Server Port</Heading>
-		<Input placeholder="IP Address..." class="mb-4" />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.web_server_port} />
 		<Tooltip>The port that the web server is served on</Tooltip>
 		<Button
 			class="mt-4 w-full"
