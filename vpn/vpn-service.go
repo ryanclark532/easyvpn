@@ -3,31 +3,9 @@ package vpn
 import (
 	"easyvpn/utils"
 	vpn_dtos "easyvpn/vpn/vpn-dtos"
-	"os/exec"
 	"strings"
 	"time"
 )
-
-func GetVpnServerStatus() (string, error) {
-	cmd := exec.Command("sc", "query", "OpenVPNService")
-	output, err := cmd.Output()
-	if err != nil {
-		return "unknown", err
-	}
-
-	if strings.Contains(string(output), "RUNNING") {
-		initFinished, err := utils.ContainsSequence(`C:\Program Files\OpenVPN\log\server-dev.log`, "Initialization Sequence Completed")
-		if err != nil {
-			return "unknown", err
-		}
-		if initFinished {
-			return "running", nil
-		} else {
-			return "starting", nil
-		}
-	}
-	return "notRunning", nil
-}
 
 func VpnOperation(operation string) error {
 	var err error
@@ -60,7 +38,7 @@ func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
 	if err != nil {
 		return nil, err
 	}
-	outString := strings.Join(out,"")
+	outString := strings.Join(out, "")
 	return formatServerConnection(outString)
 }
 

@@ -25,14 +25,10 @@ import (
 
 //go:embed web/dist/*
 var svelte embed.FS
+
 func main() {
 
-	err := utils.SetupVPNServer()
-	if err != nil {
-		panic(err)
-	}
-
-	err = database.Test()
+	err := database.Test()
 	if err != nil {
 		panic(err)
 	}
@@ -41,9 +37,6 @@ func main() {
 
 	go func() {
 		err := utils.SetupVPNServer()
-		vpn <- err
-
-		err = utils.StartVPNServer()
 		vpn <- err
 	}()
 

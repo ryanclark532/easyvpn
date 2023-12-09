@@ -1,31 +1,33 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 )
 
-func GenerateClientConfig(userName string) error{
+func GenerateClientConfig(userName string) error {
 	key, err := ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.key`, userName))
 	if err != nil {
 		return err
-	}	
+	}
 
 	cert, err := ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.crt`, userName))
 	if err != nil {
 		return err
-	}	
+	}
 
 	ca, err := ReadFile(`C:\Program Files\OpenVPN\config-auto\keys\root.crt`)
 	if err != nil {
 		return err
-	}	
+	}
 
 	base, err := ReadFile("./vpn-config/base-client-dev.ovpn")
-if err != nil {
-	return err
-} 
+	if err != nil {
+		return err
+	}
 	config := append(base, []byte("<ca>\n")...)
 	config = append(config, ca...)
 	config = append(config, []byte("</ca>\n")...)
@@ -35,8 +37,8 @@ if err != nil {
 	config = append(config, []byte("<key>\n")...)
 	config = append(config, key...)
 	config = append(config, []byte("</key>")...)
-	err = WriteFile(fmt.Sprintf("./vpn-config/temp/%s.ovpn", userName),config) 
-	return err 
+	err = WriteFile(fmt.Sprintf("./vpn-config/temp/%s.ovpn", userName), config)
+	return err
 }
 
 func SetupVPNServer() error {
@@ -67,17 +69,25 @@ func SetupVPNServer() error {
 		return err
 	}
 
-	err := CopyFile(`.\vpn-config\server-dev.ovpn`, path+`\server-dev.ovpn`)
+	content, err := os.Open(`./vpn-config/server-dev.ovpn`)
+	if err != nil {
+		return nil
+	}
+	scanner := bufio.NewScanner(content)
+	var config []string
+	for scanner.Scan() {
+		config = append(config, scanner.Text())
+	}
+	set, err := GetSettings()
 	if err != nil {
 		return err
 	}
-	/*
-		err = StopVPNServer()
-		if err != nil {
-			return err
-		}
-		err = StartVPNServer()
-	*/
+	config = AppendModifyableSettings(config, set)
+	err = WriteFile(`C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`, []byte(strings.Join(config, "\n")))
+	if err != nil {
+		return err
+	}
+	err = RestartVPNServer()
 	return err
 }
 
@@ -99,8 +109,35 @@ func StopVPNServer() error {
 	return nil
 }
 
-func GetActiveUsers() {
-	// call telnet cmd
+func RestartVPNServer() error {
+	status, err := GetVpnServerStatus()
+	if err != nil {
+		return err
+	}
+	if status == "running" {
+		err = StopVPNServer()
+	}
+	go StartVPNServer()
+	return err
+}
 
-	//format users
+func GetVpnServerStatus() (string, error) {
+	cmd := exec.Command("sc", "query", "OpenVPNService")
+	output, err := cmd.Output()
+	if err != nil {
+		return "unknown", err
+	}
+
+	if strings.Contains(string(output), "RUNNING") {
+		initFinished, err := ContainsSequence(`C:\Program Files\OpenVPN\log\server-dev.log`, "Initialization Sequence Completed")
+		if err != nil {
+			return "unknown", err
+		}
+		if initFinished {
+			return "running", nil
+		} else {
+			return "starting", nil
+		}
+	}
+	return "notRunning", nil
 }

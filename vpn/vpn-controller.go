@@ -8,7 +8,7 @@ import (
 )
 
 func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
-	status, err := GetVpnServerStatus()
+	status, err := utils.GetVpnServerStatus()
 	if err != nil {
 		utils.HandleError(err, "GetServerStatusEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -27,8 +27,6 @@ func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-
 
 func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *vpn_dtos.VpnOperationRequest

@@ -8,13 +8,13 @@ import (
 )
 
 func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
-	s, err := GetSettings()
+	s, err := utils.GetSettings()
 	if err != nil {
 		utils.HandleError(err, "GetSettings")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	
+
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(s)
 	if err != nil {
@@ -24,10 +24,8 @@ func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
 func SetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
-var req *settings_dtos.Settings
+	var req *settings_dtos.Settings
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		utils.HandleError(err, "PostSettingsEndpoint")
@@ -42,4 +40,3 @@ var req *settings_dtos.Settings
 		return
 	}
 }
-	
