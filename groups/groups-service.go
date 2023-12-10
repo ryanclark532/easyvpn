@@ -9,8 +9,8 @@ import (
 	"strconv"
 )
 
-func GetGroups() (*[]groups_dtos.Group, error) {
-	var groups = new([]groups_dtos.Group)
+func GetGroups() ([]groups_dtos.Group, error) {
+	var groups []groups_dtos.Group
 	err := database.DB.NewSelect().Model(groups).Scan(context.Background())
 	if err != nil {
 		return nil, err
@@ -18,9 +18,9 @@ func GetGroups() (*[]groups_dtos.Group, error) {
 	return groups, nil
 }
 
-func GetMembershipsForGroup(groupId string) (*[]user_dtos.User, error) {
+func GetMembershipsForGroup(groupId string) ([]user_dtos.User, error) {
 	fmt.Println(groupId)
-	users := new([]user_dtos.User)
+	var users []user_dtos.User
 	err := database.DB.NewSelect().
 		Model(users).
 		Join("INNER JOIN group_membership gm ON u.id = gm.user_id").
@@ -32,15 +32,15 @@ func GetMembershipsForGroup(groupId string) (*[]user_dtos.User, error) {
 
 	return users, nil
 }
-func GetMembershipsforUser(userId uint) (*[]groups_dtos.Group, error) {
-	var memberships = new([]groups_dtos.GroupMembership)
+func GetMembershipsforUser(userId uint) ([]groups_dtos.Group, error) {
+	var memberships []groups_dtos.GroupMembership
 	err := database.DB.NewSelect().Model(memberships).Relation("Group").Where("user.id = ?", userId).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	var groups []groups_dtos.Group
 
-	return &groups, nil
+	return groups, nil
 }
 
 func CreateGroup(group *groups_dtos.Group) error {

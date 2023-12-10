@@ -59,7 +59,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := FormatUsers(*users)
+	u := FormatUsers(users)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -89,15 +89,14 @@ func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	 err = UpdateUser(req, chi.URLParam(r, "id"))
-	if err !=nil {
+	err = UpdateUser(req, chi.URLParam(r, "id"))
+	if err != nil {
 		utils.HandleError(err, "UpdateUser")
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
 
-
-func SetPWEndpoint(w http.ResponseWriter, r *http.Request){
+func SetPWEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *user_dtos.PasswordResetRequest
 
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -108,7 +107,7 @@ func SetPWEndpoint(w http.ResponseWriter, r *http.Request){
 	}
 
 	err = SetPassword(chi.URLParam(r, "id"), req)
-	if err !=nil {
+	if err != nil {
 		utils.HandleError(err, "SetPWEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
