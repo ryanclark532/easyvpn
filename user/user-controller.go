@@ -59,7 +59,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	u := FormatUsers(users)
+	u := FormatUsers(*users)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

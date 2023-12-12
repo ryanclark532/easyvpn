@@ -5,12 +5,11 @@ import (
 	"easyvpn/database"
 	"easyvpn/groups/groups_dtos"
 	user_dtos "easyvpn/user/user-dtos"
-	"fmt"
 	"strconv"
 )
 
-func GetGroups() ([]groups_dtos.Group, error) {
-	var groups []groups_dtos.Group
+func GetGroups() (*[]groups_dtos.Group, error) {
+	groups := new([]groups_dtos.Group)
 	err := database.DB.NewSelect().Model(groups).Scan(context.Background())
 	if err != nil {
 		return nil, err
@@ -18,9 +17,8 @@ func GetGroups() ([]groups_dtos.Group, error) {
 	return groups, nil
 }
 
-func GetMembershipsForGroup(groupId string) ([]user_dtos.User, error) {
-	fmt.Println(groupId)
-	var users []user_dtos.User
+func GetMembershipsForGroup(groupId string) (*[]user_dtos.User, error) {
+	users := new([]user_dtos.User)
 	err := database.DB.NewSelect().
 		Model(users).
 		Join("INNER JOIN group_membership gm ON u.id = gm.user_id").
@@ -33,13 +31,12 @@ func GetMembershipsForGroup(groupId string) ([]user_dtos.User, error) {
 	return users, nil
 }
 func GetMembershipsforUser(userId uint) ([]groups_dtos.Group, error) {
-	var memberships []groups_dtos.GroupMembership
+	memberships := new([]groups_dtos.GroupMembership)
 	err := database.DB.NewSelect().Model(memberships).Relation("Group").Where("user.id = ?", userId).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	var groups []groups_dtos.Group
-
 	return groups, nil
 }
 

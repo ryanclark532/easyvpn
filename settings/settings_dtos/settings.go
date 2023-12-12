@@ -2,19 +2,10 @@ package settings_dtos
 
 import "time"
 
-type NetworkSettings struct {
-	IPAddress     *string `json:"ip_address"`
-	WebServerPort *string `json:"web_server_port"`
-}
-
-type VpnSettings struct {
-	Port          *int    `json:"port"`
-	VpnSubnet     *string `json:"vpn_subnet"`
-	VpnSubnetMask *int    `json:"vpn_subnet_mask"`
-	PrivateAccess *bool   `json:"private_access"`
-	UseAsGateway  *bool   `json:"use_as_gateway"`
-	DNSServer1    *string `json:"dnsserver1"`
-	DNSServer2    *string `json:"dnsserver2"`
+type Settings struct {
+	Client *ClientSettings `json:"network"`
+	Server *ServerSettings `json:"vpn"`
+	Auth   *AuthSettings   `json:auth"`
 }
 
 type AuthSettings struct {
@@ -24,8 +15,17 @@ type AuthSettings struct {
 	LockoutTimeout  time.Duration `json:"lockout_timeout"`
 }
 
-type Settings struct {
-	Network *NetworkSettings `json:"network"`
-	Vpn     *VpnSettings     `json:"vpn"`
-	Auth    *AuthSettings    `json:"auth"`
+type ServerSettings struct {
+	VpnSubnet     string `json:"vpn_subnet"`
+	VpnSubnetMask int    `json:"vpn_subnet_mask"`
+	Port          int    `json:"port"`
+	IPAddress     string `json:"ip_address"`
+	WebServerPort string `json:"web_server_port"`
+	PrivateAccess bool   `json:"private_access"`
+	UseAsGateway  bool   `json:"use_as_gateway"`
+}
+
+type ClientSettings struct {
+	DNSServer1 *string `json:"dnsserver1"`
+	DNSServer2 *string `json:"dnsserver2"`
 }

@@ -20,8 +20,8 @@ func GetUser(username string) (*user_dtos.User, error) {
 	return user, nil
 }
 
-func GetUsers() ([]user_dtos.User, error) {
-	var users []user_dtos.User
+func GetUsers() (*[]user_dtos.User, error) {
+	users := new([]user_dtos.User)
 	err := database.DB.NewSelect().Model(users).Scan(context.Background())
 	if err != nil {
 		return nil, err

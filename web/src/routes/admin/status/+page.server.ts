@@ -20,16 +20,8 @@ export async function load({ fetch, cookies, depends }) {
 	console.log(statusResponse);
 	depends('admin:status');
 
-	const connectionsResponse = await fetch('http://localhost:8080/vpn/connections', {
-		headers: {
-			JWT: cookies.get('JWT')
-		},
-		credentials: 'include',
-		method: 'GET'
-	}).then((response) => response.json());
 
 	return {
 		status: statusResponse.status as ServerStatus,
-		connections: (connectionsResponse.connections as Connection[]) || []
 	};
 }
