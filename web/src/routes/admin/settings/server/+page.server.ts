@@ -1,5 +1,5 @@
 import { handleRedirects } from '$lib/auth';
-import type { NetworkSettings, Settings } from '../../../../types/settings';
+import type { ServerSettings } from '../../../../types/settings';
 
 export async function load({ fetch, cookies, depends }) {
 	const authcheck = await fetch('http://localhost:8080/auth/user', {
@@ -18,5 +18,6 @@ export async function load({ fetch, cookies, depends }) {
 		method: 'GET'
 	}).then((response) => response.json());
 	depends('admin:settings');
-	return settings.network satisfies NetworkSettings;
+	console.log(settings);
+	return settings.server satisfies ServerSettings;
 }

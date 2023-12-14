@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-func AppendModifyableSettings(newFile []string, settings *settings_dtos.Settings) []string {
-	dns1 := fmt.Sprintf("push \"dhcp-option DNS %s\"", *settings.Vpn.DNSServer1)
-	dns2 := fmt.Sprintf("push \"dhcp-option DNS %s\"", *settings.Vpn.DNSServer2)
-	ip := fmt.Sprintf("server %s 255.255.255.0", *settings.Network.IPAddress)
-	port := fmt.Sprintf("port %d", *settings.Vpn.Port)
+func AppendModifyableSettings(newFile []string, settings settings_dtos.Settings) []string {
+	dns1 := fmt.Sprintf("push \"dhcp-option DNS %s\"", settings.Client.DNSServer1)
+	dns2 := fmt.Sprintf("push \"dhcp-option DNS %s\"", settings.Client.DNSServer2)
+	ip := fmt.Sprintf("server %s 255.255.255.0", settings.Server.IPAddress)
+	port := fmt.Sprintf("port %d", settings.Server.Port)
 	gateway := "push \"redirect-gateway def1 bypass-dhcp\""
 	newFile = append(newFile, "\n")
 	newFile = append(newFile, "#Modifiable Settings")
@@ -18,8 +18,7 @@ func AppendModifyableSettings(newFile []string, settings *settings_dtos.Settings
 	newFile = append(newFile, ip)
 	newFile = append(newFile, port)
 
-	useGateway := *settings.Vpn.UseAsGateway
-	if useGateway {
+	if settings.Client.UseAsGateway {
 		newFile = append(newFile, gateway)
 	}
 

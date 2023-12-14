@@ -78,13 +78,11 @@
 			</svg>
 			<h2 class="text-2xl ml-2 mb-3">Settings</h2>
 		</div>
-		<a href="/admin/settings/network"
-			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">
-				Network Settings
-			</h2></a
+		<a href="/admin/settings/server"
+			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">Server Settings</h2></a
 		>
-		<a href="/admin/settings/vpn"
-			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">VPN Settings</h2></a
+		<a href="/admin/settings/client"
+			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">Client Settings</h2></a
 		>
 
 		<a href="/admin/settings/auth"

@@ -2,21 +2,19 @@
 	import { Badge, Button, Heading, Input, Label, P, Toggle, Tooltip } from 'flowbite-svelte';
 	import Sidepanel from '../../sidepanel.svelte';
 	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
-	import type { NetworkSettings } from '../../../../types/settings';
+	import type { ServerSettings } from '../../../../types/settings';
 	let open: boolean = false;
-	export let data: NetworkSettings;
-	let tcp = data.protocol === 'tcp';
-	let udp = data.protocol === 'udp';
+	export let data: ServerSettings;
 </script>
 
 <div class="flex">
 	<Sidepanel />
 	<div class="w-full p-5">
 		<div class="mb-4">
-			<Heading tag="h2" class="mb-2">Network Settings</Heading>
+			<Heading tag="h2" class="mb-2">Server Settings</Heading>
 			<P
-				>This page contains the Network settings for the VPN Server, the Admin Web Server and the
-				Client Web Server</P
+				>Server settings dictate how your server behaves, as well as how the admin panel is served
+				to you.</P
 			>
 		</div>
 
@@ -35,48 +33,23 @@
 					stroke-width="2"
 					d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
 				/>
-			</svg><P
-				>Changing the Hostname or Protocol after VPN clients are deployed will cause the existing
-				clients to be unusable (until a new client configuration is downloaded)</P
-			></Badge
-		>
+			</svg><P>Changing Server settings will require the VPN server to be restarted.</P></Badge
+		><Heading tag="h4" class="mb-1">VPN Subnet</Heading>
+		<div class="flex mb-4">
+			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.vpn_subnet} />
+			<Input placeholder="Subnet Mask..." class="w-1/4" bind:value={data.vpn_subnet_mask} />
+		</div>
 		<Heading tag="h4" class="mb-1">Hostname or IP Address</Heading>
 		<Input placeholder="IP Address..." class="mb-4" bind:value={data.ip_address} />
 		<Tooltip
 			>This is the Public IP Address Or Hostname that VPN clients will use to connect to the Server</Tooltip
 		>
-		<Heading tag="h4" class="mb-1">Protocol</Heading>
-		<div class="border border-gray-300 rounded mb-4">
-			<div class="flex my-6 mx-2">
-				<P class="justify-start w-1/2">TCP</P>
-				<Toggle
-					size="large"
-					class="w-1/2 justify-end"
-					bind:checked={tcp}
-					on:click={() => {
-						tcp = !tcp;
-						udp = !tcp;
-					}}
-				/>
-			</div>
-			<div class="flex my-6 mx-2">
-				<P tag="h5" class="justify-start w-1/2">UDP</P>
-				<Toggle
-					size="large"
-					class="w-1/2 justify-end"
-					bind:checked={udp}
-					on:click={() => {
-						udp = !udp;
-						tcp = !udp;
-					}}
-				/>
-			</div>
-		</div>
+		<Heading tag="h4" class="mb-1">VPN Server Port</Heading>
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.port} />
 		<Tooltip
-			>The protocol used by the VPN server. TCP is used for reliability and security, UDP is used
-			for speed</Tooltip
+			>This is the port the VPN server will listen on. This will need to be port forwarded on your
+			router</Tooltip
 		>
-
 		<Badge color="yellow" class="mb-2 w-full p-3">
 			<svg
 				class="ml-2 mr-2 w-6 h-6 text-gray-800 dark:text-white"

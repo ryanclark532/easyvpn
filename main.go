@@ -33,6 +33,11 @@ func main() {
 		panic(err)
 	}
 
+	err = utils.GetSettings()
+	if err != nil {
+		panic(err)
+	}
+
 	vpn := make(chan error)
 
 	go func() {
@@ -80,8 +85,8 @@ func main() {
 	r := setupRouter(service)
 
 	fmt.Print("Startup Successful")
-	port := "8080"
-	err = http.ListenAndServe(":"+port, r)
+	port := utils.Settings.Server.WebServerPort
+	err = http.ListenAndServe(fmt.Sprintf(":%d", port), r)
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +97,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r := chi.NewRouter()
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:*"}, // Replace with your desired origins or use a function
+		AllowedOrigins:   []string{fmt.Sprintf("http://localhost:%d", utils.Settings.Server.WebServerPort)},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Set-Cookie", "Jwt"},
 		ExposedHeaders:   []string{"Jwt"},

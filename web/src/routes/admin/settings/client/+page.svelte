@@ -11,11 +11,8 @@
 	<Sidepanel />
 	<div class="w-full p-5">
 		<div class="mb-4">
-			<Heading tag="h2" class="mb-2">VPN Settings</Heading>
-			<P
-				>VPN Settings control how your vpn server functions. And what settings the server serves to
-				clients.</P
-			>
+			<Heading tag="h2" class="mb-2">Client Settings</Heading>
+			<P>Client Settings control how your VPN clients behave and what they have acess to.</P>
 		</div>
 		<Badge color="yellow" class="mb-2 w-full p-3">
 			<svg
@@ -32,13 +29,12 @@
 					stroke-width="2"
 					d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
 				/>
-			</svg><P>Changing VPN settings will require the VPN server to restart</P></Badge
+			</svg><P
+				>Changing some client settings may require the VPN server to restart. Clients will also need
+				to download and import a new config file from the user panel to have changes take effect.</P
+			></Badge
 		>
-		<Heading tag="h4" class="mb-1">VPN Subnet</Heading>
-		<div class="flex mb-4">
-			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.vpn_subnet} />
-			<Input placeholder="Subnet Mask..." class="w-1/4"  bind:value={data.vpn_subnet_mask}/>
-		</div>
+
 		<Tooltip>VPN clients will be assigned ip addresses in this subnet</Tooltip>
 		<Heading tag="h4" class="mb-1">DNS Servers</Heading>
 		<div class="flex mb-4">
@@ -46,17 +42,23 @@
 			<Input placeholder="DNS Server 2" class="ml-2 w-1/2" bind:value={data.dnsserver2} />
 		</div>
 		<Tooltip>DNS Servers that will be pushed to VPN clients</Tooltip>
-<Heading tag="h4" class="mb-1">Private Network</Heading>
-		<div class="flex mb-4 p-2 rounded  border border-gray-200">
-			<P class="w-1/2" >Use VPN Server As Gateway</P>
-			<Toggle class="w-1/2 justify-end" bind:checked={data.use_as_gateway}/>
-			</div>
-		<Tooltip>Whether the VPN server will be used as the gateway for all client traffic. This is required for geolocation hiding</Tooltip>
-		<div class="flex mb-4 p-2 rounded  border border-gray-200">
-			<P class="w-1/2" >Allow VPN Clients Access to Private Network</P>
-			<Toggle class="w-1/2 justify-end" bind:checked={data.private_access}/>
-			</div>
-		<Tooltip>Whether VPN clients will be able to discover and comminucate with other devices connected to the VPN servers network</Tooltip>
+		<Heading tag="h4" class="mb-1">Private Network</Heading>
+		<div class="flex mb-4 p-2 rounded border border-gray-200">
+			<P class="w-1/2">Use VPN Server As Gateway</P>
+			<Toggle class="w-1/2 justify-end" bind:checked={data.use_as_gateway} />
+		</div>
+		<Tooltip
+			>Whether the VPN server will be used as the gateway for all client traffic. This is required
+			for geolocation hiding</Tooltip
+		>
+		<div class="flex mb-4 p-2 rounded border border-gray-200">
+			<P class="w-1/2">Allow VPN Clients Access to Private Network</P>
+			<Toggle class="w-1/2 justify-end" bind:checked={data.private_access} />
+		</div>
+		<Tooltip
+			>Whether VPN clients will be able to discover and comminucate with other devices connected to
+			the VPN servers network</Tooltip
+		>
 		<Button
 			class="w-full"
 			on:click={() => {

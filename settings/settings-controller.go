@@ -8,15 +8,9 @@ import (
 )
 
 func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
-	s, err := utils.GetSettings()
-	if err != nil {
-		utils.HandleError(err, "GetSettings")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
 
 	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(s)
+	err := json.NewEncoder(w).Encode(utils.Settings)
 	if err != nil {
 		utils.HandleError(err, "GetSettings")
 		w.WriteHeader(http.StatusInternalServerError)

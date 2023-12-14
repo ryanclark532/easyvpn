@@ -1,22 +1,16 @@
-export type Settings = {
-	network: NetworkSettings;
-	vpn: VpnSettings;
-	auth: AuthSettings;
-};
-
-export type NetworkSettings = {
-	ip_address: string;
-	protocol: string;
-	web_server_port: string;
-};
-
-export type VpnSettings = {
-	vpn_subnet: string;
-	vpn_subnet_mask: number;
-	private_access: boolean;
-	use_as_gateway: boolean;
+export type ClientSettings = {
 	dnsserver1: string;
 	dnsserver2: string;
+	private_access: boolean;
+	use_as_gateway: boolean;
+};
+
+export type ServerSettings = {
+	vpn_subnet: string;
+	vpn_subnet_mask: number;
+	port: number;
+	web_server_port: number;
+	ip_address: string;
 };
 
 export type AuthSettings = {

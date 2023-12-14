@@ -11,7 +11,8 @@ import (
 )
 
 func SetSettings(settings *settings_dtos.Settings) error {
-	err := RewriteVPNConfig(settings)
+	utils.Settings = settings
+	err := RewriteVPNConfig()
 	if err != nil {
 		return err
 	}
@@ -28,7 +29,7 @@ func SetSettings(settings *settings_dtos.Settings) error {
 	return err
 }
 
-func RewriteVPNConfig(settings *settings_dtos.Settings) error {
+func RewriteVPNConfig() error {
 	content, err := os.Open(`C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`)
 	if err != nil {
 		return err
@@ -43,7 +44,7 @@ func RewriteVPNConfig(settings *settings_dtos.Settings) error {
 		}
 		newFile = append(newFile, line)
 	}
-	newFile = utils.AppendModifyableSettings(newFile, settings)
+	newFile = utils.AppendModifyableSettings(newFile, *utils.Settings)
 
 	err = utils.WriteFile(`C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`, []byte(strings.Join(newFile, "\n")))
 	return err

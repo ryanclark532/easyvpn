@@ -78,11 +78,9 @@ func SetupVPNServer() error {
 	for scanner.Scan() {
 		config = append(config, scanner.Text())
 	}
-	set, err := GetSettings()
-	if err != nil {
-		return err
-	}
-	config = AppendModifyableSettings(config, set)
+	fmt.Println(Settings)
+	fmt.Println(*Settings)
+	config = AppendModifyableSettings(config, *Settings)
 	err = WriteFile(`C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`, []byte(strings.Join(config, "\n")))
 	if err != nil {
 		return err
