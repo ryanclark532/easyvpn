@@ -97,7 +97,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r := chi.NewRouter()
 
 	cors := cors.New(cors.Options{
-		AllowedOrigins:   []string{fmt.Sprintf("http://localhost:%d", utils.Settings.Server.WebServerPort)},
+		AllowedOrigins:   []string{"http://localhost:*"}, //TO Be changes in real deployment
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Content-Type", "Authorization", "Set-Cookie", "Jwt"},
 		ExposedHeaders:   []string{"Jwt"},
@@ -124,6 +124,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Use(m.AdminOnly)
 		r.Get("/", settings.GetSettingsEndpoint)
 		r.Put("/", settings.SetSettingsEndpoint)
+		r.Get("/file", settings.GetConfigFileEndpoint)
 	})
 
 	r.Route("/user", func(r chi.Router) {

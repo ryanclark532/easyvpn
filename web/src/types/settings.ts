@@ -19,3 +19,9 @@ export type AuthSettings = {
 	max_auth_attempts: number;
 	lockout_timeout: number;
 };
+
+export type Settings = {
+	client: ClientSettings;
+	server: ServerSettings;
+	auth: AuthSettings;
+};

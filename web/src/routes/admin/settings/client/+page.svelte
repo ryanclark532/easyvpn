@@ -2,8 +2,9 @@
 	import { Badge, Button, Checkbox, Heading, Input, P, Toggle, Tooltip } from 'flowbite-svelte';
 	import Sidepanel from '../../sidepanel.svelte';
 	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
-	import type { VpnSettings } from '../../../../types/settings';
-	export let data: VpnSettings;
+	import { setSettings } from '$lib/settings';
+	import type { Settings } from '../../../../types/settings';
+	export let data: Settings;
 	let open = false;
 </script>
 
@@ -38,14 +39,14 @@
 		<Tooltip>VPN clients will be assigned ip addresses in this subnet</Tooltip>
 		<Heading tag="h4" class="mb-1">DNS Servers</Heading>
 		<div class="flex mb-4">
-			<Input placeholder="DNS Server 1" class="mr-2 w-1/2" bind:value={data.dnsserver1} />
-			<Input placeholder="DNS Server 2" class="ml-2 w-1/2" bind:value={data.dnsserver2} />
+			<Input placeholder="DNS Server 1" class="mr-2 w-1/2" bind:value={data.client.dnsserver1} />
+			<Input placeholder="DNS Server 2" class="ml-2 w-1/2" bind:value={data.client.dnsserver2} />
 		</div>
 		<Tooltip>DNS Servers that will be pushed to VPN clients</Tooltip>
 		<Heading tag="h4" class="mb-1">Private Network</Heading>
 		<div class="flex mb-4 p-2 rounded border border-gray-200">
 			<P class="w-1/2">Use VPN Server As Gateway</P>
-			<Toggle class="w-1/2 justify-end" bind:checked={data.use_as_gateway} />
+			<Toggle class="w-1/2 justify-end" bind:checked={data.client.use_as_gateway} />
 		</div>
 		<Tooltip
 			>Whether the VPN server will be used as the gateway for all client traffic. This is required
@@ -53,7 +54,7 @@
 		>
 		<div class="flex mb-4 p-2 rounded border border-gray-200">
 			<P class="w-1/2">Allow VPN Clients Access to Private Network</P>
-			<Toggle class="w-1/2 justify-end" bind:checked={data.private_access} />
+			<Toggle class="w-1/2 justify-end" bind:checked={data.client.private_access} />
 		</div>
 		<Tooltip
 			>Whether VPN clients will be able to discover and comminucate with other devices connected to
@@ -72,5 +73,5 @@
 	title="Confirm Settings Changes"
 	subtext="Changing settings will cause the vpn server to restart, and disconnect any connected clients. Please confirm this action"
 	{open}
-	onConfirm={() => console.log('Confirmed')}
+	onConfirm={() => setSettings(data)}
 />

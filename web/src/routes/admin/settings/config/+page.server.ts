@@ -1,5 +1,5 @@
 import { handleRedirects } from '$lib/auth';
-import type { ServerSettings, Settings } from '../../../../types/settings';
+import type { ClientSettings } from '../../../../types/settings';
 
 export async function load({ fetch, cookies, depends }) {
 	const authcheck = await fetch('http://localhost:8080/auth/user', {
@@ -10,7 +10,7 @@ export async function load({ fetch, cookies, depends }) {
 	}).then((response) => response.json());
 	handleRedirects(authcheck);
 
-	const settings = await fetch('http://localhost:8080/settings', {
+	const config = await fetch('http://localhost:8080/settings/file', {
 		headers: {
 			JWT: cookies.get('JWT')
 		},
@@ -18,5 +18,7 @@ export async function load({ fetch, cookies, depends }) {
 		method: 'GET'
 	}).then((response) => response.json());
 	depends('admin:settings');
-	return settings satisfies Settings;
+	return {
+		config: config
+	};
 }

@@ -30,6 +30,9 @@
 		<a href="/admin/status/active-users"
 			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">Active Users</h2></a
 		>
+		<a href="/admin/status/logs"
+			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">Logs</h2></a
+		>
 	</div>
 	<div class=" border-b border-gray-200 p-3 mb-1">
 		<div class="flex">
