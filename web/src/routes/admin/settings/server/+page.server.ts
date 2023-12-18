@@ -18,5 +18,6 @@ export async function load({ fetch, cookies, depends }) {
 		method: 'GET'
 	}).then((response) => response.json());
 	depends('admin:settings');
+	console.log(settings);
 	return settings satisfies Settings;
 }

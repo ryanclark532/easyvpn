@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -69,23 +68,7 @@ func SetupVPNServer() error {
 		return err
 	}
 
-	content, err := os.Open(`./vpn-config/server-dev.ovpn`)
-	if err != nil {
-		return nil
-	}
-	scanner := bufio.NewScanner(content)
-	var config []string
-	for scanner.Scan() {
-		config = append(config, scanner.Text())
-	}
-	fmt.Println(Settings)
-	fmt.Println(*Settings)
-	config = AppendModifyableSettings(config, *Settings)
-	err = WriteFile(`C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`, []byte(strings.Join(config, "\n")))
-	if err != nil {
-		return err
-	}
-	err = RestartVPNServer()
+	err := RestartVPNServer()
 	return err
 }
 

@@ -1,31 +1,31 @@
 package settings_dtos
 
-import "time"
+import (
+	"time"
+
+	"github.com/uptrace/bun"
+)
 
 type Settings struct {
-	Client ClientSettings `json:"client"`
-	Server ServerSettings `json:"server"`
-	Auth   AuthSettings   `json:"auth"`
-}
+	bun.BaseModel `bun:"table:settings,alias:s"`
+	Version       int  `json:"version" bun:",pk,autoincrement"`
+	Latest        bool `json:"latest" bun:",notnull"`
 
-type AuthSettings struct {
-	AllowChangePW   bool          `json:"allow_change_pw"`
-	EnforceStrongPW bool          `json:"enforce_strong_pw"`
-	MaxAuthAttempts int           `json:"max_auth_attempts"`
-	LockoutTimeout  time.Duration `json:"lockout_timeout"`
-}
+	//Auth
+	AllowChangePW   bool          `json:"allow_change_pw" bun:",notnull"`
+	EnforceStrongPW bool          `json:"enforce_strong_pw" bun:",notnull"`
+	MaxAuthAttempts int           `json:"max_auth_attempts" bun:",notnull"`
+	LockoutTimeout  time.Duration `json:"lockout_timeout" bun:",notnull"`
+	//Server
+	VpnSubnet     string `json:"vpn_subnet" bun:"-"`
+	VpnSubnetMask int    `json:"vpn_subnet_mask" bun:"-"`
+	Port          int    `json:"port" bun:"-"`
+	IPAddress     string `json:"ip_address" bun:",notnull"`
+	WebServerPort int    `json:"web_server_port" bun:",notnull"`
 
-type ServerSettings struct {
-	VpnSubnet     string `json:"vpn_subnet"`
-	VpnSubnetMask int    `json:"vpn_subnet_mask"`
-	Port          int    `json:"port"`
-	IPAddress     string `json:"ip_address"`
-	WebServerPort int    `json:"web_server_port"`
-}
-
-type ClientSettings struct {
-	PrivateAccess bool   `json:"private_access"`
-	UseAsGateway  bool   `json:"use_as_gateway"`
-	DNSServer1    string `json:"dnsserver1"`
-	DNSServer2    string `json:"dnsserver2"`
+	//Client
+	UseAsGateway  bool   `json:"use_as_gateway" bun:"-"`
+	PrivateAccess bool   `json:"private_access" bun:"-"`
+	DNSServer1    string `json:"dnsserver1" bun:"-"`
+	DNSServer2    string `json:"dnsserver2" bun:"-"`
 }

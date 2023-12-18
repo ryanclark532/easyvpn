@@ -33,11 +33,6 @@ func main() {
 		panic(err)
 	}
 
-	err = utils.GetSettings()
-	if err != nil {
-		panic(err)
-	}
-
 	vpn := make(chan error)
 
 	go func() {
@@ -85,8 +80,7 @@ func main() {
 	r := setupRouter(service)
 
 	fmt.Print("Startup Successful")
-	port := utils.Settings.Server.WebServerPort
-	err = http.ListenAndServe(fmt.Sprintf(":%d", port), r)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", 8080), r)
 	if err != nil {
 		panic(err)
 	}

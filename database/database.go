@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"easyvpn/groups/groups_dtos"
+	"easyvpn/settings/settings_dtos"
 	user_dtos "easyvpn/user/user-dtos"
 	"os"
 	"time"
@@ -11,6 +12,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *bun.DB
@@ -40,11 +42,12 @@ func Test() error {
 	DB.NewCreateTable().Model((*user_dtos.User)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*groups_dtos.Group)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*groups_dtos.GroupMembership)(nil)).Exec(context.Background())
+	DB.NewCreateTable().Model((*settings_dtos.Settings)(nil)).Exec(context.Background())
 
-    err = SetupTestData()
-    if err != nil {
-        return err
-    }
+	err = SetupTestData()
+	if err != nil {
+		return err
+	}
 
 	return nil
 
@@ -62,38 +65,56 @@ func TestGetDB() error {
 	return nil
 }
 
-
 func SetupTestData() error {
-    user:= user_dtos.User{
-        Name: "test1",
-        Username: "test1",
-        Password: "test1",
-        PasswordExpiry: time.Now().Add(time.Hour *24),
-        IsAdmin: true,
-        Enabled: true,
-    }
+	password, err := bcrypt.GenerateFromPassword([]byte("test1"), 10)
+	if err != nil {
+		return err
+	}
+	user := user_dtos.User{
+		Name:           "test1",
+		Username:       "test1",
+		Password:       string(password),
+		PasswordExpiry: time.Now().Add(time.Hour * 24),
+		IsAdmin:        true,
+		Enabled:        true,
+	}
 
-    group := groups_dtos.Group{
-       Name: "group1",
-       IsAdmin: true,
-       Enabled: true,
-       MemberCount: 1,
-    }
+	group := groups_dtos.Group{
+		Name:        "group1",
+		IsAdmin:     true,
+		Enabled:     true,
+		MemberCount: 1,
+	}
 
-    groupMembership := groups_dtos.GroupMembership{
-       GroupID: 1,
-       UserID: 1,
-    }
+	groupMembership := groups_dtos.GroupMembership{
+		GroupID: 1,
+		UserID:  1,
+	}
 
-    _, err := DB.NewInsert().Model(&user).Exec(context.Background())
-    if err != nil{
-        return err
-    }
-    _, err = DB.NewInsert().Model(&group).Exec(context.Background())
-    if err != nil{
-        return err
-    }
+	settings := &settings_dtos.Settings{
+		Version:         0,
+		Latest:          true,
+		AllowChangePW:   true,
+		EnforceStrongPW: true,
+		MaxAuthAttempts: 3,
+		LockoutTimeout:  10000,
+		WebServerPort:   8080,
+		IPAddress:       "192.168.86.10",
+	}
 
-    _, err = DB.NewInsert().Model(&groupMembership).Exec(context.Background())
-    return err
+	_, err = DB.NewInsert().Model(&user).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	_, err = DB.NewInsert().Model(&group).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+
+	_, err = DB.NewInsert().Model(&groupMembership).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	_, err = DB.NewInsert().Model(settings).Exec(context.Background())
+	return err
 }

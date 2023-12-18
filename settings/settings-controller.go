@@ -10,8 +10,15 @@ import (
 )
 
 func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
+	s, err := GetSettings()
+	if err != nil {
+		utils.HandleError(err, "GetSettings")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	err := json.NewEncoder(w).Encode(utils.Settings)
+	err = json.NewEncoder(w).Encode(s)
 	if err != nil {
 		utils.HandleError(err, "GetSettings")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -21,7 +28,7 @@ func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
 
 func SetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *settings_dtos.Settings
-	err := json.NewDecoder(r.Body).Decode(&req)
+	err := json.NewDecoder(r.Body).Decode(req)
 	if err != nil {
 		utils.HandleError(err, "PostSettingsEndpoint")
 		w.WriteHeader(http.StatusBadRequest)

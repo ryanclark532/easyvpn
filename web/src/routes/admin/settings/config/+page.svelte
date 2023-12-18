@@ -34,7 +34,7 @@
 			></Badge
 		>
 		<Textarea
-			class="h-4/5 mb-4"
+			class="h-3/4 mb-4"
 			placeholder="VPN Config..."
 			name="message"
 			bind:value={data.config}

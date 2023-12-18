@@ -1,1 +1,21 @@
-{"client":{"private_access":true,"use_as_gateway":true,"dnsserver1":"8.8.8.8","dnsserver2":"8.8.4.4"},"server":{"vpn_subnet":"10.8.0.2","vpn_subnet_mask":24,"port":1194,"ip_address":"192.168.86.237","web_server_port":8080},"auth":{"allow_change_pw":true,"enforce_strong_pw":true,"max_auth_attempts":3,"lockout_timeout":100000}}
+{
+  "client": {
+    "private_access": true,
+    " use_as_gateway": true,
+    "dnsserver1": "8.8.8.8",
+    "dnsserver2": "8.8.4.4"
+  },
+  "server": {
+    "vpn_subnet": "10.8.0.2",
+    "vpn_subnet_mask": 24,
+    "port": 1194,
+    "ip_address": "192.168.86.237",
+    "web_server_port": 8080
+  },
+  "auth": {
+    "allow_change_pw": true,
+    "enforce_strong_pw": true,
+    "max_auth_attempts": 3,
+    "lockout_timeout": 100000
+  }
+}

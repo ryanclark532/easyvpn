@@ -3,3 +3,4 @@ dist
 database.db
 log
 vpn-config/temp
+tmp
