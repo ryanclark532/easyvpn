@@ -1,8 +1,8 @@
 package groups
 
 import (
-	"easyvpn/groups/groups_dtos"
-	"easyvpn/utils"
+	"easyvpn/src/groups/groups_dtos"
+	"easyvpn/src/utils"
 	"encoding/json"
 	"net/http"
 

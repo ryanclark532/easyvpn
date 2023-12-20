@@ -1,8 +1,8 @@
 package settings
 
 import (
-	"easyvpn/settings/settings_dtos"
-	"easyvpn/utils"
+	"easyvpn/src/settings/settings_dtos"
+	"easyvpn/src/utils"
 	"encoding/json"
 	"fmt"
 	"net/http"

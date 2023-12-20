@@ -1,8 +1,8 @@
 package vpn
 
 import (
-	"easyvpn/utils"
-	vpn_dtos "easyvpn/vpn/vpn-dtos"
+	"easyvpn/src/utils"
+	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
 	"encoding/json"
 	"net/http"
 )

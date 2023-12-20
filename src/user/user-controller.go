@@ -1,8 +1,8 @@
 package user
 
 import (
-	user_dtos "easyvpn/user/user-dtos"
-	"easyvpn/utils"
+	user_dtos "easyvpn/src/user/user-dtos"
+	"easyvpn/src/utils"
 	"encoding/json"
 	"net/http"
 

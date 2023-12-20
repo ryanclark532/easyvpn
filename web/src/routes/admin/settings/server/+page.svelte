@@ -38,16 +38,16 @@
 			</svg><P>Changing Server settings will require the VPN server to be restarted.</P></Badge
 		><Heading tag="h4" class="mb-1">VPN Subnet</Heading>
 		<div class="flex mb-4">
-			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.server.vpn_subnet} />
-			<Input placeholder="Subnet Mask..." class="w-1/4" bind:value={data.server.vpn_subnet_mask} />
+			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.vpn_subnet} />
+			<Input placeholder="Subnet Mask..." class="w-1/4" bind:value={data.vpn_subnet_mask} />
 		</div>
 		<Heading tag="h4" class="mb-1">Hostname or IP Address</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.server.ip_address} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.ip_address} />
 		<Tooltip
 			>This is the Public IP Address Or Hostname that VPN clients will use to connect to the Server</Tooltip
 		>
 		<Heading tag="h4" class="mb-1">VPN Server Port</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.server.port} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.port} />
 		<Tooltip
 			>This is the port the VPN server will listen on. This will need to be port forwarded on your
 			router</Tooltip
@@ -73,7 +73,7 @@
 			</P></Badge
 		>
 		<Heading tag="h4" class="mb-1">Web Server Port</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.server.web_server_port} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.web_server_port} />
 		<Tooltip>The port that the web server is served on</Tooltip>
 		<Button
 			class="mt-4 w-full"

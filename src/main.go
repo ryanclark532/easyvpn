@@ -1,16 +1,16 @@
 package main
 
 import (
-	"easyvpn/database"
-	"easyvpn/groups"
-	"easyvpn/settings"
-	"easyvpn/user"
-	"easyvpn/vpn"
+	"easyvpn/src/database"
+	"easyvpn/src/groups"
+	"easyvpn/src/settings"
+	"easyvpn/src/user"
+	"easyvpn/src/vpn"
 	"net/http"
 	"strconv"
 	"time"
 
-	"easyvpn/utils"
+	"easyvpn/src/utils"
 	"embed"
 	"fmt"
 
@@ -23,7 +23,7 @@ import (
 	"github.com/go-pkgz/auth/token"
 )
 
-//go:embed web/dist/*
+//go:embed app/*
 var svelte embed.FS
 
 func main() {
@@ -76,7 +76,6 @@ func main() {
 	}
 
 	service := auth.NewService(options)
-
 	r := setupRouter(service)
 
 	fmt.Print("Startup Successful")
@@ -153,7 +152,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Delete("/", groups.DeleteGroupMembershipEndpoint)
 		})
 	})
-	r.Handle("/web/dist/", http.FileServer(http.FS(svelte)))
-
+	r.Handle("/app/*", http.FileServer(http.FS(svelte)))
 	return r
 }

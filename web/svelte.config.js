@@ -5,11 +5,14 @@ export default {
 	preprocess: [vitePreprocess()],
 	kit: {
 		adapter: adapter({
-			pages: '../app',
-			assets: '../app',
+			pages: './src/app',
+			assets: './src/app',
 			fallback: undefined,
 			precompress: false,
 			strict: true
-		})
+		}),
+		prerender: {
+			handleHttpError: 'warn'
+		}
 	}
 };

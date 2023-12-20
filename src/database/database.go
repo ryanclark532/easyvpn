@@ -3,9 +3,9 @@ package database
 import (
 	"context"
 	"database/sql"
-	"easyvpn/groups/groups_dtos"
-	"easyvpn/settings/settings_dtos"
-	user_dtos "easyvpn/user/user-dtos"
+	"easyvpn/src/groups/groups_dtos"
+	"easyvpn/src/settings/settings_dtos"
+	user_dtos "easyvpn/src/user/user-dtos"
 	"os"
 	"time"
 

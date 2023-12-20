@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"easyvpn/database"
-	user_dtos "easyvpn/user/user-dtos"
-	"easyvpn/utils"
+	"easyvpn/src/database"
+	user_dtos "easyvpn/src/user/user-dtos"
+	"easyvpn/src/utils"
 	"fmt"
 	"time"
 

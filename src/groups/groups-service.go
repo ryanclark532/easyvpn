@@ -2,9 +2,9 @@ package groups
 
 import (
 	"context"
-	"easyvpn/database"
-	"easyvpn/groups/groups_dtos"
-	user_dtos "easyvpn/user/user-dtos"
+	"easyvpn/src/database"
+	"easyvpn/src/groups/groups_dtos"
+	user_dtos "easyvpn/src/user/user-dtos"
 	"strconv"
 )
 
