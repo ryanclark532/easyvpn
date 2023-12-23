@@ -11,6 +11,7 @@ export type Settings = {
 	port: number;
 	web_server_port: number;
 	ip_address: string;
+	max_connections: number;
 
 	//Client
 	dnsserver1: string;

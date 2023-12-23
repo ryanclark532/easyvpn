@@ -17,6 +17,12 @@ import (
 
 var DB *bun.DB
 
+type Log struct {
+	bun.BaseModel `bun:"table:logs,alias:l"`
+	time          time.Time `bun:",notnull"`
+	text          string    `bun:",notnull"`
+}
+
 func Test() error {
 	_, err := os.Stat("database.db")
 	if err == nil {
@@ -43,7 +49,7 @@ func Test() error {
 	DB.NewCreateTable().Model((*groups_dtos.Group)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*groups_dtos.GroupMembership)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*settings_dtos.Settings)(nil)).Exec(context.Background())
-
+	DB.NewCreateTable().Model((*Log)(nil)).Exec(context.Background())
 	err = SetupTestData()
 	if err != nil {
 		return err
@@ -100,6 +106,7 @@ func SetupTestData() error {
 		LockoutTimeout:  10000,
 		WebServerPort:   8080,
 		IPAddress:       "192.168.86.10",
+		MaxConnections:  5,
 	}
 
 	_, err = DB.NewInsert().Model(&user).Exec(context.Background())

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, TableBodyCell, TableBodyRow } from 'flowbite-svelte';
-	import type { Connection } from '../../../types/vpn.js';
+	import type { Connection } from '../../../../types/vpn';
 	export let connection: Connection;
 </script>
 

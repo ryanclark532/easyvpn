@@ -75,6 +75,9 @@
 		<Heading tag="h4" class="mb-1">Web Server Port</Heading>
 		<Input placeholder="IP Address..." class="mb-4" bind:value={data.web_server_port} />
 		<Tooltip>The port that the web server is served on</Tooltip>
+		<Heading tag="h4" class="mb-1">Maximum Allowed Connections</Heading>
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.max_connections} />
+		<Tooltip>The maximum allow connections to the VPN Server</Tooltip>
 		<Button
 			class="mt-4 w-full"
 			on:click={() => {

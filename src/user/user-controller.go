@@ -1,8 +1,8 @@
 package user
 
 import (
+	"easyvpn/src/logging"
 	user_dtos "easyvpn/src/user/user-dtos"
-	"easyvpn/src/utils"
 	"encoding/json"
 	"net/http"
 
@@ -14,7 +14,7 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *user_dtos.User
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		utils.HandleError(err, "CreateUser")
+		logging.HandleError(err, "CreateUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -23,15 +23,15 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if mysqlErr, ok := err.(*mysql.MySQLError); ok {
 			if mysqlErr.Number == 1062 {
-				utils.HandleError(err, "CreateUser")
+				logging.HandleError(err, "CreateUser")
 				w.WriteHeader(http.StatusConflict)
 				return
 			}
-			utils.HandleError(err, "CreateUser")
+			logging.HandleError(err, "CreateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		} else {
-			utils.HandleError(err, "CreateUser")
+			logging.HandleError(err, "CreateUser")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -43,7 +43,7 @@ func CreateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	err = json.NewEncoder(w).Encode(frontendUser)
 	if err != nil {
-		utils.HandleError(err, "CreateUser")
+		logging.HandleError(err, "CreateUser")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -54,7 +54,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	users, err := GetUsers()
 	if err != nil {
-		utils.HandleError(err, "GetUsers")
+		logging.HandleError(err, "GetUsers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -65,7 +65,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	err = json.NewEncoder(w).Encode(u)
 	if err != nil {
-		utils.HandleError(err, "GetUsers")
+		logging.HandleError(err, "GetUsers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -74,7 +74,7 @@ func GetUsersEndpoint(w http.ResponseWriter, r *http.Request) {
 func DeleteUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	err := DeleteUser(chi.URLParam(r, "id"))
 	if err != nil {
-		utils.HandleError(err, "DeleteUser")
+		logging.HandleError(err, "DeleteUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -85,13 +85,13 @@ func UpdateUserEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *user_dtos.User
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		utils.HandleError(err, "DeleteUser")
+		logging.HandleError(err, "DeleteUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = UpdateUser(req, chi.URLParam(r, "id"))
 	if err != nil {
-		utils.HandleError(err, "UpdateUser")
+		logging.HandleError(err, "UpdateUser")
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -101,14 +101,14 @@ func SetPWEndpoint(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		utils.HandleError(err, "DeleteUser")
+		logging.HandleError(err, "DeleteUser")
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	err = SetPassword(chi.URLParam(r, "id"), req)
 	if err != nil {
-		utils.HandleError(err, "SetPWEndpoint")
+		logging.HandleError(err, "SetPWEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

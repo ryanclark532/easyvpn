@@ -23,6 +23,9 @@ import (
 	"github.com/go-pkgz/auth/token"
 )
 
+var LOGFILE_DIR = `C:\Program Files\OpenVPN\log\server-dev.log`
+var CONFIGFILE_DIR = `C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`
+
 //go:embed app/*
 var svelte embed.FS
 
@@ -130,6 +133,8 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Post("/set-pw", user.SetPWEndpoint)
 		})
 	})
+
+	r.HandleFunc("/vpn/log", vpn.GetVpnLogs)
 
 	r.Route("/vpn", func(r chi.Router) {
 		r.Use(m.AdminOnly)

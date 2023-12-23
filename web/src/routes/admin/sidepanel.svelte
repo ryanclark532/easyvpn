@@ -24,7 +24,7 @@
 			>
 			<h2 class="text-2xl ml-2 mb-3">Server Status</h2>
 		</div>
-		<a href="/admin/status"
+		<a href="/admin/status/statistics"
 			><h2 class="text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer">Statistics</h2></a
 		>
 		<a href="/admin/status/active-users"

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { PageData } from '../$types';
 	import Sidepanel from '../../sidepanel.svelte';
-	import ActiveUserTable from "../active-user-table.svelte";
+	import ActiveUserTable from './active-user-table.svelte';
 	export let data: PageData;
-
-    console.log(data); 
+	console.log(data);
 </script>
 
 <div class="flex">

@@ -1,17 +1,8 @@
 <script lang="ts">
-	import Sidepanel from '../sidepanel.svelte';
 	import Status from './status.svelte';
 	import type { PageData } from './$types';
-	import ActiveUserTable from './active-user-table.svelte';
-	import {
-		Table,
-		TableHead,
-		TableHeadCell,
-		TableBody,
-		TableBodyRow,
-		TableBodyCell,
-		Heading
-	} from 'flowbite-svelte';
+	import { Table, TableBody, TableBodyRow, TableBodyCell, Heading } from 'flowbite-svelte';
+	import Sidepanel from '../../sidepanel.svelte';
 	export let data: PageData;
 </script>
 
@@ -26,35 +17,35 @@
 				<TableBody class="divide-y">
 					<TableBodyRow>
 						<TableBodyCell>Server Name</TableBodyCell>
-						<TableBodyCell>Sliver</TableBodyCell>
+						<TableBodyCell>{data.hostname}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Server IP Address</TableBodyCell>
-						<TableBodyCell>White</TableBodyCell>
+						<TableBodyCell>{data.settings.ip_address}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Maximum Allowed Connections</TableBodyCell>
-						<TableBodyCell>Black</TableBodyCell>
+						<TableBodyCell>{data.settings.max_connections}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Current Active Connections</TableBodyCell>
-						<TableBodyCell>Gray</TableBodyCell>
+						<TableBodyCell>{data.connections}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>VPN Server Port</TableBodyCell>
-						<TableBodyCell>Red</TableBodyCell>
+						<TableBodyCell>{data.settings.port}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Web Server Port</TableBodyCell>
-						<TableBodyCell>Red</TableBodyCell>
+						<TableBodyCell>{data.settings.web_server_port}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Using Server As A Gateway</TableBodyCell>
-						<TableBodyCell>Red</TableBodyCell>
+						<TableBodyCell>{data.settings.use_as_gateway ? 'Yes' : 'No'}</TableBodyCell>
 					</TableBodyRow>
 					<TableBodyRow>
 						<TableBodyCell>Allow Clients Access To Private Network</TableBodyCell>
-						<TableBodyCell>Red</TableBodyCell>
+						<TableBodyCell>{data.settings.private_access ? 'Yes' : 'No'}</TableBodyCell>
 					</TableBodyRow>
 				</TableBody>
 			</Table>

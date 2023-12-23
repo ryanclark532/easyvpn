@@ -17,11 +17,12 @@ type Settings struct {
 	MaxAuthAttempts int           `json:"max_auth_attempts" bun:",notnull"`
 	LockoutTimeout  time.Duration `json:"lockout_timeout" bun:",notnull"`
 	//Server
-	VpnSubnet     string `json:"vpn_subnet" bun:"-"`
-	VpnSubnetMask int    `json:"vpn_subnet_mask" bun:"-"`
-	Port          int    `json:"port" bun:"-"`
-	IPAddress     string `json:"ip_address" bun:",notnull"`
-	WebServerPort int    `json:"web_server_port" bun:",notnull"`
+	VpnSubnet      string `json:"vpn_subnet" bun:"-"`
+	VpnSubnetMask  int    `json:"vpn_subnet_mask" bun:"-"`
+	Port           int    `json:"port" bun:"-"`
+	IPAddress      string `json:"ip_address" bun:",notnull"`
+	WebServerPort  int    `json:"web_server_port" bun:",notnull"`
+	MaxConnections int    `json:"max_connections" bun:",notnull"`
 
 	//Client
 	UseAsGateway  bool   `json:"use_as_gateway" bun:"-"`

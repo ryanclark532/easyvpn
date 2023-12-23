@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { ServerStatusMapping } from '../../../types/vpn';
 	import { Button } from 'flowbite-svelte';
 	import { redirect } from '@sveltejs/kit';
-	import ConfirmationModal from '../../../components/confirmation-modal.svelte';
 	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import { vpnOperation } from '$lib/vpn';
 	import type { PageData } from './$types';
+	import { ServerStatusMapping } from '../../../../types/vpn';
+	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
 
 	let background: string;
 	let containerClass: string;
@@ -91,5 +91,5 @@
 	open={start}
 	title="Confirm Start VPN Server"
 	subtext="This will start the VPN server. Please confirm this action"
-	onConfirm={vpnOperation}
+	onConfirm={() => vpnOperation('start')}
 />
