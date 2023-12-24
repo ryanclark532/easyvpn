@@ -3,7 +3,6 @@
 	import Sidepanel from '../../sidepanel.svelte';
 	import ActiveUserTable from './active-user-table.svelte';
 	export let data: PageData;
-	console.log(data);
 </script>
 
 <div class="flex">

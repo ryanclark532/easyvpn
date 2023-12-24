@@ -3,8 +3,11 @@ package user
 import (
 	"easyvpn/src/logging"
 	user_dtos "easyvpn/src/user/user-dtos"
+	"easyvpn/src/utils"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-sql-driver/mysql"
@@ -113,4 +116,24 @@ func SetPWEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func CreateUserConfigEndpoint(w http.ResponseWriter, r *http.Request) {
+	err := utils.GenerateClientConfig(chi.URLParam(r, "username"))
+	if err != nil {
+		logging.HandleError(err, "CreateUserConfig")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func DeleteUserConfigEndpoint(w http.ResponseWriter, r *http.Request) {
+	err := os.Remove(fmt.Sprintf(`./tmp/%s.ovpn`, chi.URLParam(r, "username")))
+	if err != nil {
+		logging.HandleError(err, "DeleteUserConfig")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

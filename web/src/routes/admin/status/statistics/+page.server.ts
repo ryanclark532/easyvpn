@@ -18,7 +18,6 @@ export async function load({ fetch, cookies, depends }) {
 		credentials: 'include',
 		method: 'GET'
 	}).then((response) => response.json());
-	console.log(statusResponse);
 	depends('admin:status');
 
 	const settings = await fetch('http://localhost:8080/settings', {
@@ -37,7 +36,6 @@ export async function load({ fetch, cookies, depends }) {
 		credentials: 'include',
 		method: 'GET'
 	}).then((response) => response.json());
-	console.log(connectionsResponse);
 	return {
 		hostname: os.hostname(),
 		connections: connectionsResponse.connections ? connectionsResponse.connections.length : 0,

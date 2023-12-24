@@ -134,6 +134,12 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		})
 	})
 
+	r.Route("/user/config/{username}", func(r chi.Router) {
+		r.Use(m.Auth)
+		r.Post("/", user.CreateUserConfigEndpoint)
+		r.Delete("/", user.DeleteUserConfigEndpoint)
+	})
+
 	r.HandleFunc("/vpn/log", vpn.GetVpnLogs)
 
 	r.Route("/vpn", func(r chi.Router) {
@@ -157,6 +163,11 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Delete("/", groups.DeleteGroupMembershipEndpoint)
 		})
 	})
+
+	fileServer := http.FileServer(http.Dir("tmp"))
+
 	r.Handle("/app/*", http.FileServer(http.FS(svelte)))
+	r.Handle("/tmp/*", http.StripPrefix("/tmp/", fileServer))
+
 	return r
 }

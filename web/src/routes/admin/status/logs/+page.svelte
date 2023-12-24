@@ -4,7 +4,10 @@
 	import Sidepanel from '../../sidepanel.svelte';
 	import {
 		Badge,
+		Input,
+		Label,
 		P,
+		Select,
 		Table,
 		TableBody,
 		TableBodyCell,
@@ -13,8 +16,14 @@
 		TableHeadCell,
 		Textarea
 	} from 'flowbite-svelte';
-	import { split } from 'postcss/lib/list';
+	import Layout from '../../../+layout.svelte';
+	let selected;
 
+	let countries = [
+		{ value: 'us', name: 'United States' },
+		{ value: 'ca', name: 'Canada' },
+		{ value: 'fr', name: 'France' }
+	];
 	onMount(() => {
 		getVpnLogs();
 	});
@@ -43,16 +52,25 @@
 				>These are the unedited logs from OpenVPN. These should be used to dianose connection issues</P
 			></Badge
 		>
+		<div class="flex">
+			<Input class="w-1/2 mr-1" placeholder="Filter By Event Text..." />
+			<Select
+				class="w-1/2 ml-1"
+				placeholder="Filter By Time Period"
+				items={countries}
+				bind:value={selected}
+			/>
+		</div>
 		<Table divClass="overflow-y-hidden max-w-1/2">
 			<TableHead>
 				<TableHeadCell>Event Time Stamp</TableHeadCell>
 				<TableHeadCell>Event Text</TableHeadCell>
 			</TableHead>
-			<TableBody class="divide-y overflow-y-hidden max-w-1/2">
+			<TableBody>
 				{#each $vpnLog as log}
 					<TableBodyRow>
-						<TableBodyCell>{splitOnFirstLetter(log)[0]}</TableBodyCell>
-						<TableBodyCell>{splitOnFirstLetter(log)[1]}</TableBodyCell>
+						<TableBodyCell>{log[0]}</TableBodyCell>
+						<TableBodyCell tdClass="overflow-y-hidden ">{log[1]}</TableBodyCell>
 					</TableBodyRow>
 				{/each}
 			</TableBody>

@@ -1,6 +1,6 @@
 import type { User } from '../types/users';
 import { writable } from 'svelte/store';
-import { getToken } from './auth';
+import { getToken, setToken } from './auth';
 import { invalidate } from '$app/navigation';
 
 export const userFilter = writable<string>();
@@ -68,11 +68,11 @@ export async function createUser(e: Event) {
 	invalidate('admin:users');
 }
 
-export async function changePassword(e: Event, userId: number, temp: bool) {
+export async function changePassword(e: Event, userId: number, temp: boolean) {
 	e.preventDefault();
 	const formData = new FormData(e.target as HTMLFormElement);
-	const password = formData.get('password').toString();
-	const confirm = formData.get('confirm').toString();
+	const password = formData.get('password')?.toString();
+	const confirm = formData.get('confirm')?.toString();
 	if (password !== confirm) {
 		return new Error('Please enter matching passwords');
 	}
@@ -87,7 +87,22 @@ export async function changePassword(e: Event, userId: number, temp: bool) {
 		credentials: 'include'
 	}).then((res) => res.status);
 
+	setToken('');
+
 	if (response >= 400) {
 		return new Error('Something went wrong while changing the password. Please try again');
+	}
+}
+
+export async function deleteUserConfig(username: string) {
+	const headers = new Headers();
+	headers.append('JWT', getToken() ?? '');
+	const response = await fetch(`http://localhost:8080/user/config/${username}`, {
+		method: 'DELETE',
+		headers,
+		credentials: 'include'
+	}).then((res) => res.json());
+	if (response >= 400) {
+		return new Error('Something went wrong while deleting the user config');
 	}
 }

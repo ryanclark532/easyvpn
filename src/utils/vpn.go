@@ -36,7 +36,7 @@ func GenerateClientConfig(userName string) error {
 	config = append(config, []byte("<key>\n")...)
 	config = append(config, key...)
 	config = append(config, []byte("</key>")...)
-	err = WriteFile(fmt.Sprintf("./vpn-config/temp/%s.ovpn", userName), config)
+	err = WriteFile(fmt.Sprintf("./tmp/%s.ovpn", userName), config)
 	return err
 }
 

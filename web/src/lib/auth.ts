@@ -6,6 +6,10 @@ export function getToken() {
 	return localStorage ? localStorage.getItem('jwt') : undefined;
 }
 
+export function setToken(token: string) {
+	localStorage ? localStorage.setItem('jwt', token) : undefined;
+}
+
 export function getID() {
 	return localStorage ? localStorage.getItem('id') : undefined;
 }
