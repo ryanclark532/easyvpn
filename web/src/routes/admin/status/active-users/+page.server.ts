@@ -1,3 +1,4 @@
+import { handleRedirects } from '$lib/auth';
 import type { Connection } from '../../../../types/vpn';
 
 export async function load({ cookies }) {

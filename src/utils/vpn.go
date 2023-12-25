@@ -65,11 +65,14 @@ func SetupVPNServer() error {
 		}()
 
 		err = <-keychan
+		if err != nil {
+			return err
+		}
+
+		err = RestartVPNServer()
 		return err
 	}
-
-	err := RestartVPNServer()
-	return err
+	return nil
 }
 
 func StartVPNServer() error {

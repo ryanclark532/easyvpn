@@ -3,14 +3,6 @@ import type { Settings } from '../../../../types/settings';
 import type { ServerStatus } from '../../../../types/vpn';
 import os from 'os';
 export async function load({ fetch, cookies, depends }) {
-	const authcheck = await fetch('http://localhost:8080/auth/user', {
-		headers: {
-			JWT: cookies.get('JWT')
-		},
-		credentials: 'include'
-	}).then((response) => response.json());
-	handleRedirects(authcheck);
-
 	const statusResponse = await fetch('http://localhost:8080/vpn', {
 		headers: {
 			JWT: cookies.get('JWT')

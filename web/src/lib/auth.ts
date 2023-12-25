@@ -40,6 +40,7 @@ export async function handleLogin(e: Event) {
 
 		const json = await response.json();
 		localStorage.setItem('id', json.attrs.id);
+		localStorage.setItem('name', json.name);
 		const expiry = new Date(json.attrs.password_expiry);
 		if (expiry < new Date()) {
 			goto('/login/reset');

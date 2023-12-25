@@ -4,6 +4,7 @@
 	import type { PageData } from './$types';
 	import { deleteUserConfig } from '$lib/users';
 	import { beforeNavigate } from '$app/navigation';
+	import UserInfo from '../components/user-info.svelte';
 
 	export let data: PageData;
 
@@ -12,6 +13,9 @@
 	});
 </script>
 
+<div class="fixed">
+	<UserInfo username={data.username} />
+</div>
 <div class="h-screen flex items-center justify-center flex-col">
 	<Heading tag="h3" class="mb-4 pb-2 border-b-2 border-primary-500 w-1/3 text-center"
 		>EasyVPN User Center</Heading

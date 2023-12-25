@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<div class="border-b-2 border-primary-700 mb-3">
 			<Heading tag="h2" class=" pb-1">Users</Heading>

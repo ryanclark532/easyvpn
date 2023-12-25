@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { Sidebar } from 'flowbite-svelte';
+	import UserInfo from '../../components/user-info.svelte';
+
+	const username = localStorage.getItem('name') ?? '';
 </script>
 
 <Sidebar class=" border-r border-gray-200 w-96" style="height: 100vh">
@@ -96,5 +99,8 @@
 				Edit Base Configuration
 			</h2></a
 		>
+	</div>
+	<div class="fixed bottom-0">
+		<UserInfo {username} placement="top" />
 	</div>
 </Sidebar>

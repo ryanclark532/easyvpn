@@ -5,3 +5,4 @@ log
 vpn-config/temp
 tmp
 app
+node_modules/ 

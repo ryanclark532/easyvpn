@@ -1,8 +1,10 @@
 package main
 
 import (
+	"easyvpn/src/common"
 	"easyvpn/src/database"
 	"easyvpn/src/groups"
+	"easyvpn/src/login"
 	"easyvpn/src/settings"
 	"easyvpn/src/user"
 	"easyvpn/src/vpn"
@@ -14,6 +16,7 @@ import (
 	"embed"
 	"fmt"
 
+	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -26,8 +29,8 @@ import (
 var LOGFILE_DIR = `C:\Program Files\OpenVPN\log\server-dev.log`
 var CONFIGFILE_DIR = `C:\Program Files\OpenVPN\config-auto\server-dev.ovpn`
 
-//go:embed app/*
-var svelte embed.FS
+//go:embed static/*
+var static embed.FS
 
 func main() {
 
@@ -164,10 +167,10 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		})
 	})
 
-	fileServer := http.FileServer(http.Dir("tmp"))
+	r.Handle("/static/*", http.FileServer(http.FS(static)))
 
-	r.Handle("/app/*", http.FileServer(http.FS(svelte)))
-	r.Handle("/tmp/*", http.StripPrefix("/tmp/", fileServer))
-
+	r.Handle("/", templ.Handler(common.Home()))
+	r.Handle("/login", templ.Handler(login.Login()))
+	r.Post("/login/handle", login.HandleLogin)
 	return r
 }

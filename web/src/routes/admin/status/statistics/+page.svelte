@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<Status {data} />
 

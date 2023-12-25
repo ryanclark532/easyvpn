@@ -9,7 +9,7 @@
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<Heading tag="h2" class="mb-2">Network Settings</Heading>
 		<Badge color="yellow" class="mb-2 w-full p-3">

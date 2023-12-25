@@ -7,7 +7,7 @@
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<div class="border-b-2 border-primary-700 mb-1">
 			<Heading tag="h2" class="text-2xl mt-5 pb-1">User Groups</Heading>

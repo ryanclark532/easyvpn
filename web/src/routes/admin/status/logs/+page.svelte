@@ -17,8 +17,9 @@
 		Textarea
 	} from 'flowbite-svelte';
 	import Layout from '../../../+layout.svelte';
+	import type { PageData } from './$types';
 	let selected;
-
+	export let data: PageData;
 	let countries = [
 		{ value: 'us', name: 'United States' },
 		{ value: 'ca', name: 'Canada' },
@@ -30,7 +31,7 @@
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<h2 class="text-2xl mt-5 mb-1">VPN Server Logs</h2>
 		<Badge color="yellow" class="mb-2 w-full p-3">
@@ -52,7 +53,7 @@
 				>These are the unedited logs from OpenVPN. These should be used to dianose connection issues</P
 			></Badge
 		>
-		<div class="flex">
+		<div class="flex my-2">
 			<Input class="w-1/2 mr-1" placeholder="Filter By Event Text..." />
 			<Select
 				class="w-1/2 ml-1"
@@ -61,7 +62,7 @@
 				bind:value={selected}
 			/>
 		</div>
-		<Table divClass="overflow-y-hidden max-w-1/2">
+		<Table>
 			<TableHead>
 				<TableHeadCell>Event Time Stamp</TableHeadCell>
 				<TableHeadCell>Event Text</TableHeadCell>

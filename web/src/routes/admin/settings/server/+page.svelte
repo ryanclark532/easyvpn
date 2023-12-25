@@ -4,13 +4,12 @@
 	import ConfirmationModal from '../../../../components/confirmation-modal.svelte';
 	import type { PageData } from './$types';
 	import { setSettings } from '$lib/settings';
-	import type { Settings } from '../../../../types/settings';
 	let open: boolean = false;
-	export let data: Settings;
+	export let data: PageData;
 </script>
 
 <div class="flex">
-	<Sidepanel />
+	<Sidepanel username={data.username} />
 	<div class="w-full p-5">
 		<div class="mb-4">
 			<Heading tag="h2" class="mb-2">Server Settings</Heading>
@@ -38,16 +37,20 @@
 			</svg><P>Changing Server settings will require the VPN server to be restarted.</P></Badge
 		><Heading tag="h4" class="mb-1">VPN Subnet</Heading>
 		<div class="flex mb-4">
-			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.vpn_subnet} />
-			<Input placeholder="Subnet Mask..." class="w-1/4" bind:value={data.vpn_subnet_mask} />
+			<Input placeholder="IP Address..." class="mr-4 w-3/4" bind:value={data.settings.vpn_subnet} />
+			<Input
+				placeholder="Subnet Mask..."
+				class="w-1/4"
+				bind:value={data.settings.vpn_subnet_mask}
+			/>
 		</div>
 		<Heading tag="h4" class="mb-1">Hostname or IP Address</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.ip_address} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.settings.ip_address} />
 		<Tooltip
 			>This is the Public IP Address Or Hostname that VPN clients will use to connect to the Server</Tooltip
 		>
 		<Heading tag="h4" class="mb-1">VPN Server Port</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.port} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.settings.port} />
 		<Tooltip
 			>This is the port the VPN server will listen on. This will need to be port forwarded on your
 			router</Tooltip
@@ -73,10 +76,10 @@
 			</P></Badge
 		>
 		<Heading tag="h4" class="mb-1">Web Server Port</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.web_server_port} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.settings.web_server_port} />
 		<Tooltip>The port that the web server is served on</Tooltip>
 		<Heading tag="h4" class="mb-1">Maximum Allowed Connections</Heading>
-		<Input placeholder="IP Address..." class="mb-4" bind:value={data.max_connections} />
+		<Input placeholder="IP Address..." class="mb-4" bind:value={data.settings.max_connections} />
 		<Tooltip>The maximum allow connections to the VPN Server</Tooltip>
 		<Button
 			class="mt-4 w-full"
@@ -91,5 +94,5 @@
 	title="Confirm Settings Changes"
 	subtext="Changing settings will cause the vpn server to restart, and disconnect any connected clients. Please confirm this action"
 	{open}
-	onConfirm={() => setSettings(data)}
+	onConfirm={() => setSettings(data.settings)}
 />
