@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,47 +21,38 @@ func GetUser(username string) (*user_dtos.User, error) {
 	return user, nil
 }
 
-func GetUsers() (*[]user_dtos.User, error) {
+func GetUsers(username string) (*[]user_dtos.User, error) {
 	users := new([]user_dtos.User)
 	err := database.DB.NewSelect().Model(users).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	return users, nil
+
+	var filteredusers []user_dtos.User
+	for _, user := range *users {
+		if fuzzy.Match(username, user.Username) {
+			filteredusers = append(filteredusers, user)
+		}
+	}
+
+	return &filteredusers, nil
 }
 
-func CreateUser(user *user_dtos.User) (*user_dtos.User, error) {
+func CreateUser(user *user_dtos.User) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	user.Password = string(hash)
-	user.PasswordExpiry = time.Now().Add(time.Hour * 1000)
 	_, err = database.DB.NewInsert().Model(user).Exec(context.Background())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	err = utils.GenerateSignedCertificate(`C:\Program Files\OpenVPN\config-auto\keys\`, user.Username)
 	if err != nil {
-		return nil, err
-	}
-	return user, err
-}
-
-func DeleteUser(id string) error {
-	_, err := database.DB.NewDelete().Model((*user_dtos.User)(nil)).Where("id = ?", id).Exec(context.Background())
-	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func UpdateUser(user *user_dtos.User, id string) error {
-	_, err := database.DB.NewUpdate().Model((*user_dtos.User)(nil)).Set("username = ?, name = ?, is_admin = ?, enabled = ?", user.Username, user.Name, user.IsAdmin, user.Enabled).Where("id = ?", id).Exec(context.Background())
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func SetPassword(userId string, ps *user_dtos.PasswordResetRequest) error {

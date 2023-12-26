@@ -128,11 +128,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 
 	r.Route("/user", func(r chi.Router) {
 		r.Use(m.AdminOnly)
-		r.Get("/", user.GetUsersEndpoint)
-		r.Post("/", user.CreateUserEndpoint)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Delete("/", user.DeleteUserEndpoint)
-			r.Put("/", user.UpdateUserEndpoint)
 			r.Post("/set-pw", user.SetPWEndpoint)
 		})
 	})
@@ -170,7 +166,21 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Handle("/static/*", http.FileServer(http.FS(static)))
 
 	r.Handle("/", templ.Handler(common.Home()))
-	r.Handle("/login", templ.Handler(login.Login()))
-	r.Post("/login/handle", login.HandleLogin)
+
+	r.Route("/login", func(r chi.Router) {
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			login.Login().Render(r.Context(), w)
+		})
+		r.Post("/", login.HandleLogin)
+	})
+	r.Route("/users", func(r chi.Router) {
+		r.Use(login.AuthMiddleware)
+		r.Get("/", user.UsersPage)
+		r.Post("/", user.CreateNewUser)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Delete("/", user.DeleteUser)
+			r.Put("/", user.UpdateUser)
+		})
+	})
 	return r
 }
