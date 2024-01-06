@@ -1,11 +1,16 @@
 package groups
 
 import (
+	"context"
+	"easyvpn/src/database"
 	"easyvpn/src/groups/groups_dtos"
 	"easyvpn/src/logging"
+	"easyvpn/src/user"
 	"encoding/json"
+	"fmt"
 	"net/http"
-
+	"strings"
+	"strconv"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -43,27 +48,6 @@ func GetGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-}
-
-func CreateGroupEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *groups_dtos.Group
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		logging.HandleError(err, "CreateGroupEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = CreateGroup(req)
-	if err != nil {
-		logging.HandleError(err, "CreateGroupEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	return
-
 }
 
 func CreateGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -106,16 +90,6 @@ func DeleteGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteGroupEndpoint(w http.ResponseWriter, r *http.Request) {
-	err := DeleteGroup(chi.URLParam(r, "id"))
-	if err != nil {
-		logging.HandleError(err, "DeleteGroupEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	return
-}
 
 func UpdateGroupEndpoint(w http.ResponseWriter, r *http.Request) {
 	var req *groups_dtos.Group
@@ -127,3 +101,92 @@ func UpdateGroupEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	err = UpdateGroup(req, chi.URLParam(r, "id"))
 }
+
+
+
+
+
+
+func GroupsPage(w http.ResponseWriter, r * http.Request){
+	
+	groups, err := GetGroups()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return;
+	}
+	users, err := user.GetUsers("")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return;
+	}
+	Groups("hello", groups, users, chi.URLParam(r, "username")).Render(r.Context(), w)
+}
+
+
+func CreateGroup(w http.ResponseWriter, r *http.Request){
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)	
+		return;
+	}
+	group := groups_dtos.Group{
+		Name: r.Form.Get("name"),
+		MemberCount: 0,
+		IsAdmin: r.Form.Get("admin") == "on",
+		Enabled: r.Form.Get("enabled") == "on",
+	}
+
+	err = database.DB.NewInsert().Model(&group).Scan(context.Background(), &group)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	formObjs := strings.Split(r.Form.Encode(), "&")
+	var addedUsers int	
+	for _, v := range formObjs {
+		if strings.HasSuffix(v, "-group=on"){
+			userId, err := strconv.ParseInt(strings.TrimSuffix(v,"-group=on"),36,64)
+			if err != nil {
+				fmt.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			groupMembership := groups_dtos.GroupMembership{
+				UserID: uint(userId),
+				GroupID: group.ID,
+			}
+			_,err = database.DB.NewInsert().Model(&groupMembership).Exec(context.Background())
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			addedUsers++
+
+		}	
+	}
+	group.MemberCount = addedUsers	
+	_,err = database.DB.NewUpdate().Model(&group).Where("ID = ?", group.ID).Exec(context.Background())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/groups", http.StatusSeeOther)
+}
+
+
+func DeleteGroup(w http.ResponseWriter, r *http.Request){
+	_, err := database.DB.NewDelete().Table("groups").Where("ID = ?", chi.URLParam(r, "id")).Exec(context.Background())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	groups, err := GetGroups()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	GroupsTable(groups, "").Render(r.Context(), w)
+}
+

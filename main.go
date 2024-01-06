@@ -119,12 +119,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 
 	m := service.Middleware()
 
-	r.Route("/settings", func(r chi.Router) {
-		r.Use(m.AdminOnly)
-		r.Get("/", settings.GetSettingsEndpoint)
-		r.Put("/", settings.SetSettingsEndpoint)
-		r.Get("/file", settings.GetConfigFileEndpoint)
-	})
 
 	r.Route("/user", func(r chi.Router) {
 		r.Use(m.AdminOnly)
@@ -151,9 +145,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Route("/group", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", groups.GetGroupsEndpoint)
-		r.Post("/", groups.CreateGroupEndpoint)
 		r.Route("/{id}", func(r chi.Router) {
-			r.Delete("/", groups.DeleteGroupEndpoint)
 			r.Put("/", groups.UpdateGroupEndpoint)
 		})
 		r.Route("/membership/{id}", func(r chi.Router) {
@@ -182,5 +174,22 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Put("/", user.UpdateUser)
 		})
 	})
+
+	r.Route("/groups", func(r chi.Router) {
+		r.Use(login.AuthMiddleware)
+		r.Get("/", groups.GroupsPage)
+		r.Post("/", groups.CreateGroup)
+		r.Route("/{id}", func(r chi.Router) {
+			r.Delete("/", groups.DeleteGroup)
+		})
+	})	
+
+	r.Route("/settings", func(r chi.Router) {
+		r.Route("/server",func(r chi.Router) {
+			r.Get("/", settings.ServerSettingsPage)
+			r.Post("/", settings.SetServerSettings)
+		})
+	})	
+
 	return r
 }

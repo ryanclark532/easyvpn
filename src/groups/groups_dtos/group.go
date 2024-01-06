@@ -6,7 +6,7 @@ type Group struct {
 	bun.BaseModel `bun:"table:groups,alias:g"`
 	ID            uint `bun:",pk,autoincrement" json:"id"`
 	Name          string `bun:",notnull" json:"name"`
-	MemberCount   int    `json:"member_count"`
+	MemberCount   int    `json:"member_count" bun:"-"`
 	IsAdmin       bool   `bun:",notnull" json:"is_admin"`
 	Enabled       bool   `bun:",notnull" json:"enabled"`
 }

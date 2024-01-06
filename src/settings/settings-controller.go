@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -60,3 +61,46 @@ func GetConfigFileEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+
+
+func ServerSettingsPage(w http.ResponseWriter, r *http.Request){
+	settings, err := GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(">")
+	fmt.Println(settings)
+	ServerSettings("test", settings).Render(r.Context(), w)
+}
+
+
+func SetServerSettings(w http.ResponseWriter, r *http.Request){
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+	settings, err := GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+
+	}
+
+	settings.IPAddress = r.Form.Get("ip_address") 
+	Port, _ := strconv.ParseInt(r.Form.Get("vpn_port"), 10, 0)
+	settings.Port = int(Port)
+	WebServerPort, _ := strconv.ParseInt(r.Form.Get("web_port"), 10, 0)
+	settings.WebServerPort = int(WebServerPort)
+	MaxConnections, _ := strconv.ParseInt(r.Form.Get("max_connecitons"), 10, 0)
+	settings.MaxConnections = int(MaxConnections) 
+
+	err = SetSettings(settings)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	http.Redirect(w, r, "/settings/server", http.StatusSeeOther)
+}
+

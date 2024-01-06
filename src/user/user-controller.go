@@ -62,7 +62,7 @@ func UsersPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	Users(username, users).Render(r.Context(), w)
+	Users(username, users, r.URL.Query().Get("username")).Render(r.Context(), w)
 }
 
 func CreateNewUser(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +102,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	UsersTable(users).Render(r.Context(), w)
+	UsersTable(users, r.URL.Query().Get("username")).Render(r.Context(), w)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -134,5 +134,5 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	UsersTable(users).Render(r.Context(), w)
+	UsersTable(users, r.URL.Query().Get("username")).Render(r.Context(), w)
 }
