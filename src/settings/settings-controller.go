@@ -69,11 +69,18 @@ func ServerSettingsPage(w http.ResponseWriter, r *http.Request){
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Println(">")
 	fmt.Println(settings)
 	ServerSettings("test", settings).Render(r.Context(), w)
 }
 
+func ClientSettingsPage(w http.ResponseWriter, r *http.Request){
+	settings, err := GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	ClientSettings("test", settings).Render(r.Context(), w)
+}
 
 func SetServerSettings(w http.ResponseWriter, r *http.Request){
 	err := r.ParseForm()
@@ -92,10 +99,10 @@ func SetServerSettings(w http.ResponseWriter, r *http.Request){
 	settings.Port = int(Port)
 	WebServerPort, _ := strconv.ParseInt(r.Form.Get("web_port"), 10, 0)
 	settings.WebServerPort = int(WebServerPort)
-	MaxConnections, _ := strconv.ParseInt(r.Form.Get("max_connecitons"), 10, 0)
+	MaxConnections, _ := strconv.ParseInt(r.Form.Get("max_connections"), 10, 0) 
 	settings.MaxConnections = int(MaxConnections) 
 
-	//err = SetSettings(settings)
+	err = SetSettings(settings)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

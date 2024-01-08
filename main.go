@@ -189,6 +189,10 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			r.Get("/", settings.ServerSettingsPage)
 			r.Post("/", settings.SetServerSettings)
 		})
+
+		r.Route("/client", func(r chi.Router) {
+			r.Get("/", settings.ClientSettingsPage)
+		})
 	})	
 
 	return r
