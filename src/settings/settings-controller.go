@@ -37,7 +37,6 @@ func SetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(req)
 
-	err = SetSettings(req)
 	if err != nil {
 		logging.HandleError(err, "PostSettings")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -96,7 +95,7 @@ func SetServerSettings(w http.ResponseWriter, r *http.Request){
 	MaxConnections, _ := strconv.ParseInt(r.Form.Get("max_connecitons"), 10, 0)
 	settings.MaxConnections = int(MaxConnections) 
 
-	err = SetSettings(settings)
+	//err = SetSettings(settings)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
