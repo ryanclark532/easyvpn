@@ -119,7 +119,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 
 	m := service.Middleware()
 
-
 	r.Route("/user", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Route("/{id}", func(r chi.Router) {
@@ -182,18 +181,19 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Route("/{id}", func(r chi.Router) {
 			r.Delete("/", groups.DeleteGroup)
 		})
-	})	
+	})
 
 	r.Route("/settings", func(r chi.Router) {
-		r.Route("/server",func(r chi.Router) {
+		r.Route("/server", func(r chi.Router) {
 			r.Get("/", settings.ServerSettingsPage)
 			r.Post("/", settings.SetServerSettings)
 		})
 
 		r.Route("/client", func(r chi.Router) {
 			r.Get("/", settings.ClientSettingsPage)
+			r.Post("/", settings.SetClientSettings)
 		})
-	})	
+	})
 
 	return r
 }

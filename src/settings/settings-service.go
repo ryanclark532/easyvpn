@@ -13,8 +13,7 @@ import (
 	"strings"
 )
 
-
-const SETTINGS_BREAK = "#Modifiable Settings" 
+const SETTINGS_BREAK = "#Modifiable Settings"
 
 var dnsPattern = `^push "dhcp-option DNS ([0-9.]+)"(.*)$`
 var dnsRegex, _ = regexp.Compile(dnsPattern)
@@ -49,36 +48,36 @@ func GetSettings() (*settings_dtos.Settings, error) {
 		line := scanner.Text()
 		readConfigLine(line, newSettings)
 	}
-
-
+	fmt.Println(newSettings.VpnSubnet)
 	return newSettings, nil
 }
 
 func readConfigLine(line string, settings *settings_dtos.Settings) {
-		dnsMatch := dnsRegex.FindStringSubmatch(line)
-		portMatch := portRegex.FindStringSubmatch(line)
-		subnetMatch := subnetRegex.FindStringSubmatch(line)
+	dnsMatch := dnsRegex.FindStringSubmatch(line)
+	portMatch := portRegex.FindStringSubmatch(line)
+	subnetMatch := subnetRegex.FindStringSubmatch(line)
 
-		if len(dnsMatch) > 0 {
-			if settings.DNSServer1 == "" {
-				settings.DNSServer1 = dnsMatch[1]
-			} else {
-				settings.DNSServer2 = dnsMatch[1]
-			}
+	if len(dnsMatch) > 0 {
+		if settings.DNSServer1 == "" {
+			settings.DNSServer1 = dnsMatch[1]
+		} else {
+			settings.DNSServer2 = dnsMatch[1]
 		}
-		if len(subnetMatch) > 0 {
-			settings.VpnSubnet = subnetMatch[1]
+	}
+	if len(subnetMatch) > 0 {
+		fmt.Println(subnetMatch)
+		settings.VpnSubnet = subnetMatch[1]
 
-			s, _:= subnetMaskToCIDR(subnetMatch[2])
-			settings.VpnSubnetMask = s //TODO add transform to / notation
-		}
-		if len(portMatch) > 0 {
-		portint , _ := strconv.ParseInt(portMatch[1], 0,0)
-			settings.Port = int(portint) 
-		}
-		if line == "push \"redirect-gateway def1 bypass-dhcp\"" {
-			settings.UseAsGateway = true
-		}
+		s, _ := subnetMaskToCIDR(subnetMatch[2])
+		settings.VpnSubnetMask = s
+	}
+	if len(portMatch) > 0 {
+		portint, _ := strconv.ParseInt(portMatch[1], 0, 0)
+		settings.Port = int(portint)
+	}
+	if line == "push \"redirect-gateway def1 bypass-dhcp\"" {
+		settings.UseAsGateway = true
+	}
 }
 
 func subnetMaskToCIDR(subnetMask string) (int, error) {
@@ -99,13 +98,13 @@ func subnetMaskToCIDR(subnetMask string) (int, error) {
 	return onesCount, nil
 }
 
-func SetSettings(settings *settings_dtos.Settings) error{
+func SetSettings(settings *settings_dtos.Settings) error {
 	fmt.Println(settings)
 	_, err := database.DB.NewUpdate().Table("settings").Set("latest = ?", false).Where("latest = ?", true).Exec(context.Background())
 	if err != nil {
 		return err
 	}
-	settings.Version +=1
+	settings.Version += 1
 	settings.Latest = true
 	_, err = database.DB.NewInsert().Model(settings).Exec(context.Background())
 	if err != nil {
@@ -115,13 +114,37 @@ func SetSettings(settings *settings_dtos.Settings) error{
 	return err
 }
 
+func cidrToSubnetMask(cidr int) (string, error) {
+	if cidr < 0 || cidr > 32 {
+		return "", fmt.Errorf("invalid CIDR value")
+	}
+
+	binaryRepresentation := strings.Repeat("1", cidr) + strings.Repeat("0", 32-cidr)
+
+	var octets []string
+	for i := 0; i < 4; i++ {
+		start := i * 8
+		end := start + 8
+		octets = append(octets, binaryRepresentation[start:end])
+	}
+
+	var decimalOctets []string
+	for _, octet := range octets {
+		decimalValue, _ := strconv.ParseInt(octet, 2, 64)
+		decimalOctets = append(decimalOctets, fmt.Sprintf("%d", decimalValue))
+	}
+
+	subnetMask := strings.Join(decimalOctets, ".")
+	return subnetMask, nil
+}
+
 func RewriteConfigFile(settings *settings_dtos.Settings) error {
-	file, err:=os.OpenFile(common.VPNCONFIG_FILE, os.O_RDWR,0644)
+	file, err := os.OpenFile(common.VPNCONFIG_FILE, os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
-	
+
 	scanner := bufio.NewScanner(file)
 
 	var modifiedContent []string
@@ -133,14 +156,19 @@ func RewriteConfigFile(settings *settings_dtos.Settings) error {
 		}
 	}
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		line = writeConfigFile(line, settings)	
-		modifiedContent = append(modifiedContent, line)
-		if settings.UseAsGateway {
-			modifiedContent = append(modifiedContent, "push \"redirect-gateway def1 bypass-dhcp\"" )
-		}
+	vpnMask, err := cidrToSubnetMask(settings.VpnSubnetMask)
+	if err != nil {
+		return err
 	}
+
+	modifiableSettings := [4]string{fmt.Sprintf("push \"dhcp-option DNS %s\" \npush \"dhcp-option DNS %s\"", settings.DNSServer1, settings.DNSServer2), fmt.Sprintf("server %s %s", settings.VpnSubnet, vpnMask), fmt.Sprintf("port %s", strconv.Itoa(settings.Port))}
+	if settings.PrivateAccess {
+		modifiableSettings[3] = "push \"redirect-gateway def1 bypass-dhcp\""
+	}
+	contentLen := len(modifiedContent)
+	modifiedContent = append(modifiedContent, make([]string, 4)...)
+
+	copy(modifiedContent[contentLen:], modifiableSettings[:])
 	if err := scanner.Err(); err != nil {
 		return err
 	}
@@ -157,21 +185,4 @@ func RewriteConfigFile(settings *settings_dtos.Settings) error {
 		fmt.Fprintln(file, line)
 	}
 	return nil
-}
-
-func writeConfigFile(line string, settings *settings_dtos.Settings) string {
-		dnsMatch := dnsRegex.FindStringSubmatch(line)
-		portMatch := portRegex.FindStringSubmatch(line)
-		subnetMatch := subnetRegex.FindStringSubmatch(line)
-
-		if len(dnsMatch) > 0 {
-		return fmt.Sprintf("push \"dhcp-option DNS %s\" \n push \"dhcp-option DNS %s\"", settings.DNSServer1, settings.DNSServer2)	
-		}
-		if len(subnetMatch) > 0 {
-		return fmt.Sprintf("server %s %s", settings.VpnSubnet, strconv.Itoa(settings.VpnSubnetMask))
-		}
-		if len(portMatch) > 0 {
-		return fmt.Sprintf("port %s", strconv.Itoa(settings.Port))
-		}
-	return line
 }
