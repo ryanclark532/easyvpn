@@ -80,6 +80,15 @@ func ClientSettingsPage(w http.ResponseWriter, r *http.Request) {
 	ClientSettings("test", settings).Render(r.Context(), w)
 }
 
+func AuthSettingsPage(w http.ResponseWriter, r *http.Request) {
+	settings, err := GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	AuthSettings("test", settings).Render(r.Context(), w)
+}
+
 func SetServerSettings(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
