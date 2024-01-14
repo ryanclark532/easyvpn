@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 func GetSettingsEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -135,4 +136,29 @@ func SetClientSettings(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	http.Redirect(w, r, "/settings/client", http.StatusSeeOther)
+}
+
+func SetAuthSettings(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+	settings, err := GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(r.Form.Get("strong_passwords"))
+	max_auth_attempts, _ := strconv.ParseInt(r.Form.Get("max_auth_attempts"), 0, 0)
+	settings.MaxAuthAttempts = int(max_auth_attempts)
+	lockout_timeout, _ := time.ParseDuration(r.Form.Get("lockout_timeout"))
+	settings.LockoutTimeout = lockout_timeout
+	settings.EnforceStrongPW = r.Form.Get("strong_passwords") == "on"
+	settings.AllowChangePW = r.Form.Get("change_password") == "on"
+	err = SetSettings(settings)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	http.Redirect(w, r, "/settings/auth", http.StatusSeeOther)
 }

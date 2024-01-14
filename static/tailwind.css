@@ -940,6 +940,10 @@ input[type="range"]::-ms-fill-lower {
   z-index: 50;
 }
 
+.float-right {
+  float: right;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
@@ -986,6 +990,10 @@ input[type="range"]::-ms-fill-lower {
   margin-inline-start: 0.5rem;
 }
 
+.ms-3 {
+  margin-inline-start: 0.75rem;
+}
+
 .ms-auto {
   margin-inline-start: auto;
 }
@@ -994,8 +1002,12 @@ input[type="range"]::-ms-fill-lower {
   margin-top: 0.25rem;
 }
 
-.ms-3 {
-  margin-inline-start: 0.75rem;
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
+.me-3 {
+  margin-inline-end: 0.75rem;
 }
 
 .block {
@@ -1066,6 +1078,10 @@ input[type="range"]::-ms-fill-lower {
   width: 50%;
 }
 
+.w-11 {
+  width: 2.75rem;
+}
+
 .w-2\/5 {
   width: 40%;
 }
@@ -1114,10 +1130,6 @@ input[type="range"]::-ms-fill-lower {
   width: 100%;
 }
 
-.w-11 {
-  width: 2.75rem;
-}
-
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -1140,6 +1152,10 @@ input[type="range"]::-ms-fill-lower {
 
 .grid-cols-7 {
   grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
 }
 
 .flex-col {
@@ -1225,12 +1241,12 @@ input[type="range"]::-ms-fill-lower {
   border-radius: 0.25rem;
 }
 
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
 .rounded-full {
   border-radius: 9999px;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
 }
 
 .rounded-e-lg {
