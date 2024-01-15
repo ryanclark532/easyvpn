@@ -1,6 +1,7 @@
 package settings
 
 import (
+	"easyvpn/src/common"
 	"easyvpn/src/logging"
 	"easyvpn/src/settings/settings_dtos"
 	"encoding/json"
@@ -90,6 +91,15 @@ func AuthSettingsPage(w http.ResponseWriter, r *http.Request) {
 	AuthSettings("test", settings).Render(r.Context(), w)
 }
 
+func ConfigFileSettingsPage(w http.ResponseWriter, r *http.Request) {
+	contents, err := os.ReadFile(common.VPNCONFIG_FILE)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	fmt.Println(string(contents))
+	ConfigFile("test", string(contents)).Render(r.Context(), w)
+}
+
 func SetServerSettings(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
@@ -161,4 +171,18 @@ func SetAuthSettings(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	http.Redirect(w, r, "/settings/auth", http.StatusSeeOther)
+}
+
+func SetConfigFileContent(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	content := r.Form.Get("config")
+	err = os.WriteFile(common.VPNCONFIG_FILE, []byte(content), 755)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	http.Redirect(w, r, "/settings/config", http.StatusSeeOther)
 }

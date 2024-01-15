@@ -116,3 +116,17 @@ func GetVpnLogs(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
+	activeUsers, err := GetActiveConnections()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	if activeUsers == nil {
+		var x []vpn_dtos.ServerConnection
+		p := &x
+		ActiveUsers("test", p, "").Render(r.Context(), w)
+		return
+	}
+	ActiveUsers("test", activeUsers, "").Render(r.Context(), w)
+}
