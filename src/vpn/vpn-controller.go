@@ -1,18 +1,25 @@
 package vpn
 
 import (
+	"bufio"
+	"easyvpn/src/common"
 	"easyvpn/src/logging"
 	"easyvpn/src/utils"
 	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/websocket"
 )
+
+type Log struct {
+	LogTime time.Time
+	LogText string
+}
 
 func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
 	status, err := utils.GetVpnServerStatus()
@@ -80,43 +87,6 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
-func GetVpnLogs(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer conn.Close()
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer watcher.Close()
-	err = watcher.Add(`C:\Program Files\OpenVPN\log\server-dev.log`)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	content, _ := os.ReadFile(`C:\Program Files\OpenVPN\log\server-dev.log`)
-	conn.WriteMessage(1, content)
-	for {
-		select {
-		case event, ok := <-watcher.Events:
-			if !ok {
-				return
-			}
-			log.Println("event:", event)
-			content, _ := os.ReadFile(`C:\Program Files\OpenVPN\log\server-dev.log`)
-			conn.WriteMessage(1, content)
-		case err, ok := <-watcher.Errors:
-			if !ok {
-				return
-			}
-			log.Println("error:", err)
-		}
-	}
-}
-
 func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
 	activeUsers, err := GetActiveConnections()
 	if err != nil {
@@ -129,4 +99,53 @@ func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ActiveUsers("test", activeUsers, "").Render(r.Context(), w)
+}
+
+func GetVpnLogsPage(w http.ResponseWriter, r *http.Request) {
+
+	logs, err := GetVPNLogs()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	Logs("test", logs, "").Render(r.Context(), w)
+}
+
+func GetVPNLogs() ([]Log, error) {
+	file, err := os.Open(common.VPNLOG_FILE)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	var logs []Log
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		log, _ := parseLogLine(line)
+		if log.LogText != "" {
+			logs = append(logs, log)
+		}
+	}
+	return logs, nil
+}
+
+func parseLogLine(line string) (Log, error) {
+	parts := strings.SplitN(line, " ", 4)
+
+	if len(parts) < 4 {
+		return Log{}, fmt.Errorf("Invalid log format: %s", line)
+	}
+
+	logTime, err := time.Parse("2006-01-02 15:04:05", parts[0]+" "+parts[1])
+	if err != nil {
+		return Log{}, fmt.Errorf("Error parsing timestamp: %s", err)
+	}
+
+	log := Log{
+		LogTime: logTime,
+		LogText: parts[3],
+	}
+
+	return log, nil
 }

@@ -132,8 +132,6 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Delete("/", user.DeleteUserConfigEndpoint)
 	})
 
-	r.HandleFunc("/vpn/log", vpn.GetVpnLogs)
-
 	r.Route("/group", func(r chi.Router) {
 		r.Use(m.AdminOnly)
 		r.Get("/", groups.GetGroupsEndpoint)
@@ -200,6 +198,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 
 	r.Route("/vpn", func(r chi.Router) {
 		r.Get("/active-connections", vpn.GetActiveUsersPage)
+		r.Get("/logs", vpn.GetVpnLogsPage)
 	})
 
 	return r

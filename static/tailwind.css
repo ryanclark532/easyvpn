@@ -1090,10 +1090,6 @@ input[type="range"]::-ms-fill-lower {
   max-height: 100%;
 }
 
-.min-h-\[75vh\] {
-  min-height: 75vh;
-}
-
 .min-h-\[50vh\] {
   min-height: 50vh;
 }
@@ -1460,11 +1456,6 @@ input[type="range"]::-ms-fill-lower {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-.py-4 {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .px-3 {
@@ -1949,10 +1940,6 @@ input[type="range"]::-ms-fill-lower {
   .xl\:p-0 {
     padding: 0px;
   }
-}
-
-:is(:where([dir="rtl"]) .rtl\:text-right) {
-  text-align: right;
 }
 
 :is(:where([dir="rtl"]) .peer:checked ~ .rtl\:peer-checked\:after\:-translate-x-full)::after {
