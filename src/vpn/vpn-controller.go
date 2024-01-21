@@ -10,10 +10,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gorilla/websocket"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 type Log struct {
@@ -102,17 +105,20 @@ func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetVpnLogsPage(w http.ResponseWriter, r *http.Request) {
-
-	logs, err := GetVPNLogs()
+	page, err := strconv.ParseInt(r.URL.Query().Get("page"), 10, 10)
+	if err != nil {
+		page = 1
+	}
+	logs, err := GetVPNLogs(int(page), r.URL.Query().Get("search"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
-	Logs("test", logs, "").Render(r.Context(), w)
+	fmt.Println(r.URL.Query().Get("search"))
+	Logs("test", logs, int(page), r.URL.Query().Get("search"), len(logs) == 100, int(page) != 1).Render(r.Context(), w)
 }
 
-func GetVPNLogs() ([]Log, error) {
+func GetVPNLogs(page int, searchterm string) ([]Log, error) {
 	file, err := os.Open(common.VPNLOG_FILE)
 	if err != nil {
 		return nil, err
@@ -120,13 +126,24 @@ func GetVPNLogs() ([]Log, error) {
 	defer file.Close()
 	var logs []Log
 	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		log, _ := parseLogLine(line)
-		if log.LogText != "" {
-			logs = append(logs, log)
+
+	if page > 1 {
+		for i := 0; i < page*100 && scanner.Scan(); i++ {
+			continue
 		}
 	}
+
+	for i := 0; i < 100 && scanner.Scan(); {
+		line := scanner.Text()
+		log, _ := parseLogLine(line)
+		if (searchterm == "" || fuzzy.Match(searchterm, log.LogText)) && log.LogText != "" {
+			logs = append(logs, log)
+			i++
+		}
+	}
+	sort.Slice(logs, func(i, j int) bool {
+		return logs[i].LogTime.After(logs[j].LogTime)
+	})
 	return logs, nil
 }
 
