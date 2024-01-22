@@ -65,7 +65,7 @@ func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetActiveConnectionsEndpoint(w http.ResponseWriter, r *http.Request) {
-	response, err := GetActiveConnections()
+	response, err := GetActiveConnections("blah")
 	if err != nil {
 		logging.HandleError(err, "GetActiveConnectionsEndpoint")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -91,7 +91,7 @@ var upgrader = websocket.Upgrader{
 }
 
 func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
-	activeUsers, err := GetActiveConnections()
+	activeUsers, err := GetActiveConnections(r.URL.Query().Get("search"))
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -116,6 +116,27 @@ func GetVpnLogsPage(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(r.URL.Query().Get("search"))
 	Logs("test", logs, int(page), r.URL.Query().Get("search"), len(logs) == 100, int(page) != 1).Render(r.Context(), w)
+}
+
+func DisconnectClient(w http.ResponseWriter, r *http.Request) {
+	username := r.URL.Query().Get("username")
+	conn, err := utils.ConnectTelnet("localhost:7505")
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	defer conn.Close()
+	err = utils.CommandTelnet(fmt.Sprintf("kill %s", username), conn)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	_, err = utils.ReadTelnet(conn)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/vpn/active-connections", http.StatusSeeOther)
 }
 
 func GetVPNLogs(page int, searchterm string) ([]Log, error) {

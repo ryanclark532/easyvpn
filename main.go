@@ -199,6 +199,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	r.Route("/vpn", func(r chi.Router) {
 		r.Get("/active-connections", vpn.GetActiveUsersPage)
 		r.Get("/logs", vpn.GetVpnLogsPage)
+		r.Post("/disconnect", vpn.DisconnectClient)
 	})
 
 	return r

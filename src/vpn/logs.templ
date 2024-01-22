@@ -3,7 +3,7 @@ package vpn
 import "easyvpn/src/common"
 import "strconv"
 
-templ searchUsers() {
+templ searchLogs() {
 	<script>
 	var search = document.getElementById("simple-search");
 	search.addEventListener("change",function(event){
@@ -25,7 +25,7 @@ templ Logs(username string, logs []Log, page int, searchterm string, hasNext boo
 			@LogsTable(searchterm,page, logs, hasNext, hasPrev)
 		</div>
 	</div>
-	@searchUsers()
+	@searchLogs()
 }
 
 templ LogsTable(searchterm string, page int, logs []Log, hasNext bool, hasPrev bool) {

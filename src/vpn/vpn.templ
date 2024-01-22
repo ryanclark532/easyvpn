@@ -4,6 +4,17 @@ import "easyvpn/src/common"
 import "easyvpn/src/vpn/vpn-dtos"
 import "fmt"
 
+templ searchUsers() {
+	<script>
+	var search = document.getElementById("simple-search");
+	search.addEventListener("change",function(event){
+ 			var inputValue = search.value;
+            var newUrl = window.location.pathname + "?search=" + encodeURIComponent(inputValue);
+            window.location.href = newUrl;
+	})
+	</script>
+}
+
 templ ActiveUsers(username string, activeUsers *[]vpn_dtos.ServerConnection, searchterm string) {
 	@common.Root()
 	<div class="flex">
@@ -15,6 +26,7 @@ templ ActiveUsers(username string, activeUsers *[]vpn_dtos.ServerConnection, sea
 			@ActiveUsersTable(searchterm, activeUsers)
 		</div>
 	</div>
+	@searchUsers()
 }
 
 templ ActiveUsersTable(searchterm string, connections *[]vpn_dtos.ServerConnection) {
@@ -75,7 +87,7 @@ templ activeConnnectsTableRow(connection vpn_dtos.ServerConnection) {
 			</button>
 			<div id={ fmt.Sprintf("%s-dropdown", connection.CommonName) } class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
 				<div class="py-1">
-					<a href="#" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" hx-post={ fmt.Sprintf("/vpn/disconnect", connection.CommonName) } hx-swap="outerHTML">Disconnect</a>
+					<a href="#" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white" hx-post={ fmt.Sprintf("/vpn/disconnect?username=%s", connection.CommonName) } hx-swap="outerHTML">Disconnect</a>
 				</div>
 			</div>
 		</td>

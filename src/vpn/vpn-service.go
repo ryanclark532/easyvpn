@@ -5,6 +5,8 @@ import (
 	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
 	"strings"
 	"time"
+
+	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 func VpnOperation(operation string) error {
@@ -24,7 +26,7 @@ func VpnOperation(operation string) error {
 	return nil
 }
 
-func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
+func GetActiveConnections(searchterm string) (*[]vpn_dtos.ServerConnection, error) {
 	conn, err := utils.ConnectTelnet("localhost:7505")
 	if err != nil {
 		return nil, err
@@ -39,10 +41,10 @@ func GetActiveConnections() (*[]vpn_dtos.ServerConnection, error) {
 		return nil, err
 	}
 	outString := strings.Join(out, "")
-	return formatServerConnection(outString)
+	return formatServerConnection(outString, searchterm)
 }
 
-func formatServerConnection(output string) (*[]vpn_dtos.ServerConnection, error) {
+func formatServerConnection(output string, searchterm string) (*[]vpn_dtos.ServerConnection, error) {
 	lines := strings.Split(output, "\r\n")
 
 	headerLine := ""
@@ -79,7 +81,9 @@ func formatServerConnection(output string) (*[]vpn_dtos.ServerConnection, error)
 				BytesSent:      bytesSent,
 				ConnectedSince: parsedTime,
 			}
-			connections = append(connections, y)
+			if fuzzy.Match(searchterm, commonName) {
+				connections = append(connections, y)
+			}
 		}
 	}
 

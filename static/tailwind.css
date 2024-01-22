@@ -1058,10 +1058,6 @@ input[type="range"]::-ms-fill-lower {
   height: 100%;
 }
 
-.h-screen {
-  height: 100vh;
-}
-
 .max-h-full {
   max-height: 100%;
 }
