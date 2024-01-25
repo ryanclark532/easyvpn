@@ -9,23 +9,6 @@ import (
 	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
-func VpnOperation(operation string) error {
-	var err error
-	switch operation {
-	case "start":
-		go utils.StartVPNServer()
-		return nil
-	case "stop":
-		err = utils.StopVPNServer()
-		return err
-	case "restart":
-		err = utils.StopVPNServer()
-		go utils.StartVPNServer()
-		return err
-	}
-	return nil
-}
-
 func GetActiveConnections(searchterm string) (*[]vpn_dtos.ServerConnection, error) {
 	conn, err := utils.ConnectTelnet("localhost:7505")
 	if err != nil {

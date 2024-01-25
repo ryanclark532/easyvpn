@@ -1,0 +1,102 @@
+package vpn 
+
+import "easyvpn/src/common"
+import "fmt"
+import "strconv"
+
+templ StatusOverview(username string, current ServerOverview,status string, bgcolor string) {
+	@common.Root()
+	<div class="flex">
+		@common.Sidepanel(username)
+		<div class="p-4 w-full">
+			<div class="border-b-2 border-primary-500 mb-2">
+				<h2 class="text-4xl dark:text-white  pb-2 mb-2">Status Overview</h2>
+			</div>
+			@ServerStatus(status, bgcolor)
+			@currentSettings(current)
+		</div>
+	</div>
+}
+
+templ ServerStatus(status string, bgcolor string) {
+	<div class={ fmt.Sprintf("w-full h-60 bg-%s-300 rounded flex justify-center items-center", bgcolor) }>
+		if status == "running" {
+			@statusRunning()
+		} else if status == "notRunning" {
+			@statusNotRunning()
+		} else {
+			@statusUnknown()
+		}
+	</div>
+}
+
+templ statusRunning() {
+	<div class="mx-2 text-xl">
+		VPN Server Is Running
+	</div>
+	<div class="mx-2 flex flex-col">
+		<button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" hx-swap="none" hx-post="/vpn?operation=stop">Stop VPN Server</button>
+		<button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" hx-swap="none" hx-post="/vpn?operation=restart">Restart VPN Server</button>
+		<button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick="window.location.reload()">Refetch Status</button>
+	</div>
+}
+
+templ statusNotRunning() {
+	<div class="mx-2 text-xl">
+		VPN Server Is Not Running
+	</div>
+	<div class="mx-2 flex flex-col">
+		<button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" hx-swap="none" hx-post="/vpn?operation=start">Start Server</button>
+		<button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick="window.location.reload()">Refetch Status</button>
+	</div>
+}
+
+templ statusStarting() {
+	<div class="mx-2 text-xl">
+		VPN Server Is Starting 
+	</div>
+	<div class="mx-2 flex flex-col">
+		<button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700" hx-swap="none" hx-post="/vpn?operation=restart">Restart Server</button>
+		<button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick="window.location.reload()">Refetch Status</button>
+	</div>
+}
+
+templ statusUnknown() {
+	<div class="mx-2 text-xl">
+		Unable to get VPN Server Status
+	</div>
+	<div class="mx-2 flex flex-col">
+		<button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick="window.location.reload()">Refetch Status</button>
+	</div>
+}
+
+templ currentSettings(current ServerOverview) {
+	<section class="bg-gray-50 dark:bg-gray-900 ">
+		<div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+			<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+				<tbody>
+					<tr class="border-b dark:border-gray-700">
+						<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Server Name</th>
+						<td class="px-4 py-3">{ current.Name }</td>
+					</tr>
+					<tr class="border-b dark:border-gray-700">
+						<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Max Connections</th>
+						<td class="px-4 py-3">{ strconv.Itoa(current.MaxConnections) }</td>
+					</tr>
+					<tr class="border-b dark:border-gray-700">
+						<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Active Connections</th>
+						<td class="px-4 py-3">{ strconv.Itoa(current.ActiveUsers) }</td>
+					</tr>
+					<tr class="border-b dark:border-gray-700">
+						<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">VPN Port</th>
+						<td class="px-4 py-3">{ strconv.Itoa(current.VpnPort) }</td>
+					</tr>
+					<tr class="border-b dark:border-gray-700">
+						<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">Web Server Port</th>
+						<td class="px-4 py-3">{ strconv.Itoa(current.WebPort) }</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</section>
+}

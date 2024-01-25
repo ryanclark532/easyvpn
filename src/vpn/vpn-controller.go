@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"easyvpn/src/common"
 	"easyvpn/src/logging"
+	"easyvpn/src/settings"
 	"easyvpn/src/utils"
 	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
 	"encoding/json"
@@ -22,6 +23,15 @@ import (
 type Log struct {
 	LogTime time.Time
 	LogText string
+}
+
+type ServerOverview struct {
+	Name           string
+	IP             string
+	MaxConnections int
+	ActiveUsers    int
+	VpnPort        int
+	WebPort        int
 }
 
 func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -51,13 +61,6 @@ func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logging.HandleError(err, "VPNOperationEndpoint")
 		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = VpnOperation(req.Operation)
-	if err != nil {
-		logging.HandleError(err, "VPNOperationEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -139,6 +142,47 @@ func DisconnectClient(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/vpn/active-connections", http.StatusSeeOther)
 }
 
+func StatusOverviewPage(w http.ResponseWriter, r *http.Request) {
+	status, err := utils.GetVpnServerStatus()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	var color string
+	if status == "running" {
+		color = "green"
+	} else if status == "notRunning" {
+		color = "red"
+	} else {
+		color = "yellow"
+	}
+	s, err := settings.GetSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	currentConnections, err := GetActiveConnections("")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	name, _ := os.Hostname()
+	current := ServerOverview{
+		Name:           name,
+		IP:             s.IPAddress,
+		MaxConnections: s.MaxConnections,
+		ActiveUsers:    len(*currentConnections),
+		VpnPort:        s.Port,
+		WebPort:        s.WebServerPort,
+	}
+
+	StatusOverview("test", current, status, color).Render(r.Context(), w)
+}
+
 func GetVPNLogs(page int, searchterm string) ([]Log, error) {
 	file, err := os.Open(common.VPNLOG_FILE)
 	if err != nil {
@@ -186,4 +230,20 @@ func parseLogLine(line string) (Log, error) {
 	}
 
 	return log, nil
+}
+
+func VpnOperation(w http.ResponseWriter, r *http.Request) {
+	operation := r.URL.Query().Get("operation")
+	switch operation {
+	case "start":
+		fmt.Println("sttart")
+		utils.StartVPNServer()
+	case "stop":
+		fmt.Println("stop")
+		utils.StopVPNServer()
+	case "restart":
+		fmt.Println("restart")
+		utils.StopVPNServer()
+		utils.StartVPNServer()
+	}
 }
