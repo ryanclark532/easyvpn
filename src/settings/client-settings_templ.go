@@ -38,7 +38,7 @@ func ClientSettings(username string, settings *settings_dtos.Settings) templ.Com
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4 w-full\"><div class=\"border-b-2 border-primary-500 mb-2\"><h2 class=\"text-4xl dark:text-white  pb-2 mb-2\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ml-72 p-4 w-full\"><div class=\"border-b-2 border-primary-500 mb-2\"><h2 class=\"text-4xl dark:text-white  pb-2 mb-2\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

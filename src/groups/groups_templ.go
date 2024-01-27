@@ -41,7 +41,7 @@ func Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.Use
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4 w-full\"><h2 class=\"text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ml-72 p-4 w-full\"><h2 class=\"text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -86,7 +86,7 @@ func GroupsTable(groups *[]groups_dtos.Group, searchterm string) templ.Component
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section id=\"groups-table\" class=\"bg-gray-50 dark:bg-gray-900 sm:p-5\"><div class=\"mx-auto max-w-screen-xl lg:px-2\"><!--")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<section id=\"groups-table\" class=\"bg-gray-50 dark:bg-gray-900\"><div class=\"mx-auto max-w-screen-xl lg:px-2\"><!--")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

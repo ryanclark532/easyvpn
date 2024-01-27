@@ -1,6 +1,5 @@
 package groups
 
-
 import "easyvpn/src/common"
 import "easyvpn/src/groups/groups_dtos"
 import "easyvpn/src/user/user-dtos"
@@ -11,16 +10,16 @@ templ Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.Us
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
-		<div class="p-4 w-full">
+		<div class="ml-72 p-4 w-full">
 			<h2 class="text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4">Group Management</h2>
-		@GroupsTable(groups, searchterm)
+			@GroupsTable(groups, searchterm)
 		</div>
 	</div>
 	@createGroupModal(users)
 }
 
 templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
-	<section id="groups-table" class="bg-gray-50 dark:bg-gray-900 sm:p-5">
+	<section id="groups-table" class="bg-gray-50 dark:bg-gray-900">
 		<div class="mx-auto max-w-screen-xl lg:px-2">
 			<!-- Start coding here -->
 			<div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -33,7 +32,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
 									<path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
 								</svg>
 							</div>
-							<input type="text" value={searchterm} id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required=""/>
+							<input type="text" value={ searchterm } id="simple-search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required=""/>
 						</div>
 					</div>
 					<div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
@@ -72,7 +71,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
 						</thead>
 						<tbody>
 							for _, group := range *groups {
-							@groupTableRow(group)
+								@groupTableRow(group)
 							}
 						</tbody>
 					</table>
@@ -108,7 +107,6 @@ templ groupTableRow(group groups_dtos.Group) {
 	</tr>
 }
 
-
 templ createGroupModal(users *[]user_dtos.User) {
 	<div id="create-group-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
@@ -142,26 +140,24 @@ templ createGroupModal(users *[]user_dtos.User) {
 								<label for="enabled" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Users in this group are enabled</label>
 							</div>
 						</div>
-
-					<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-						<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-							<tr>
-								<th scope="col" class="px-4 py-3">Add User To Group</th>
-								<th scope="col" class="px-4 py-3">Username</th>
-							</tr>
-						</thead>
-						<tbody>
-							for _, user := range *users {
-
-								<tr class="border-b dark:border-gray-700">
-									<td class="px-4 py-3">
-								<input id="{user.ID}" type="checkbox" name={ fmt.Sprintf("%d-group", user.ID) } class="mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
-									</td>
-									<td class="px-4 py-3">{ user.Username}</td>
+						<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+							<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+								<tr>
+									<th scope="col" class="px-4 py-3">Add User To Group</th>
+									<th scope="col" class="px-4 py-3">Username</th>
 								</tr>
-							}
-						</tbody>
-					</table>
+							</thead>
+							<tbody>
+								for _, user := range *users {
+									<tr class="border-b dark:border-gray-700">
+										<td class="px-4 py-3">
+											<input id="{user.ID}" type="checkbox" name={ fmt.Sprintf("%d-group", user.ID) } class="mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
+										</td>
+										<td class="px-4 py-3">{ user.Username }</td>
+									</tr>
+								}
+							</tbody>
+						</table>
 						<button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">Create Group</button>
 					</form>
 				</div>

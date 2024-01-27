@@ -23,7 +23,7 @@ func Sidepanel(username string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-96 h-full\"><div class=\"border-b border-gray-200 p-3 mb-1 \"><div class=\"flex\"><svg style=\"margin-top: 5px;\" class=\"w-6 h-6 text-gray-500 dark:text-white\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 21 19\"><path stroke=\"currentColor\" fill=\"transparent\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M11 4C5.5-1.5-1.5 5.5 4 11l7 7 7-7c5.458-5.458-1.542-12.458-7-7Z\"></path></svg><h2 class=\"text-2xl ml-2 mb-3\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-92 h-full fixed top-0\"><div class=\"border-b border-gray-200 p-3 mb-1 \"><div class=\"flex\"><svg style=\"margin-top: 5px;\" class=\"w-6 h-6 text-gray-500 dark:text-white\" aria-hidden=\"true\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 21 19\"><path stroke=\"currentColor\" fill=\"transparent\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M11 4C5.5-1.5-1.5 5.5 4 11l7 7 7-7c5.458-5.458-1.542-12.458-7-7Z\"></path></svg><h2 class=\"text-2xl ml-2 mb-3\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -32,7 +32,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/admin/status/statistics\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/vpn/overview\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,7 +41,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/status/active-users\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/vpn/active-connections\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -50,7 +50,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/status/logs\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/vpn/logs\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -68,7 +68,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/admin/users\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/users\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -77,7 +77,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/users/groups\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/groups\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -95,7 +95,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/admin/settings/server\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></div><a href=\"/settings/server\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -104,7 +104,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/settings/client\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/settings/client\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -113,7 +113,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/settings/auth\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/settings/auth\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -122,7 +122,7 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/admin/settings/config\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h2></a> <a href=\"/settings/config\"><h2 class=\"text-xl rounded p-4 ml-4 hover:bg-gray-200 cursor-pointer\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -135,8 +135,49 @@ func Sidepanel(username string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var14 string = username
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+		templ_7745c5c3_Err = profileControls(username).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func profileControls(username string) templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var14 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var14 == nil {
+			templ_7745c5c3_Var14 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex bg-gray-200 w-full p-4\"><div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var15 string = username
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Var16 := `hello`
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var16)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

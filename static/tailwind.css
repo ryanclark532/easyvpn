@@ -998,6 +998,26 @@ input[type="range"]::-ms-fill-lower {
   margin-top: 0.25rem;
 }
 
+.mr-40 {
+  margin-right: 10rem;
+}
+
+.ml-40 {
+  margin-left: 10rem;
+}
+
+.ml-60 {
+  margin-left: 15rem;
+}
+
+.ml-72 {
+  margin-left: 18rem;
+}
+
+.ml-64 {
+  margin-left: 16rem;
+}
+
 .block {
   display: block;
 }
@@ -1370,6 +1390,10 @@ input[type="range"]::-ms-fill-lower {
   padding: 1.5rem;
 }
 
+.p-8 {
+  padding: 2rem;
+}
+
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -1424,6 +1448,14 @@ input[type="range"]::-ms-fill-lower {
 
 .pr-2 {
   padding-right: 0.5rem;
+}
+
+.pr-40 {
+  padding-right: 10rem;
+}
+
+.pl-40 {
+  padding-left: 10rem;
 }
 
 .text-left {
