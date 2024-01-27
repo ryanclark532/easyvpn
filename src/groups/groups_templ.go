@@ -41,7 +41,7 @@ func Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.Use
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ml-72 p-4 w-full\"><h2 class=\"text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"ml-80 p-4 w-full\"><h2 class=\"text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -154,6 +154,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 			login.Login().Render(r.Context(), w)
 		})
 		r.Post("/", login.HandleLogin)
+		r.Post("/signout", login.HandleSignout)
 	})
 	r.Route("/users", func(r chi.Router) {
 		r.Use(login.AuthMiddleware)
@@ -175,6 +176,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	})
 
 	r.Route("/settings", func(r chi.Router) {
+		r.Use(login.AuthMiddleware)
 		r.Route("/server", func(r chi.Router) {
 			r.Get("/", settings.ServerSettingsPage)
 			r.Post("/", settings.SetServerSettings)
@@ -197,6 +199,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 	})
 
 	r.Route("/vpn", func(r chi.Router) {
+		r.Use(login.AuthMiddleware)
 		r.Get("/active-connections", vpn.GetActiveUsersPage)
 		r.Get("/logs", vpn.GetVpnLogsPage)
 		r.Post("/disconnect", vpn.DisconnectClient)

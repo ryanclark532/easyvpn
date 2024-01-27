@@ -47,6 +47,17 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }
 
+func HandleSignout(w http.ResponseWriter, r *http.Request) {
+	cookie := http.Cookie{
+		Name:    "JWT",
+		Value:   "",
+		Expires: time.Now().AddDate(0, 0, -1),
+		Path:    "/",
+	}
+	http.SetCookie(w, &cookie)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}
+
 func AuthUser(username string, password string) (bool, *user_dtos.User, error) {
 	user, err := user.GetUser(username)
 	if err != nil {
@@ -67,6 +78,7 @@ func generateJWT(user *user_dtos.User) (string, error) {
 
 	claims := token.Claims.(jwt.MapClaims)
 	claims["username"] = user.Username
+	claims["roles"] = user.Roles
 	claims["exp"] = time.Now().Add(time.Hour * 24 * 30).Unix()
 
 	tokenString, err := token.SignedString(secret)

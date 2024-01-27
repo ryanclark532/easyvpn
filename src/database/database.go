@@ -83,12 +83,14 @@ func SetupTestData() error {
 		PasswordExpiry: time.Now().Add(time.Hour * 24),
 		IsAdmin:        true,
 		Enabled:        true,
+		Roles:          "vpn, usermgt, settings",
 	}
 
 	group := groups_dtos.Group{
 		Name:        "group1",
 		IsAdmin:     true,
 		Enabled:     true,
+		Roles:       "vpn, usermgt, settings",
 		MemberCount: 1,
 	}
 

@@ -5,6 +5,7 @@ import (
 	"easyvpn/src/user"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -42,6 +43,12 @@ func AuthMiddleware(next http.Handler) http.Handler {
 					http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 					return
 				}
+
+				if !checkRoles(r.URL.Path, user.Roles) {
+					http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+					return
+				}
+
 				ctx := context.WithValue(r.Context(), "user", user)
 
 				r = r.WithContext(ctx)
@@ -70,4 +77,17 @@ func decodeJWT(tokenString string) (*jwt.Token, error) {
 	})
 
 	return token, err
+}
+
+func checkRoles(route string, roles string) bool {
+	if strings.HasPrefix(route, "/vpn") {
+		return strings.Contains(roles, "vpn")
+	}
+	if strings.HasPrefix(route, "/settings") {
+		return strings.Contains(roles, "settings")
+	}
+	if strings.HasPrefix(route, "/users") || strings.HasPrefix(route, "/groups") {
+		return strings.Contains(roles, "usermgt")
+	}
+	return false
 }
