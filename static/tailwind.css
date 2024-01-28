@@ -1357,6 +1357,10 @@ input[type="range"]::-ms-fill-lower {
   border-width: 1px;
 }
 
+.border-2 {
+  border-width: 2px;
+}
+
 .border-b {
   border-bottom-width: 1px;
 }
@@ -1460,6 +1464,10 @@ input[type="range"]::-ms-fill-lower {
 
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-1 {
+  padding: 0.25rem;
 }
 
 .px-4 {

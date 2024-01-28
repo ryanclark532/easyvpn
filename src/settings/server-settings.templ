@@ -33,20 +33,30 @@ templ ServerSettings(username string, settings *settings_dtos.Settings) {
 				</svg>Changing Server settings will require the server to restart, therefore disconnecting all connected clients 	
 			</div>
 			<form action="/settings/server" method="POST">
+				<div class="p-4 border-2 border-gray-200 rounded">
+					<div class="mb-4" data-tooltip-target="tcp_port_tooltip">
+						<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">TCP VPN Server Port</label>
+						<input value={ strconv.Itoa(settings.TCPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+					</div>
+					<div id="tcp_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+						If the server is using TCP, the port that it is served on
+						<div class="tooltip-arrow" data-popper-arrow></div>
+					</div>
+					<div class="mb-4" data-tooltip-target="port_tooltip">
+						<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">UDP VPN Server Port</label>
+						<input value={ strconv.Itoa(settings.UDPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+					</div>
+					<div id="port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+						If the server is using UDP, the port that it is served on 
+						<div class="tooltip-arrow" data-popper-arrow></div>
+					</div>
+				</div>
 				<div class="mb-4" data-tooltip-target="ip_tooltip">
 					<label for="ip_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Hostname or IP Address</label>
 					<input value={ settings.IPAddress } type="text" name="ip_address" id="ip_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0.0.0.0..." required/>
 				</div>
 				<div id="ip_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
 					The IP address of the VPN server
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<div class="mb-4" data-tooltip-target="port_tooltip">
-					<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Server Port</label>
-					<input value={ strconv.Itoa(settings.Port) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
-				</div>
-				<div id="port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Port that the VPN server is served on
 					<div class="tooltip-arrow" data-popper-arrow></div>
 				</div>
 				<div class="mb-4" data-tooltip-target="web_port_tooltip">

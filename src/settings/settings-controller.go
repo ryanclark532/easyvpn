@@ -92,7 +92,7 @@ func AuthSettingsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConfigFileSettingsPage(w http.ResponseWriter, r *http.Request) {
-	contents, err := os.ReadFile(common.VPNCONFIG_FILE)
+	contents, err := os.ReadFile(common.VPN_TCP_CONFIG_FILE)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -112,7 +112,7 @@ func SetServerSettings(w http.ResponseWriter, r *http.Request) {
 
 	}
 	Port, _ := strconv.ParseInt(r.Form.Get("vpn_port"), 10, 0)
-	settings.Port = int(Port)
+	settings.TCPPort = int(Port)
 	WebServerPort, _ := strconv.ParseInt(r.Form.Get("web_port"), 10, 0)
 	settings.WebServerPort = int(WebServerPort)
 	MaxConnections, _ := strconv.ParseInt(r.Form.Get("max_connections"), 10, 0)
@@ -180,7 +180,7 @@ func SetConfigFileContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	content := r.Form.Get("config")
-	err = os.WriteFile(common.VPNCONFIG_FILE, []byte(content), 755)
+	err = os.WriteFile(common.VPN_TCP_CONFIG_FILE, []byte(content), 755)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}

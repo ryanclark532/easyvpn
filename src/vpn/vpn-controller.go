@@ -176,7 +176,7 @@ func StatusOverviewPage(w http.ResponseWriter, r *http.Request) {
 		IP:             s.IPAddress,
 		MaxConnections: s.MaxConnections,
 		ActiveUsers:    len(*currentConnections),
-		VpnPort:        s.Port,
+		VpnPort:        s.TCPPort,
 		WebPort:        s.WebServerPort,
 	}
 

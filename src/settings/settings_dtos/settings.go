@@ -19,7 +19,8 @@ type Settings struct {
 	//Server
 	VpnSubnet      string `json:"vpn_subnet" bun:"-"`
 	VpnSubnetMask  int    `json:"vpn_subnet_mask" bun:"-"`
-	Port           int    `json:"port" bun:"-"`
+	TCPPort        int    `json:"port" bun:"-"`
+	UDPPort        int    `json:"port" bun:"-"`
 	IPAddress      string `json:"ip_address" bun:",notnull"`
 	WebServerPort  int    `json:"web_server_port" bun:",notnull"`
 	MaxConnections int    `json:"max_connections" bun:",notnull"`

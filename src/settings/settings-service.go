@@ -29,7 +29,7 @@ func GetSettings() (*settings_dtos.Settings, error) {
 		return nil, err
 	}
 
-	file, err := os.Open(common.VPNCONFIG_FILE)
+	file, err := os.Open(common.VPN_TCP_CONFIG_FILE)
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func readConfigLine(line string, settings *settings_dtos.Settings) {
 	}
 	if len(portMatch) > 0 {
 		portint, _ := strconv.ParseInt(portMatch[1], 0, 0)
-		settings.Port = int(portint)
+		settings.TCPPort = int(portint)
 	}
 	if line == "push \"redirect-gateway def1 bypass-dhcp\"" {
 		settings.UseAsGateway = true
@@ -139,7 +139,7 @@ func cidrToSubnetMask(cidr int) (string, error) {
 }
 
 func RewriteConfigFile(settings *settings_dtos.Settings) error {
-	file, err := os.OpenFile(common.VPNCONFIG_FILE, os.O_RDWR, 0644)
+	file, err := os.OpenFile(common.VPN_TCP_CONFIG_FILE, os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
@@ -161,7 +161,7 @@ func RewriteConfigFile(settings *settings_dtos.Settings) error {
 		return err
 	}
 
-	modifiableSettings := [4]string{fmt.Sprintf("push \"dhcp-option DNS %s\" \npush \"dhcp-option DNS %s\"", settings.DNSServer1, settings.DNSServer2), fmt.Sprintf("server %s %s", settings.VpnSubnet, vpnMask), fmt.Sprintf("port %s", strconv.Itoa(settings.Port))}
+	modifiableSettings := [4]string{fmt.Sprintf("push \"dhcp-option DNS %s\" \npush \"dhcp-option DNS %s\"", settings.DNSServer1, settings.DNSServer2), fmt.Sprintf("server %s %s", settings.VpnSubnet, vpnMask), fmt.Sprintf("port %s", strconv.Itoa(settings.TCPPort))}
 	if settings.PrivateAccess {
 		modifiableSettings[3] = "push \"redirect-gateway def1 bypass-dhcp\""
 	}
