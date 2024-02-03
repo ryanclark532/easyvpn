@@ -17,3 +17,5 @@ type User struct {
 	Enabled        bool      `json:"enabled"`
 	PasswordExpiry time.Time `json:"password_expiry"`
 }
+
+const CompleteRoles = "Server Status,User Management,Settings"

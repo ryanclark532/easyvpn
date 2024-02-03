@@ -162,7 +162,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Post("/", user.CreateNewUser)
 		r.Route("/{id}", func(r chi.Router) {
 			r.Delete("/", user.DeleteUser)
-			r.Put("/", user.UpdateUser)
+			r.Post("/", user.UpdateUser)
 		})
 	})
 

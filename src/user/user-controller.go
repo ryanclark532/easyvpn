@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -62,7 +63,7 @@ func UsersPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	Users(username, users, r.URL.Query().Get("username")).Render(r.Context(), w)
+	Users(username, users, r.URL.Query().Get("username"), user_dtos.CompleteRoles).Render(r.Context(), w)
 }
 
 func CreateNewUser(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +83,7 @@ func CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		IsAdmin:        r.Form.Get("admin") == "on",
 		Enabled:        r.Form.Get("enabled") == "on",
 		PasswordExpiry: passwordExpiry,
+		Roles:          strings.Join(r.Form["roles"], ","),
 	}
 
 	err = CreateUser(&user)
@@ -102,7 +104,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	UsersTable(users, r.URL.Query().Get("username")).Render(r.Context(), w)
+	UsersTable(users, r.URL.Query().Get("username"), user_dtos.CompleteRoles).Render(r.Context(), w)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -110,6 +112,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	fmt.Println(r.Form.Encode())
+
 	var passwordExpiry time.Time
 	if r.Form.Get("mustChangePw") == "on" {
 		passwordExpiry = time.Now()
@@ -122,17 +127,14 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		IsAdmin:        r.Form.Get("admin") == "on",
 		Enabled:        r.Form.Get("enabled") == "on",
 		PasswordExpiry: passwordExpiry,
+		Roles:          strings.Join(r.Form["roles"], ","),
 	}
-	_, err = database.DB.NewUpdate().Model(user).Where("id = ?", chi.URLParam(r, "id")).Exec(context.Background())
+	_, err = database.DB.NewUpdate().Model(&user).Where("id = ?", chi.URLParam(r, "id")).Exec(context.Background())
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	users, err := GetUsers("")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	UsersTable(users, r.URL.Query().Get("username")).Render(r.Context(), w)
+	http.Redirect(w, r, "/users", http.StatusSeeOther)
 }

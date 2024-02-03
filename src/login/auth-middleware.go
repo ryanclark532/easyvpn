@@ -43,6 +43,7 @@ func AuthMiddleware(next http.Handler) http.Handler {
 					http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 					return
 				}
+				fmt.Println(user.Roles)
 
 				if !checkRoles(r.URL.Path, user.Roles) {
 					http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
@@ -81,13 +82,13 @@ func decodeJWT(tokenString string) (*jwt.Token, error) {
 
 func checkRoles(route string, roles string) bool {
 	if strings.HasPrefix(route, "/vpn") {
-		return strings.Contains(roles, "vpn")
+		return strings.Contains(roles, "Server Status")
 	}
 	if strings.HasPrefix(route, "/settings") {
-		return strings.Contains(roles, "settings")
+		return strings.Contains(roles, "Settings")
 	}
 	if strings.HasPrefix(route, "/users") || strings.HasPrefix(route, "/groups") {
-		return strings.Contains(roles, "usermgt")
+		return strings.Contains(roles, "User Management")
 	}
 	return false
 }
