@@ -5,20 +5,21 @@ import "easyvpn/src/groups/groups_dtos"
 import "easyvpn/src/user/user-dtos"
 import "fmt"
 import "strconv"
+import "strings"
 
-templ Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.User, searchterm string) {
+templ Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.User, searchterm string, completeRoles string) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
 		<div class="ml-80 p-4 w-full">
 			<h2 class="text-4xl dark:text-white border-b-2 border-primary-500 pb-2 mb-4">Group Management</h2>
-			@GroupsTable(groups, searchterm)
+			@GroupsTable(groups, users,searchterm)
 		</div>
 	</div>
-	@createGroupModal(users)
+	@createGroupModal(users, completeRoles)
 }
 
-templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
+templ GroupsTable(groups *[]groups_dtos.Group, users *[]user_dtos.User, searchterm string) {
 	<section id="groups-table" class="bg-gray-50 dark:bg-gray-900">
 		<div class="mx-auto max-w-screen-xl lg:px-2">
 			<!-- Start coding here -->
@@ -64,6 +65,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
 								<th scope="col" class="px-4 py-3">Member Count</th>
 								<th scope="col" class="px-4 py-3">Is Admin</th>
 								<th scope="col" class="px-4 py-3">Enabled</th>
+								<th scope="col" class="px-4 py-3">Roles</th>
 								<th scope="col" class="px-4 py-3">
 									Actions
 								</th>
@@ -71,7 +73,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
 						</thead>
 						<tbody>
 							for _, group := range *groups {
-								@groupTableRow(group)
+								@groupTableRow(group, user_dtos.CompleteRoles, users)
 							}
 						</tbody>
 					</table>
@@ -81,12 +83,17 @@ templ GroupsTable(groups *[]groups_dtos.Group, searchterm string) {
 	</section>
 }
 
-templ groupTableRow(group groups_dtos.Group) {
+templ groupTableRow(group groups_dtos.Group, completeRoles string, users *[]user_dtos.User) {
 	<tr class="border-b dark:border-gray-700">
 		<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ group.Name }</th>
 		<td class="px-4 py-3">{ strconv.Itoa(group.MemberCount) }</td>
 		<td class="px-4 py-3">{ strconv.FormatBool(group.Enabled) }</td>
 		<td class="px-4 py-3">{ strconv.FormatBool(group.IsAdmin) }</td>
+		<td class="px-4 py-3">
+			for _, role := range strings.Split(group.Roles, ",") {
+				<span class="bg-blue-100 text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">{ role }</span>
+			}
+		</td>
 		<td class="px-4 py-3 flex items-center justify-end">
 			<button id={ fmt.Sprintf("%d-dropdown-button", group.ID) } data-dropdown-toggle={ fmt.Sprintf("%d-dropdown", group.ID) } class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
 				<svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -96,7 +103,7 @@ templ groupTableRow(group groups_dtos.Group) {
 			<div id={ fmt.Sprintf("%d-dropdown", group.ID) } class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600">
 				<ul class="py-1 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="apple-imac-27-dropdown-button">
 					<li>
-						<a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target={ fmt.Sprintf("update-%d-modal", group.ID) } data-modal-toggle={ fmt.Sprintf("update-%d-modal", group.ID) }>Edit</a>
+						<a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target={ fmt.Sprintf("update-%s-modal", group.Name) } data-modal-toggle={ fmt.Sprintf("update-%s-modal", group.Name) }>Edit</a>
 					</li>
 				</ul>
 				<div class="py-1">
@@ -105,9 +112,10 @@ templ groupTableRow(group groups_dtos.Group) {
 			</div>
 		</td>
 	</tr>
+	@updateGroupModal(group, completeRoles, users)
 }
 
-templ createGroupModal(users *[]user_dtos.User) {
+templ createGroupModal(users *[]user_dtos.User, completeRoles string) {
 	<div id="create-group-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<!-- Modal content -->
@@ -140,6 +148,14 @@ templ createGroupModal(users *[]user_dtos.User) {
 								<label for="enabled" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Users in this group are enabled</label>
 							</div>
 						</div>
+						<div class="mb-4">
+							<label for="countries_multiple" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
+							<select multiple id="countries_multiple" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="roles">
+								for _,role := range strings.Split(completeRoles, ",") {
+									<option value={ role }>{ role }</option>
+								}
+							</select>
+						</div>
 						<table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
 							<thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 								<tr>
@@ -164,4 +180,58 @@ templ createGroupModal(users *[]user_dtos.User) {
 			</div>
 		</div>
 	</div>
+}
+
+templ updateGroupModal(group groups_dtos.Group, completeRoles string, users *[]user_dtos.User) {
+	<div id={ fmt.Sprintf("update-%s-modal", group.Name) } tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+		<div class="relative p-4 w-full max-w-2xl max-h-full">
+			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+				<div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+					<h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+						Update Group
+					</h3>
+					<button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide={ fmt.Sprintf("update-%s-modal", group.Name) }>
+						<svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+							<path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"></path>
+						</svg>
+						<span class="sr-only">Close modal</span>
+					</button>
+				</div>
+				<div class="p-4 md:p-5 space-y-4">
+					<form method="POST">
+						<div class="mb-4">
+							<label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+							<input type="text" id="name" value={ group.Name } name="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Name..." required/>
+						</div>
+						<div class="flex mb-4">
+							<div class="flex items-center mb-4 w-1/2">
+								<input checked={ strconv.FormatBool(group.IsAdmin) } id="admin" type="checkbox" name="admin" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
+								<label for="admin" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Users in this group are admin users</label>
+							</div>
+							<div class="flex items-cener w-1/2">
+								<input checked={ strconv.FormatBool(group.Enabled) } id="enabled" name="enabled" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
+								<label for="enabled" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Users in this group are enabled</label>
+							</div>
+						</div>
+						<div class="mb-4">
+							<label for="countries_multiple" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Roles</label>
+							<select multiple id="countries_multiple" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="roles">
+								for _,role := range strings.Split(completeRoles, ",") {
+									@option(role, strings.Contains(group.Roles, role))
+								}
+							</select>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+templ option(name string, selected bool) {
+	if selected {
+		<option value={ name } selected>{ name }</option>
+	} else {
+		<option value={ name }>{ name }</option>
+	}
 }
