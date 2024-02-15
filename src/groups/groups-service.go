@@ -8,20 +8,20 @@ import (
 	"strconv"
 )
 
-func GetGroups() (*[]groups_dtos.Group, error) {
+func GetGroups() ([]groups_dtos.Group, error) {
 	groups := new([]groups_dtos.Group)
 	err := database.DB.NewSelect().Model(groups).Scan(context.Background())
 	if err != nil {
 		return nil, err
 	}
 	var g []groups_dtos.Group
-	for _, group := range *groups{
+	for _, group := range *groups {
 		m := new([]groups_dtos.GroupMembership)
 		err = database.DB.NewSelect().Model(m).Where("group_id = ?", group.ID).Scan(context.Background())
 		group.MemberCount = len(*m)
 		g = append(g, group)
-	}	
-	return &g, err
+	}
+	return g, err
 }
 
 func GetMembershipsForGroup(groupId string) (*[]user_dtos.User, error) {
@@ -46,7 +46,6 @@ func GetMembershipsforUser(userId uint) ([]groups_dtos.Group, error) {
 	var groups []groups_dtos.Group
 	return groups, nil
 }
-
 
 func CreateGroupMembership(users []uint, groupid string) error {
 	groupId, err := strconv.ParseUint(groupid, 10, 32)
@@ -75,10 +74,9 @@ func DeleteGroupMembership(users []uint, groupid string) error {
 	return err
 }
 
-
 func UpdateGroup(group *groups_dtos.Group, groupid string) error {
 	_, err := database.DB.NewUpdate().Model(group).
-		Set("name = ?, is_admin = ?, enabled = ?", group.Name, group.IsAdmin, group.Enabled).
+		Set("name = ?, is_admin = ?, enabled = ?, roles = ?", group.Name, group.IsAdmin, group.Enabled, group.Roles).
 		Where("id = ?", groupid).Exec(context.Background())
 	return err
 }

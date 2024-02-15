@@ -128,7 +128,7 @@ func GroupsPage(w http.ResponseWriter, r *http.Request) {
 
 	var groupsWithMembership []GroupWithMembership
 
-	for _, group := range *groups {
+	for _, group := range groups {
 		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
 		if err != nil {
 			continue
@@ -216,7 +216,7 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 	var groupsWithMembership []GroupWithMembership
 
-	for _, group := range *groups {
+	for _, group := range groups {
 		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
 		if err != nil {
 			continue
@@ -237,6 +237,9 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	fmt.Println(r.Form.Encode())
+
 	groupId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
 		fmt.Println(err)
@@ -244,31 +247,41 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	_, err = database.DB.NewDelete().Model((*groups_dtos.GroupMembership)(nil)).Where("group_id = ?", groupId).Exec(context.Background())
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	formObjs := strings.Split(r.Form.Encode(), "&")
-	var addedUsers int
 	for _, v := range formObjs {
-		if strings.HasSuffix(v, "-group=on") {
-			userId, err := strconv.ParseInt(strings.TrimSuffix(v, "-group=on"), 36, 64)
-			if err != nil {
-				fmt.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			groupMembership := groups_dtos.GroupMembership{
-				UserID:  uint(userId),
-				GroupID: uint(groupId),
-			}
-			_, err = database.DB.NewInsert().Model(&groupMembership).Ignore().Exec(context.Background())
-
-			if err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-
-			addedUsers++
-
+		if !strings.HasSuffix(v, "-group=on") {
+			continue
 		}
+		userId, err := strconv.ParseInt(strings.TrimSuffix(v, "-group=on"), 36, 64)
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		groupMembership := groups_dtos.GroupMembership{
+			UserID:  uint(userId),
+			GroupID: uint(groupId),
+		}
+		_, err = database.DB.NewInsert().Model(&groupMembership).Ignore().Exec(context.Background())
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 	}
 
 	group := groups_dtos.Group{
