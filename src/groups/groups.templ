@@ -1,13 +1,12 @@
 package groups
 
 import "easyvpn/src/common"
-import "easyvpn/src/groups/groups_dtos"
 import "easyvpn/src/user/user-dtos"
 import "fmt"
 import "strconv"
 import "strings"
 
-templ Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.User, searchterm string, completeRoles string) {
+templ Groups(username string, groups []GroupWithMembership, users []user_dtos.User, searchterm string, completeRoles string) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -19,7 +18,7 @@ templ Groups(username string, groups *[]groups_dtos.Group, users *[]user_dtos.Us
 	@createGroupModal(users, completeRoles)
 }
 
-templ GroupsTable(groups *[]groups_dtos.Group, users *[]user_dtos.User, searchterm string) {
+templ GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchterm string) {
 	<section id="groups-table" class="bg-gray-50 dark:bg-gray-900">
 		<div class="mx-auto max-w-screen-xl lg:px-2">
 			<!-- Start coding here -->
@@ -72,7 +71,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, users *[]user_dtos.User, searchte
 							</tr>
 						</thead>
 						<tbody>
-							for _, group := range *groups {
+							for _, group := range groups {
 								@groupTableRow(group, user_dtos.CompleteRoles, users)
 							}
 						</tbody>
@@ -83,7 +82,7 @@ templ GroupsTable(groups *[]groups_dtos.Group, users *[]user_dtos.User, searchte
 	</section>
 }
 
-templ groupTableRow(group groups_dtos.Group, completeRoles string, users *[]user_dtos.User) {
+templ groupTableRow(group GroupWithMembership, completeRoles string, users []user_dtos.User) {
 	<tr class="border-b dark:border-gray-700">
 		<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ group.Name }</th>
 		<td class="px-4 py-3">{ strconv.Itoa(group.MemberCount) }</td>
@@ -115,7 +114,7 @@ templ groupTableRow(group groups_dtos.Group, completeRoles string, users *[]user
 	@updateGroupModal(group, completeRoles, users)
 }
 
-templ createGroupModal(users *[]user_dtos.User, completeRoles string) {
+templ createGroupModal(users []user_dtos.User, completeRoles string) {
 	<div id="create-group-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<!-- Modal content -->
@@ -164,7 +163,7 @@ templ createGroupModal(users *[]user_dtos.User, completeRoles string) {
 								</tr>
 							</thead>
 							<tbody>
-								for _, user := range *users {
+								for _, user := range users {
 									<tr class="border-b dark:border-gray-700">
 										<td class="px-4 py-3">
 											<input id="{user.ID}" type="checkbox" name={ fmt.Sprintf("%d-group", user.ID) } class="mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
@@ -182,7 +181,7 @@ templ createGroupModal(users *[]user_dtos.User, completeRoles string) {
 	</div>
 }
 
-templ updateGroupModal(group groups_dtos.Group, completeRoles string, users *[]user_dtos.User) {
+templ updateGroupModal(group GroupWithMembership, completeRoles string, users []user_dtos.User) {
 	<div id={ fmt.Sprintf("update-%s-modal", group.Name) } tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -198,7 +197,7 @@ templ updateGroupModal(group groups_dtos.Group, completeRoles string, users *[]u
 					</button>
 				</div>
 				<div class="p-4 md:p-5 space-y-4">
-					<form method="POST">
+					<form method="POST" action={ templ.URL(fmt.Sprintf("/groups/%d", group.ID)) }>
 						<div class="mb-4">
 							<label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
 							<input type="text" id="name" value={ group.Name } name="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Name..." required/>
@@ -221,6 +220,27 @@ templ updateGroupModal(group groups_dtos.Group, completeRoles string, users *[]u
 								}
 							</select>
 						</div>
+						<div>
+							<div class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+								<div class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 flex">
+									<div class="flex-1 px-4 py-3 font-bold">Add User To Group</div>
+									<div class="flex-1 px-4 py-3 font-bold">Username</div>
+								</div>
+								for _, user := range users {
+									<div class="border-b dark:border-gray-700 flex">
+										<div class="flex-1 px-4 py-3">
+											if GroupContainsMember(group.members, user) {
+												<input checked id="{user.ID}" type="checkbox" name={ fmt.Sprintf("%d-group", user.ID) } class="mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
+											} else {
+												<input id="{user.ID}" type="checkbox" name={ fmt.Sprintf("%d-group", user.ID) } class="mt-1 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 pr-2"/>
+											}
+										</div>
+										<div class="flex-1 px-4 py-3">{ user.Username }</div>
+									</div>
+								}
+							</div>
+						</div>
+						<button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 w-full">Update Group</button>
 					</form>
 				</div>
 			</div>

@@ -171,6 +171,7 @@ func setupRouter(service *auth.Service) *chi.Mux {
 		r.Get("/", groups.GroupsPage)
 		r.Post("/", groups.CreateGroup)
 		r.Route("/{id}", func(r chi.Router) {
+			r.Post("/", groups.UpdateGroupPage)
 			r.Delete("/", groups.DeleteGroup)
 		})
 	})

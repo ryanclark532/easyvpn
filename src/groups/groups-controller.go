@@ -16,6 +16,11 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+type GroupWithMembership struct {
+	groups_dtos.Group
+	members []user_dtos.User
+}
+
 func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
 	response, err := GetGroups()
 	if err != nil {
@@ -120,7 +125,25 @@ func GroupsPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	Groups("hello", groups, users, chi.URLParam(r, "username"), user_dtos.CompleteRoles).Render(r.Context(), w)
+
+	var groupsWithMembership []GroupWithMembership
+
+	for _, group := range *groups {
+		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
+		if err != nil {
+			continue
+		}
+		x := GroupWithMembership{
+			Group:   group,
+			members: *members,
+		}
+		groupsWithMembership = append(groupsWithMembership, x)
+	}
+	for _, x := range groupsWithMembership {
+		fmt.Println(x.members)
+	}
+
+	Groups("hello", groupsWithMembership, *users, chi.URLParam(r, "username"), user_dtos.CompleteRoles).Render(r.Context(), w)
 }
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
@@ -191,6 +214,84 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	var groupsWithMembership []GroupWithMembership
 
-	GroupsTable(groups, users, "").Render(r.Context(), w)
+	for _, group := range *groups {
+		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
+		if err != nil {
+			continue
+		}
+		x := GroupWithMembership{
+			Group:   group,
+			members: *members,
+		}
+		groupsWithMembership = append(groupsWithMembership, x)
+	}
+
+	GroupsTable(groupsWithMembership, *users, "").Render(r.Context(), w)
+}
+
+func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	groupId, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	formObjs := strings.Split(r.Form.Encode(), "&")
+	var addedUsers int
+	for _, v := range formObjs {
+		if strings.HasSuffix(v, "-group=on") {
+			userId, err := strconv.ParseInt(strings.TrimSuffix(v, "-group=on"), 36, 64)
+			if err != nil {
+				fmt.Println(err)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			groupMembership := groups_dtos.GroupMembership{
+				UserID:  uint(userId),
+				GroupID: uint(groupId),
+			}
+			_, err = database.DB.NewInsert().Model(&groupMembership).Ignore().Exec(context.Background())
+
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			addedUsers++
+
+		}
+	}
+
+	group := groups_dtos.Group{
+		Name:        r.Form.Get("name"),
+		MemberCount: 0,
+		IsAdmin:     r.Form.Get("admin") == "on",
+		Enabled:     r.Form.Get("enabled") == "on",
+		Roles:       strings.Join(r.Form["roles"], ","),
+	}
+	err = UpdateGroup(&group, strconv.Itoa(int(groupId)))
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/groups", http.StatusSeeOther)
+}
+
+func GroupContainsMember(s []user_dtos.User, e user_dtos.User) bool {
+	for _, value := range s {
+		if value.ID == e.ID {
+			return true
+		}
+	}
+	return false
 }
