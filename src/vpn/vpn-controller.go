@@ -3,11 +3,8 @@ package vpn
 import (
 	"bufio"
 	"easyvpn/src/common"
-	"easyvpn/src/logging"
 	"easyvpn/src/settings"
 	"easyvpn/src/utils"
-	vpn_dtos "easyvpn/src/vpn/vpn-dtos"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -16,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
@@ -33,64 +29,12 @@ type ServerOverview struct {
 	VpnPort        int
 	WebPort        int
 }
-
-func GetServerStatusEndpoint(w http.ResponseWriter, r *http.Request) {
-	status, err := utils.GetVpnServerStatus()
-	if err != nil {
-		logging.HandleError(err, "GetServerStatusEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	responseData := map[string]interface{}{}
-	responseData["status"] = status
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
-	if err != nil {
-		logging.HandleError(err, "GetServerStatusEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
-func VpnOperationEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *vpn_dtos.VpnOperationRequest
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		logging.HandleError(err, "VPNOperationEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	GetServerStatusEndpoint(w, r)
-}
-
-func GetActiveConnectionsEndpoint(w http.ResponseWriter, r *http.Request) {
-	response, err := GetActiveConnections("blah")
-	if err != nil {
-		logging.HandleError(err, "GetActiveConnectionsEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	responseData := map[string]interface{}{}
-	responseData["connections"] = response
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(responseData)
-	if err != nil {
-		logging.HandleError(err, "GetActiveConnectionsEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-}
-
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
+type ServerConnection struct {
+	CommonName     string
+	Address        string
+	BytesRec       string
+	BytesSent      string
+	ConnectedSince time.Time
 }
 
 func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +43,7 @@ func GetActiveUsersPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 	if activeUsers == nil {
-		var x []vpn_dtos.ServerConnection
+		var x []ServerConnection
 		p := &x
 		ActiveUsers("test", p, "").Render(r.Context(), w)
 		return
@@ -246,4 +190,69 @@ func VpnOperation(w http.ResponseWriter, r *http.Request) {
 		utils.StopVPNServer()
 		utils.StartVPNServer()
 	}
+}
+
+func GetActiveConnections(searchterm string) (*[]ServerConnection, error) {
+	conn, err := utils.ConnectTelnet("localhost:7505")
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	err = utils.CommandTelnet("status", conn)
+	if err != nil {
+		return nil, err
+	}
+	out, err := utils.ReadTelnet(conn)
+	if err != nil {
+		return nil, err
+	}
+	outString := strings.Join(out, "")
+	return formatServerConnection(outString, searchterm)
+}
+
+func formatServerConnection(output string, searchterm string) (*[]ServerConnection, error) {
+	lines := strings.Split(output, "\r\n")
+
+	headerLine := ""
+	for i, line := range lines {
+		if line == "Common Name,Real Address,Bytes Received,Bytes Sent,Connected Since" {
+			headerLine = lines[i]
+			break
+		}
+	}
+
+	headerIndex := strings.Index(output, headerLine)
+
+	dataLines := strings.Split(output[headerIndex:], "\r\n")[1:]
+
+	var connections []ServerConnection
+
+	for _, dataLine := range dataLines {
+		fields := strings.Split(dataLine, ",")
+		if len(fields) == 5 {
+			commonName := fields[0]
+			realAddress := fields[1]
+			bytesReceived := fields[2]
+			bytesSent := fields[3]
+			connectedSince := fields[4]
+			parsedTime, err := time.Parse(time.DateTime, connectedSince)
+			if err != nil {
+				return nil, err
+			}
+
+			y := ServerConnection{
+				CommonName:     commonName,
+				Address:        realAddress,
+				BytesRec:       bytesReceived,
+				BytesSent:      bytesSent,
+				ConnectedSince: parsedTime,
+			}
+			if fuzzy.Match(searchterm, commonName) {
+				connections = append(connections, y)
+			}
+		}
+	}
+
+	return &connections, nil
+
 }

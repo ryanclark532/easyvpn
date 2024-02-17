@@ -1,7 +1,6 @@
 package vpn 
 
 import "easyvpn/src/common"
-import "easyvpn/src/vpn/vpn-dtos"
 import "fmt"
 
 templ searchUsers() {
@@ -15,7 +14,7 @@ templ searchUsers() {
 	</script>
 }
 
-templ ActiveUsers(username string, activeUsers *[]vpn_dtos.ServerConnection, searchterm string) {
+templ ActiveUsers(username string, activeUsers *[]ServerConnection, searchterm string) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -29,7 +28,7 @@ templ ActiveUsers(username string, activeUsers *[]vpn_dtos.ServerConnection, sea
 	@searchUsers()
 }
 
-templ ActiveUsersTable(searchterm string, connections *[]vpn_dtos.ServerConnection) {
+templ ActiveUsersTable(searchterm string, connections *[]ServerConnection) {
 	<section id="user-table" class="bg-gray-50 dark:bg-gray-900 ">
 		<div class="mx-auto max-w-screen-xl ">
 			<div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -72,7 +71,7 @@ templ ActiveUsersTable(searchterm string, connections *[]vpn_dtos.ServerConnecti
 	</section>
 }
 
-templ activeConnnectsTableRow(connection vpn_dtos.ServerConnection) {
+templ activeConnnectsTableRow(connection ServerConnection) {
 	<tr class="border-b dark:border-gray-700">
 		<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ connection.CommonName }</th>
 		<td class="px-4 py-3">{ connection.Address }</td>

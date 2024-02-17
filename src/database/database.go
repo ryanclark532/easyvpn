@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"easyvpn/src/groups/groups_dtos"
 	"easyvpn/src/settings/settings_dtos"
-	user_dtos "easyvpn/src/user/user-dtos"
 	"os"
+	"os/user"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/sqlitedialect"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *bun.DB
@@ -45,15 +44,17 @@ func Test() error {
 	if err != nil {
 		return err
 	}
-	DB.NewCreateTable().Model((*user_dtos.User)(nil)).Exec(context.Background())
+	DB.NewCreateTable().Model((*user.User)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*groups_dtos.Group)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*groups_dtos.GroupMembership)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*settings_dtos.Settings)(nil)).Exec(context.Background())
 	DB.NewCreateTable().Model((*Log)(nil)).Exec(context.Background())
-	err = SetupTestData()
-	if err != nil {
-		return err
-	}
+	/*
+		err = SetupTestData()
+		if err != nil {
+			return err
+		}
+	*/
 
 	return nil
 
@@ -71,12 +72,13 @@ func TestGetDB() error {
 	return nil
 }
 
+/*
 func SetupTestData() error {
 	password, err := bcrypt.GenerateFromPassword([]byte("test1"), 10)
 	if err != nil {
 		return err
 	}
-	user := user_dtos.User{
+	user := user.User{
 		Name:           "test1",
 		Username:       "test1",
 		Password:       string(password),
@@ -127,3 +129,4 @@ func SetupTestData() error {
 	_, err = DB.NewInsert().Model(settings).Exec(context.Background())
 	return err
 }
+*/

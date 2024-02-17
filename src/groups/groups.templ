@@ -1,12 +1,12 @@
 package groups
 
 import "easyvpn/src/common"
-import "easyvpn/src/user/user-dtos"
+import "easyvpn/src/user"
 import "fmt"
 import "strconv"
 import "strings"
 
-templ Groups(username string, groups []GroupWithMembership, users []user_dtos.User, searchterm string, completeRoles string) {
+templ Groups(username string, groups []GroupWithMembership, users []user.User, searchterm string, completeRoles string) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -18,7 +18,7 @@ templ Groups(username string, groups []GroupWithMembership, users []user_dtos.Us
 	@createGroupModal(users, completeRoles)
 }
 
-templ GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchterm string) {
+templ GroupsTable(groups []GroupWithMembership, users []user.User, searchterm string) {
 	<section id="groups-table" class="bg-gray-50 dark:bg-gray-900">
 		<div class="mx-auto max-w-screen-xl lg:px-2">
 			<!-- Start coding here -->
@@ -72,7 +72,7 @@ templ GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchte
 						</thead>
 						<tbody>
 							for _, group := range groups {
-								@groupTableRow(group, user_dtos.CompleteRoles, users)
+								@groupTableRow(group, user.CompleteRoles, users)
 							}
 						</tbody>
 					</table>
@@ -82,7 +82,7 @@ templ GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchte
 	</section>
 }
 
-templ groupTableRow(group GroupWithMembership, completeRoles string, users []user_dtos.User) {
+templ groupTableRow(group GroupWithMembership, completeRoles string, users []user.User) {
 	<tr class="border-b dark:border-gray-700">
 		<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ group.Name }</th>
 		<td class="px-4 py-3">{ strconv.Itoa(group.MemberCount) }</td>
@@ -114,7 +114,7 @@ templ groupTableRow(group GroupWithMembership, completeRoles string, users []use
 	@updateGroupModal(group, completeRoles, users)
 }
 
-templ createGroupModal(users []user_dtos.User, completeRoles string) {
+templ createGroupModal(users []user.User, completeRoles string) {
 	<div id="create-group-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<!-- Modal content -->
@@ -181,7 +181,7 @@ templ createGroupModal(users []user_dtos.User, completeRoles string) {
 	</div>
 }
 
-templ updateGroupModal(group GroupWithMembership, completeRoles string, users []user_dtos.User) {
+templ updateGroupModal(group GroupWithMembership, completeRoles string, users []user.User) {
 	<div id={ fmt.Sprintf("update-%s-modal", group.Name) } tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">

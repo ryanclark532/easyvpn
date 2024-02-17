@@ -11,12 +11,12 @@ import "io"
 import "bytes"
 
 import "easyvpn/src/common"
-import "easyvpn/src/user/user-dtos"
+import "easyvpn/src/user"
 import "fmt"
 import "strconv"
 import "strings"
 
-func Groups(username string, groups []GroupWithMembership, users []user_dtos.User, searchterm string, completeRoles string) templ.Component {
+func Groups(username string, groups []GroupWithMembership, users []user.User, searchterm string, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -73,7 +73,7 @@ func Groups(username string, groups []GroupWithMembership, users []user_dtos.Use
 	})
 }
 
-func GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchterm string) templ.Component {
+func GroupsTable(groups []GroupWithMembership, users []user.User, searchterm string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -198,7 +198,7 @@ func GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchter
 			return templ_7745c5c3_Err
 		}
 		for _, group := range groups {
-			templ_7745c5c3_Err = groupTableRow(group, user_dtos.CompleteRoles, users).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = groupTableRow(group, user.CompleteRoles, users).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -214,7 +214,7 @@ func GroupsTable(groups []GroupWithMembership, users []user_dtos.User, searchter
 	})
 }
 
-func groupTableRow(group GroupWithMembership, completeRoles string, users []user_dtos.User) templ.Component {
+func groupTableRow(group GroupWithMembership, completeRoles string, users []user.User) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -363,7 +363,7 @@ func groupTableRow(group GroupWithMembership, completeRoles string, users []user
 	})
 }
 
-func createGroupModal(users []user_dtos.User, completeRoles string) templ.Component {
+func createGroupModal(users []user.User, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -540,7 +540,7 @@ func createGroupModal(users []user_dtos.User, completeRoles string) templ.Compon
 	})
 }
 
-func updateGroupModal(group GroupWithMembership, completeRoles string, users []user_dtos.User) templ.Component {
+func updateGroupModal(group GroupWithMembership, completeRoles string, users []user.User) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {

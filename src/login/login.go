@@ -2,7 +2,6 @@ package login
 
 import (
 	"easyvpn/src/user"
-	user_dtos "easyvpn/src/user/user-dtos"
 	"net/http"
 	"time"
 
@@ -58,7 +57,7 @@ func HandleSignout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
-func AuthUser(username string, password string) (bool, *user_dtos.User, error) {
+func AuthUser(username string, password string) (bool, *user.User, error) {
 	user, err := user.GetUser(username)
 	if err != nil {
 		return false, nil, err
@@ -71,7 +70,7 @@ func AuthUser(username string, password string) (bool, *user_dtos.User, error) {
 	return true, user, nil
 }
 
-func generateJWT(user *user_dtos.User) (string, error) {
+func generateJWT(user *user.User) (string, error) {
 	secret := []byte("YOUR_SECRET_KEY")
 
 	token := jwt.New(jwt.SigningMethodHS256)

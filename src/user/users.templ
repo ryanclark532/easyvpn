@@ -1,7 +1,6 @@
 package user
 
 import "easyvpn/src/common"
-import "easyvpn/src/user/user-dtos"
 import "strconv"
 import "fmt"
 import "strings"
@@ -15,7 +14,7 @@ script searchUsers() {
 	})
 }
 
-templ Users(username string, users *[]user_dtos.User, searchterm string, completeRoles string) {
+templ Users(username string, users *[]User, searchterm string, completeRoles string) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -27,7 +26,7 @@ templ Users(username string, users *[]user_dtos.User, searchterm string, complet
 	@createUserModal(completeRoles)
 }
 
-templ UsersTable(users *[]user_dtos.User, searchterm string, completeRoles string) {
+templ UsersTable(users *[]User, searchterm string, completeRoles string) {
 	<section id="user-table" class="bg-gray-50 dark:bg-gray-900">
 		<div class="mx-auto max-w-screen-xl lg:px-2">
 			<div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -90,7 +89,7 @@ templ UsersTable(users *[]user_dtos.User, searchterm string, completeRoles strin
 	</section>
 }
 
-templ userTableRow(user user_dtos.User, completeRoles string) {
+templ userTableRow(user User, completeRoles string) {
 	<tr class="border-b dark:border-gray-700">
 		<th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{ user.Username }</th>
 		<td class="px-4 py-3">Today</td>
@@ -179,7 +178,7 @@ templ createUserModal(completeRoles string) {
 	</div>
 }
 
-templ updateUserModal(user user_dtos.User, completeRoles string) {
+templ updateUserModal(user User, completeRoles string) {
 	<div id={ fmt.Sprintf("update-%s-modal", user.Username) } tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
 		<div class="relative p-4 w-full max-w-2xl max-h-full">
 			<div class="relative bg-white rounded-lg shadow dark:bg-gray-700">

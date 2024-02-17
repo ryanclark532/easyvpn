@@ -2,28 +2,29 @@ package utils
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"os/exec"
 	"strings"
 )
 
 func GenerateClientConfig(userName string) error {
-	key, err := ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.key`, userName))
+	key, err := os.ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.key`, userName))
 	if err != nil {
 		return err
 	}
 
-	cert, err := ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.crt`, userName))
+	cert, err := os.ReadFile(fmt.Sprintf(`C:\Program Files\OpenVPN\config-auto\keys\%s.crt`, userName))
 	if err != nil {
 		return err
 	}
 
-	ca, err := ReadFile(`C:\Program Files\OpenVPN\config-auto\keys\root.crt`)
+	ca, err := os.ReadFile(`C:\Program Files\OpenVPN\config-auto\keys\root.crt`)
 	if err != nil {
 		return err
 	}
 
-	base, err := ReadFile("./vpn-config/base-client-dev.ovpn")
+	base, err := os.ReadFile("./vpn-config/base-client-dev.ovpn")
 	if err != nil {
 		return err
 	}
@@ -36,7 +37,7 @@ func GenerateClientConfig(userName string) error {
 	config = append(config, []byte("<key>\n")...)
 	config = append(config, key...)
 	config = append(config, []byte("</key>")...)
-	err = WriteFile(fmt.Sprintf("./tmp/%s.ovpn", userName), config)
+	err = os.WriteFile(fmt.Sprintf("./tmp/%s.ovpn", userName), config, fs.ModeDevice)
 	return err
 }
 

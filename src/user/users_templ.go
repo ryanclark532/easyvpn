@@ -11,7 +11,6 @@ import "io"
 import "bytes"
 
 import "easyvpn/src/common"
-import "easyvpn/src/user/user-dtos"
 import "strconv"
 import "fmt"
 import "strings"
@@ -30,7 +29,7 @@ func searchUsers() templ.ComponentScript {
 	}
 }
 
-func Users(username string, users *[]user_dtos.User, searchterm string, completeRoles string) templ.Component {
+func Users(username string, users *[]User, searchterm string, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -87,7 +86,7 @@ func Users(username string, users *[]user_dtos.User, searchterm string, complete
 	})
 }
 
-func UsersTable(users *[]user_dtos.User, searchterm string, completeRoles string) templ.Component {
+func UsersTable(users *[]User, searchterm string, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -219,7 +218,7 @@ func UsersTable(users *[]user_dtos.User, searchterm string, completeRoles string
 	})
 }
 
-func userTableRow(user user_dtos.User, completeRoles string) templ.Component {
+func userTableRow(user User, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -518,7 +517,7 @@ func createUserModal(completeRoles string) templ.Component {
 	})
 }
 
-func updateUserModal(user user_dtos.User, completeRoles string) templ.Component {
+func updateUserModal(user User, completeRoles string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {

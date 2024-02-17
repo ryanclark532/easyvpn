@@ -3,57 +3,31 @@ package user
 import (
 	"context"
 	"easyvpn/src/database"
-	"easyvpn/src/logging"
-	user_dtos "easyvpn/src/user/user-dtos"
 	"easyvpn/src/utils"
-	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/lithammer/fuzzysearch/fuzzy"
+	"github.com/uptrace/bun"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func SetPWEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *user_dtos.PasswordResetRequest
-
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		logging.HandleError(err, "DeleteUser")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = SetPassword(chi.URLParam(r, "id"), req)
-	if err != nil {
-		logging.HandleError(err, "SetPWEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusNoContent)
+type User struct {
+	bun.BaseModel  `bun:"table:users,alias:u"`
+	ID             uint      `bun:",pk,autoincrement" json:"id"`
+	Name           string    `bun:",notnull" json:"name"`
+	Username       string    `bun:",notnull" json:"username"`
+	Password       string    `bun:",notnull" json:"password"`
+	Roles          string    `bun:",notnull" json:"roles"`
+	IsAdmin        bool      `json:"is_admin"`
+	Enabled        bool      `json:"enabled"`
+	PasswordExpiry time.Time `json:"password_expiry"`
 }
 
-func CreateUserConfigEndpoint(w http.ResponseWriter, r *http.Request) {
-	err := utils.GenerateClientConfig(chi.URLParam(r, "username"))
-	if err != nil {
-		logging.HandleError(err, "CreateUserConfig")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
-
-func DeleteUserConfigEndpoint(w http.ResponseWriter, r *http.Request) {
-	err := os.Remove(fmt.Sprintf(`./tmp/%s.ovpn`, chi.URLParam(r, "username")))
-	if err != nil {
-		logging.HandleError(err, "DeleteUserConfig")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-}
+const CompleteRoles = "Server Status,User Management,Settings"
 
 func UsersPage(w http.ResponseWriter, r *http.Request) {
 	username := "hello"
@@ -63,7 +37,7 @@ func UsersPage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	Users(username, users, r.URL.Query().Get("username"), user_dtos.CompleteRoles).Render(r.Context(), w)
+	Users(username, users, r.URL.Query().Get("username"), CompleteRoles).Render(r.Context(), w)
 }
 
 func CreateNewUser(w http.ResponseWriter, r *http.Request) {
@@ -77,7 +51,7 @@ func CreateNewUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		passwordExpiry = time.Now().Add(30 * 24 * time.Hour)
 	}
-	user := user_dtos.User{
+	user := User{
 		Username:       r.Form.Get("username"),
 		Password:       r.Form.Get("password"),
 		IsAdmin:        r.Form.Get("admin") == "on",
@@ -86,7 +60,22 @@ func CreateNewUser(w http.ResponseWriter, r *http.Request) {
 		Roles:          strings.Join(r.Form["roles"], ","),
 	}
 
-	err = CreateUser(&user)
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	user.Password = string(hash)
+	_, err = database.DB.NewInsert().Model(user).Exec(context.Background())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	err = utils.GenerateSignedCertificate(`C:\Program Files\OpenVPN\config-auto\keys\`, user.Username)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -95,7 +84,7 @@ func CreateNewUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	_, err := database.DB.NewDelete().Model((*user_dtos.User)(nil)).Where("id = ?", chi.URLParam(r, "id")).Exec(context.Background())
+	_, err := database.DB.NewDelete().Model((*User)(nil)).Where("id = ?", chi.URLParam(r, "id")).Exec(context.Background())
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
@@ -104,7 +93,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	UsersTable(users, r.URL.Query().Get("username"), user_dtos.CompleteRoles).Render(r.Context(), w)
+	UsersTable(users, r.URL.Query().Get("username"), CompleteRoles).Render(r.Context(), w)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -121,7 +110,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	} else {
 		passwordExpiry = time.Now().Add(30 * 24 * time.Hour)
 	}
-	user := user_dtos.User{
+	user := User{
 		Username:       r.Form.Get("username"),
 		Password:       r.Form.Get("password"),
 		IsAdmin:        r.Form.Get("admin") == "on",
@@ -137,4 +126,30 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/users", http.StatusSeeOther)
+}
+
+func GetUser(username string) (*User, error) {
+	user := new(User)
+	err := database.DB.NewSelect().Model(user).Where("username = ?", username).Limit(1).Scan(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+func GetUsers(username string) (*[]User, error) {
+	users := new([]User)
+	err := database.DB.NewSelect().Model(users).Scan(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	var filteredusers []User
+	for _, user := range *users {
+		if fuzzy.Match(username, user.Username) {
+			filteredusers = append(filteredusers, user)
+		}
+	}
+
+	return &filteredusers, nil
 }

@@ -3,114 +3,50 @@ package groups
 import (
 	"context"
 	"easyvpn/src/database"
-	"easyvpn/src/groups/groups_dtos"
-	"easyvpn/src/logging"
 	"easyvpn/src/user"
-	user_dtos "easyvpn/src/user/user-dtos"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/uptrace/bun"
 )
 
 type GroupWithMembership struct {
-	groups_dtos.Group
-	members []user_dtos.User
+	Group
+	members []user.User
 }
 
-func GetGroupsEndpoint(w http.ResponseWriter, r *http.Request) {
-	response, err := GetGroups()
-	if err != nil {
-		logging.HandleError(err, "GetGroupsEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		logging.HandleError(err, "GetGroupsEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+type GroupMembership struct {
+	bun.BaseModel `bun:"table:group_membership,alias:gm"`
+	ID            int `bun:",pk,autoincrement" json:"id"`
+	UserID        int `bun:",notnull" json:"user_id"`
+	GroupID       int `bun:",notnull" json:"group"`
 }
 
-func GetGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
-	response, err := GetMembershipsForGroup(chi.URLParam(r, "id"))
-	if err != nil {
-		logging.HandleError(err, "GetGroupMembershipEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		logging.HandleError(err, "GetGroupMembershipEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
+type Group struct {
+	bun.BaseModel `bun:"table:groups,alias:g"`
+	ID            int    `bun:",pk,autoincrement" json:"id"`
+	Name          string `bun:",notnull" json:"name"`
+	MemberCount   int    `json:"member_count" bun:"-"`
+	IsAdmin       bool   `bun:",notnull" json:"is_admin"`
+	Roles         string `bun:",notnull" json:"roles"`
+	Enabled       bool   `bun:",notnull" json:"enabled"`
 }
 
-func CreateGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *[]uint
-
-	err := json.NewDecoder(r.Body).Decode(&req)
+func (g Group) GetMemberships() ([]user.User, error) {
+	var users []user.User
+	err := database.DB.NewSelect().
+		Model(&users).
+		Join("INNER JOIN group_membership gm ON u.id = gm.user_id").
+		Where("gm.group_id = ?", g.ID).
+		Scan(context.Background())
 	if err != nil {
-		logging.HandleError(err, "CreateGroupMembersipEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
+		return nil, err
 	}
 
-	err = CreateGroupMembership(*req, chi.URLParam(r, "id"))
-	if err != nil {
-		logging.HandleError(err, "CreateGroupMembershipEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	w.WriteHeader(http.StatusCreated)
-	return
-}
-func DeleteGroupMembershipEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *[]uint
-
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		logging.HandleError(err, "DeleteGroupMembershipEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	err = DeleteGroupMembership(*req, chi.URLParam(r, "id"))
-	if err != nil {
-		logging.HandleError(err, "DeleteGroupMembershipEndpoint")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
-	return
-}
-
-func UpdateGroupEndpoint(w http.ResponseWriter, r *http.Request) {
-	var req *groups_dtos.Group
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		logging.HandleError(err, "UpdateGroupEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	err = UpdateGroup(req, chi.URLParam(r, "id"))
-	if err != nil {
-		logging.HandleError(err, "UpdateGroupEndpoint")
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	return users, nil
 }
 
 func GroupsPage(w http.ResponseWriter, r *http.Request) {
@@ -129,13 +65,13 @@ func GroupsPage(w http.ResponseWriter, r *http.Request) {
 	var groupsWithMembership []GroupWithMembership
 
 	for _, group := range groups {
-		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
+		members, err := group.GetMemberships()
 		if err != nil {
 			continue
 		}
 		x := GroupWithMembership{
 			Group:   group,
-			members: *members,
+			members: members,
 		}
 		groupsWithMembership = append(groupsWithMembership, x)
 	}
@@ -143,7 +79,7 @@ func GroupsPage(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(x.members)
 	}
 
-	Groups("hello", groupsWithMembership, *users, chi.URLParam(r, "username"), user_dtos.CompleteRoles).Render(r.Context(), w)
+	Groups("hello", groupsWithMembership, *users, chi.URLParam(r, "username"), user.CompleteRoles).Render(r.Context(), w)
 }
 
 func CreateGroup(w http.ResponseWriter, r *http.Request) {
@@ -152,7 +88,7 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	group := groups_dtos.Group{
+	group := Group{
 		Name:        r.Form.Get("name"),
 		MemberCount: 0,
 		IsAdmin:     r.Form.Get("admin") == "on",
@@ -176,8 +112,8 @@ func CreateGroup(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			groupMembership := groups_dtos.GroupMembership{
-				UserID:  uint(userId),
+			groupMembership := GroupMembership{
+				UserID:  int(userId),
 				GroupID: group.ID,
 			}
 			_, err = database.DB.NewInsert().Model(&groupMembership).Exec(context.Background())
@@ -217,13 +153,13 @@ func DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	var groupsWithMembership []GroupWithMembership
 
 	for _, group := range groups {
-		members, err := GetMembershipsForGroup(strconv.Itoa(int(group.ID)))
+		members, err := group.GetMemberships()
 		if err != nil {
 			continue
 		}
 		x := GroupWithMembership{
 			Group:   group,
-			members: *members,
+			members: members,
 		}
 		groupsWithMembership = append(groupsWithMembership, x)
 	}
@@ -247,7 +183,7 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = database.DB.NewDelete().Model((*groups_dtos.GroupMembership)(nil)).Where("group_id = ?", groupId).Exec(context.Background())
+	_, err = database.DB.NewDelete().Model((*GroupMembership)(nil)).Where("group_id = ?", groupId).Exec(context.Background())
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -266,9 +202,9 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		groupMembership := groups_dtos.GroupMembership{
-			UserID:  uint(userId),
-			GroupID: uint(groupId),
+		groupMembership := GroupMembership{
+			UserID:  int(userId),
+			GroupID: int(groupId),
 		}
 		_, err = database.DB.NewInsert().Model(&groupMembership).Ignore().Exec(context.Background())
 		if err != nil {
@@ -284,14 +220,14 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	group := groups_dtos.Group{
+	group := Group{
 		Name:        r.Form.Get("name"),
 		MemberCount: 0,
 		IsAdmin:     r.Form.Get("admin") == "on",
 		Enabled:     r.Form.Get("enabled") == "on",
 		Roles:       strings.Join(r.Form["roles"], ","),
 	}
-	err = UpdateGroup(&group, strconv.Itoa(int(groupId)))
+	_, err = database.DB.NewUpdate().Model(group).Where("id = ?", groupId).Exec(context.Background())
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -300,11 +236,27 @@ func UpdateGroupPage(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/groups", http.StatusSeeOther)
 }
 
-func GroupContainsMember(s []user_dtos.User, e user_dtos.User) bool {
+func GroupContainsMember(s []user.User, e user.User) bool {
 	for _, value := range s {
 		if value.ID == e.ID {
 			return true
 		}
 	}
 	return false
+}
+
+func GetGroups() ([]Group, error) {
+	groups := new([]Group)
+	err := database.DB.NewSelect().Model(groups).Scan(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	var g []Group
+	for _, group := range *groups {
+		m := new([]GroupMembership)
+		err = database.DB.NewSelect().Model(m).Where("group_id = ?", group.ID).Scan(context.Background())
+		group.MemberCount = len(*m)
+		g = append(g, group)
+	}
+	return g, err
 }
