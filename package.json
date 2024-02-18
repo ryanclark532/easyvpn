@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "air": "air",
-    "templ": "templ",
     "tailwindcss": "tailwindcss",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "concurrently \"npm:tailwindcss -o ./static/tailwind.css --watch\" \"npm:air\" \"npm:templ generate -w\""
+    "serve": "npm run tailwindcss -o .\\static\\tailwind.css --watch & templ generate --watch",
+    "start": "concurrently \"air\" \"npm:serve\""
   },
   "author": "",
   "license": "ISC",

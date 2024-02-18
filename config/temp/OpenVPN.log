@@ -1,0 +1,275 @@
+[Jan 22, 2024, 21:02:22] OpenVPN core 3.8.2connect1 win x86_64 64-bit OVPN-DCO built on Aug 21 2023 16:29:24
+⏎[Jan 22, 2024, 21:02:22] Frame=512/2112/512 mssfix-ctrl=1250
+⏎[Jan 22, 2024, 21:02:22] NOTE: This configuration contains options that were not used:
+⏎[Jan 22, 2024, 21:02:22] Unsupported option (ignored)
+⏎[Jan 22, 2024, 21:02:22] 5 [user] [nobody]
+⏎[Jan 22, 2024, 21:02:22] 6 [group] [nogroup]
+⏎[Jan 22, 2024, 21:02:22] 7 [persist-key]
+⏎[Jan 22, 2024, 21:02:22] 8 [persist-tun]
+⏎[Jan 22, 2024, 21:02:22] 10 [mute] [10]
+⏎[Jan 22, 2024, 21:02:22] EVENT: RESOLVE ⏎[Jan 22, 2024, 21:02:22] EVENT: WAIT ⏎[Jan 22, 2024, 21:02:22] WinCommandAgent: transmitting bypass route to 127.0.0.1
+{
+	"host" : "127.0.0.1",
+	"ipv6" : false
+}
+
+⏎[Jan 22, 2024, 21:02:22] Connecting to [127.0.0.1]:1194 (127.0.0.1) via TCP
+⏎[Jan 22, 2024, 21:02:22] EVENT: CONNECTING ⏎[Jan 22, 2024, 21:02:22] Tunnel Options:V4,dev-type tun,link-mtu 1523,tun-mtu 1500,proto TCPv4_CLIENT,cipher AES-256-GCM,auth [null-digest],keysize 256,key-method 2,tls-client
+⏎[Jan 22, 2024, 21:02:22] Creds: UsernameEmpty/PasswordEmpty
+⏎[Jan 22, 2024, 21:02:22] Peer Info:
+IV_VER=3.8.2connect1
+IV_PLAT=win
+IV_NCP=2
+IV_TCPNL=1
+IV_PROTO=990
+IV_MTU=1600
+IV_CIPHERS=AES-128-CBC:AES-192-CBC:AES-256-CBC:AES-128-GCM:AES-192-GCM:AES-256-GCM:CHACHA20-POLY1305
+IV_AUTO_SESS=1
+IV_GUI_VER=OCWindows_3.4.2-3160
+IV_SSO=webauth,openurl,crtext
+
+⏎[Jan 22, 2024, 21:02:22] SSL Handshake: peer certificate: CN=server, 384 bit EC, group:secp384r1, cipher: TLS_AES_256_GCM_SHA384         TLSv1.3 Kx=any      Au=any   Enc=AESGCM(256)            Mac=AEAD
+
+⏎[Jan 22, 2024, 21:02:22] Session is ACTIVE
+⏎[Jan 22, 2024, 21:02:22] EVENT: GET_CONFIG ⏎[Jan 22, 2024, 21:02:22] Sending PUSH_REQUEST to server...
+⏎[Jan 22, 2024, 21:02:22] OPTIONS:
+0 [dhcp-option] [DNS] [8.8.8.4]
+1 [dhcp-option] [DNS] [8.8.8.4]
+2 [redirect-gateway] [def1] [bypass-dhcp]
+3 [route-gateway] [10.8.0.1]
+4 [topology] [subnet]
+5 [ping] [10]
+6 [ping-restart] [60]
+7 [ifconfig] [10.8.0.2] [255.255.255.0]
+8 [peer-id] [0]
+9 [cipher] [AES-256-GCM]
+10 [protocol-flags] [cc-exit] [tls-ekm] [dyn-tls-crypt]
+11 [tun-mtu] [1500]
+
+⏎[Jan 22, 2024, 21:02:22] PROTOCOL OPTIONS:
+  cipher: AES-256-GCM
+  digest: NONE
+  key-derivation: TLS Keying Material Exporter [RFC5705]
+  compress: NONE
+  peer ID: 0
+  control channel: dynamic tls-crypt enabled
+⏎[Jan 22, 2024, 21:02:22] EVENT: ASSIGN_IP ⏎[Jan 22, 2024, 21:02:22] CAPTURED OPTIONS:
+Session Name: 127.0.0.1
+Layer: OSI_LAYER_3
+MTU: 1500
+Remote Address: 127.0.0.1
+Tunnel Addresses:
+  10.8.0.2/24 -> 10.8.0.1
+Reroute Gateway: IPv4=1 IPv6=0 flags=[ ENABLE REROUTE_GW DEF1 BYPASS_DHCP IPv4 ]
+Block IPv4: no
+Block IPv6: no
+Add Routes:
+Exclude Routes:
+DNS Servers:
+  8.8.8.4
+  8.8.8.4
+Search Domains:
+
+⏎[Jan 22, 2024, 21:02:25] SetupClient: transmitting tun setup list to \\.\pipe\agent_ovpnconnect
+{
+	"allow_local_dns_resolvers" : false,
+	"confirm_event" : "6410000000000000",
+	"destroy_event" : "480d000000000000",
+	"tun" : 
+	{
+		"adapter_domain_suffix" : "",
+		"block_ipv6" : false,
+		"dns_servers" : 
+		[
+			{
+				"address" : "8.8.8.4",
+				"ipv6" : false
+			},
+			{
+				"address" : "8.8.8.4",
+				"ipv6" : false
+			}
+		],
+		"layer" : 3,
+		"mtu" : 1500,
+		"remote_address" : 
+		{
+			"address" : "127.0.0.1",
+			"ipv6" : false
+		},
+		"reroute_gw" : 
+		{
+			"flags" : 307,
+			"ipv4" : true,
+			"ipv6" : false
+		},
+		"route_metric_default" : -1,
+		"session_name" : "127.0.0.1",
+		"tunnel_address_index_ipv4" : 0,
+		"tunnel_address_index_ipv6" : -1,
+		"tunnel_addresses" : 
+		[
+			{
+				"address" : "10.8.0.2",
+				"gateway" : "10.8.0.1",
+				"ipv6" : false,
+				"metric" : -1,
+				"net30" : false,
+				"prefix_length" : 24
+			}
+		]
+	},
+	"tun_type" : 0
+}
+POST np://[\\.\pipe\agent_ovpnconnect]/tun-setup : 200 OK
+TAP ADAPTERS:
+guid='{7D03B04F-EF58-490A-A55A-9AF45A5420DD}' index=17 name='Local Area Connection'
+Open TAP device "Local Area Connection" PATH="\\.\Global\{7D03B04F-EF58-490A-A55A-9AF45A5420DD}.tap" SUCCEEDED
+TAP-Windows Driver Version 9.26
+ActionDeleteAllRoutesOnInterface iface_index=17
+netsh interface ip set interface 17 metric=1
+Ok.
+netsh interface ip set address 17 static 10.8.0.2 255.255.255.0 gateway=10.8.0.1 store=active
+netsh interface ip add route 0.0.0.0/1 17 10.8.0.1 store=active
+Ok.
+netsh interface ip add route 128.0.0.0/1 17 10.8.0.1 store=active
+Ok.
+netsh interface ip set dnsservers 17 static 8.8.8.4 register=primary validate=no
+netsh interface ip add dnsservers 17 8.8.8.4 2 validate=no
+The object is already in the list.
+NRPT::ActionCreate names=[.] dns_servers=[8.8.8.4,8.8.8.4]
+ActionWFP openvpn_app_path=C:\Program Files\OpenVPN Connect\OpenVPNConnect.exe tap_index=17 enable=1
+permit IPv4 DNS requests from OpenVPN app
+permit IPv6 DNS requests from OpenVPN app
+block IPv4 DNS requests from other apps
+block IPv6 DNS requests from other apps
+allow IPv4 traffic from TAP
+allow IPv6 traffic from TAP
+ipconfig /flushdns
+Windows IP Configuration
+Successfully flushed the DNS Resolver Cache.
+TAP: ARP flush succeeded
+TAP handle: 4013000000000000
+⏎[Jan 22, 2024, 21:02:25] Connected via TUN_WIN
+⏎[Jan 22, 2024, 21:02:25] EVENT: CONNECTED 127.0.0.1:1194 (127.0.0.1) via /TCP on TUN_WIN/10.8.0.2/ gw=[10.8.0.1/] mtu=1500⏎[Jan 22, 2024, 21:02:34] TUN write exception: write_some: The data area passed to a system call is too small.
+⏎[Jan 22, 2024, 21:02:34] TUN Error: TUN I/O error
+⏎[Jan 22, 2024, 21:02:34] EVENT: TUN_ERROR TUN I/O error⏎[Jan 22, 2024, 21:02:34] Client terminated, restarting in 5000 ms...
+⏎[Jan 22, 2024, 21:02:34] SetupClient: signaling tun destroy event
+⏎[Jan 22, 2024, 21:02:39] EVENT: RECONNECTING ⏎[Jan 22, 2024, 21:02:39] EVENT: RESOLVE ⏎[Jan 22, 2024, 21:02:39] EVENT: WAIT ⏎[Jan 22, 2024, 21:02:39] WinCommandAgent: transmitting bypass route to 127.0.0.1
+{
+	"host" : "127.0.0.1",
+	"ipv6" : false
+}
+
+⏎[Jan 22, 2024, 21:02:39] Connecting to [127.0.0.1]:1194 (127.0.0.1) via TCP
+⏎[Jan 22, 2024, 21:02:39] EVENT: CONNECTING ⏎[Jan 22, 2024, 21:02:40] Tunnel Options:V4,dev-type tun,link-mtu 1523,tun-mtu 1500,proto TCPv4_CLIENT,cipher AES-256-GCM,auth [null-digest],keysize 256,key-method 2,tls-client
+⏎[Jan 22, 2024, 21:02:40] Creds: UsernameEmpty/PasswordEmpty
+⏎[Jan 22, 2024, 21:02:40] Peer Info:
+IV_VER=3.8.2connect1
+IV_PLAT=win
+IV_NCP=2
+IV_TCPNL=1
+IV_PROTO=990
+IV_MTU=1600
+IV_CIPHERS=AES-128-CBC:AES-192-CBC:AES-256-CBC:AES-128-GCM:AES-192-GCM:AES-256-GCM:CHACHA20-POLY1305
+IV_AUTO_SESS=1
+IV_GUI_VER=OCWindows_3.4.2-3160
+IV_SSO=webauth,openurl,crtext
+
+⏎[Jan 22, 2024, 21:02:40] SSL Handshake: peer certificate: CN=server, 384 bit EC, group:secp384r1, cipher: TLS_AES_256_GCM_SHA384         TLSv1.3 Kx=any      Au=any   Enc=AESGCM(256)            Mac=AEAD
+
+⏎[Jan 22, 2024, 21:02:40] Session is ACTIVE
+⏎[Jan 22, 2024, 21:02:40] EVENT: GET_CONFIG ⏎[Jan 22, 2024, 21:02:40] Sending PUSH_REQUEST to server...
+⏎[Jan 22, 2024, 21:02:40] OPTIONS:
+0 [dhcp-option] [DNS] [8.8.8.4]
+1 [dhcp-option] [DNS] [8.8.8.4]
+2 [redirect-gateway] [def1] [bypass-dhcp]
+3 [route-gateway] [10.8.0.1]
+4 [topology] [subnet]
+5 [ping] [10]
+6 [ping-restart] [60]
+7 [ifconfig] [10.8.0.2] [255.255.255.0]
+8 [peer-id] [0]
+9 [cipher] [AES-256-GCM]
+10 [protocol-flags] [cc-exit] [tls-ekm] [dyn-tls-crypt]
+11 [tun-mtu] [1500]
+
+⏎[Jan 22, 2024, 21:02:40] PROTOCOL OPTIONS:
+  cipher: AES-256-GCM
+  digest: NONE
+  key-derivation: TLS Keying Material Exporter [RFC5705]
+  compress: NONE
+  peer ID: 0
+  control channel: dynamic tls-crypt enabled
+⏎[Jan 22, 2024, 21:02:40] EVENT: ASSIGN_IP ⏎[Jan 22, 2024, 21:02:40] CAPTURED OPTIONS:
+Session Name: 127.0.0.1
+Layer: OSI_LAYER_3
+MTU: 1500
+Remote Address: 127.0.0.1
+Tunnel Addresses:
+  10.8.0.2/24 -> 10.8.0.1
+Reroute Gateway: IPv4=1 IPv6=0 flags=[ ENABLE REROUTE_GW DEF1 BYPASS_DHCP IPv4 ]
+Block IPv4: no
+Block IPv6: no
+Add Routes:
+Exclude Routes:
+DNS Servers:
+  8.8.8.4
+  8.8.8.4
+Search Domains:
+
+⏎[Jan 22, 2024, 21:02:41] SetupClient: transmitting tun setup list to \\.\pipe\agent_ovpnconnect
+{
+	"allow_local_dns_resolvers" : false,
+	"confirm_event" : "e811000000000000",
+	"destroy_event" : "3010000000000000",
+	"tun" : 
+	{
+		"adapter_domain_suffix" : "",
+		"block_ipv6" : false,
+		"dns_servers" : 
+		[
+			{
+				"address" : "8.8.8.4",
+				"ipv6" : false
+			},
+			{
+				"address" : "8.8.8.4",
+				"ipv6" : false
+			}
+		],
+		"layer" : 3,
+		"mtu" : 1500,
+		"remote_address" : 
+		{
+			"address" : "127.0.0.1",
+			"ipv6" : false
+		},
+		"reroute_gw" : 
+		{
+			"flags" : 307,
+			"ipv4" : true,
+			"ipv6" : false
+		},
+		"route_metric_default" : -1,
+		"session_name" : "127.0.0.1",
+		"tunnel_address_index_ipv4" : 0,
+		"tunnel_address_index_ipv6" : -1,
+		"tunnel_addresses" : 
+		[
+			{
+				"address" : "10.8.0.2",
+				"gateway" : "10.8.0.1",
+				"ipv6" : false,
+				"metric" : -1,
+				"net30" : false,
+				"prefix_length" : 24
+			}
+		]
+	},
+	"tun_type" : 0
+}
+POST np://[\\.\pipe\agent_ovpnconnect]/tun-setup : E_ABORTED stop message received
+⏎[Jan 22, 2024, 21:02:41] TUN Error: ovpnagent: communication error
+⏎[Jan 22, 2024, 21:02:41] EVENT: TUN_SETUP_FAILED ovpnagent: communication error⏎[Jan 22, 2024, 21:02:41] EVENT: DISCONNECTED ⏎[Jan 22, 2024, 21:02:41] Client exception in transport_recv: tun_exception: not connected
+⏎
