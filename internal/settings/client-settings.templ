@@ -2,7 +2,7 @@ package settings
 
 import "easyvpn/internal/common"
 
-templ ClientSettings(username string, settings *Settings) {
+templ ClientSettings(username string, tcp *Settings, udp *Settings) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -28,40 +28,90 @@ templ ClientSettings(username string, settings *Settings) {
 					></path>
 				</svg> Changing client settings will require clients to re-download their vpn config from the user panel 
 			</div>
-			<form action="/settings/client" method="POST">
-				<div class="mb-4" data-tooltip-target="dns1_tooltip">
-					<label for="dns1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 1</label>
-					<input value={ settings.DNSServer1 } type="text" id="dns1" name="dns1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+			<div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+				<ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+					<li class="me-2" role="presentation">
+						<button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">TCP Server Server Settings</button>
+					</li>
+					<li class="me-2" role="presentation">
+						<button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">UDP Server Settings</button>
+					</li>
+				</ul>
+			</div>
+			<div id="default-tab-content">
+				<div class="hidden p-4 rounded-lg " id="profile" role="tabpanel" aria-labelledby="profile-tab">
+					<form action="/settings/client/tcp" method="POST">
+						<div class="mb-4" data-tooltip-target="dns1_tooltip">
+							<label for="dns1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 1</label>
+							<input value={ tcp.DNSServer1 } type="text" id="dns1" name="dns1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+						</div>
+						<div id="dns1_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Primary DNS Server For Clients
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="dns2_tooltip">
+							<label for="dns2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 2</label>
+							<input value={ tcp.DNSServer2 } type="text" id="dns2" name="dns2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+						</div>
+						<div id="dns2_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Secondary DNS Server For Clients
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="flex items-center mb-4" data-tooltip-target="private_access_tooltip">
+							<p class="mr-2">Allow Clients Access To Private Subnet</p>
+							<label class="relative inline-flex items-center cursor-pointer">
+								if tcp.PrivateAccess {
+									<input type="checkbox" name="private_access" class="sr-only peer" checked/>
+								} else {
+									<input type="checkbox" name="private_access" class="sr-only peer"/>
+								}
+								<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+							</label>
+						</div>
+						<div id="private_access_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Specifies if connected VPN clients can communicate with other devices on the servers subnet
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
+					</form>
 				</div>
-				<div id="dns1_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Primary DNS Server For Clients
-					<div class="tooltip-arrow" data-popper-arrow></div>
+				<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+					<form action="/settings/client/udp" method="POST">
+						<div class="mb-4" data-tooltip-target="dns1_tooltip">
+							<label for="dns1" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 1</label>
+							<input value={ udp.DNSServer1 } type="text" id="dns1" name="dns1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+						</div>
+						<div id="dns1_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Primary DNS Server For Clients
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="dns2_tooltip">
+							<label for="dns2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 2</label>
+							<input value={ udp.DNSServer2 } type="text" id="dns2" name="dns2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+						</div>
+						<div id="dns2_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Secondary DNS Server For Clients
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="flex items-center mb-4" data-tooltip-target="private_access_tooltip">
+							<p class="mr-2">Allow Clients Access To Private Subnet</p>
+							<label class="relative inline-flex items-center cursor-pointer">
+								if udp.PrivateAccess {
+									<input type="checkbox" name="private_access" class="sr-only peer" checked/>
+								} else {
+									<input type="checkbox" name="private_access" class="sr-only peer"/>
+								}
+								<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+							</label>
+						</div>
+						<div id="private_access_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Specifies if connected VPN clients can communicate with other devices on the servers subnet
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
+					</form>
 				</div>
-				<div class="mb-4" data-tooltip-target="dns2_tooltip">
-					<label for="dns2" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">DNS Server 2</label>
-					<input value={ settings.DNSServer2 } type="text" id="dns2" name="dns2" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
-				</div>
-				<div id="dns2_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Secondary DNS Server For Clients
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<div class="flex items-center mb-4" data-tooltip-target="private_access_tooltip">
-					<p class="mr-2">Allow Clients Access To Private Subnet</p>
-					<label class="relative inline-flex items-center cursor-pointer">
-						if settings.PrivateAccess {
-							<input type="checkbox" name="private_access" class="sr-only peer" checked/>
-						} else {
-							<input type="checkbox" name="private_access" class="sr-only peer"/>
-						}
-						<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-					</label>
-				</div>
-				<div id="private_access_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Specifies if connected VPN clients can communicate with other devices on the servers subnet
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
-			</form>
+			</div>
 		</div>
 	</div>
 }

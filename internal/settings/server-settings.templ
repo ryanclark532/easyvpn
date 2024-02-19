@@ -4,7 +4,7 @@ package settings
 import "easyvpn/internal/common"
 import "strconv"
 
-templ ServerSettings(username string, settings *Settings) {
+templ ServerSettings(username string, tcp *Settings, udp *Settings) {
 	@common.Root()
 	<div class="flex">
 		@common.Sidepanel(username)
@@ -34,112 +34,157 @@ templ ServerSettings(username string, settings *Settings) {
 			<div class="mb-4 border-b border-gray-200 dark:border-gray-700">
 				<ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-styled-tab" data-tabs-toggle="#default-styled-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300" role="tablist">
 					<li class="me-2" role="presentation">
-						<button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-styled-tab" data-tabs-target="#styled-profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
+						<button class="inline-block p-4 border-b-2 rounded-t-lg" id="profile-styled-tab" data-tabs-target="#styled-profile" type="button" role="tab" aria-controls="profile" aria-selected="false">TCP Server Settings</button>
 					</li>
 					<li class="me-2" role="presentation">
-						<button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="dashboard-styled-tab" data-tabs-target="#styled-dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Dashboard</button>
-					</li>
-					<li class="me-2" role="presentation">
-						<button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="settings-styled-tab" data-tabs-target="#styled-settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
-					</li>
-					<li role="presentation">
-						<button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="contacts-styled-tab" data-tabs-target="#styled-contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Contacts</button>
+						<button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="dashboard-styled-tab" data-tabs-target="#styled-dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">UDP Server Settings</button>
 					</li>
 				</ul>
 			</div>
 			<div id="default-styled-tab-content">
-				<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-profile" role="tabpanel" aria-labelledby="profile-tab">
-					<p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Profile tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
+				<div class="hidden p-4 rounded-lg" id="styled-profile" role="tabpanel" aria-labelledby="profile-tab">
+					<form action="/settings/server/tcp" method="POST">
+						<div class="mb-4" data-tooltip-target="tcp_port_tooltip">
+							<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">TCP VPN Server Port</label>
+							<input value={ strconv.Itoa(tcp.TCPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+						</div>
+						<div id="tcp_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							If the server is using TCP, the port that it is served on
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="ip_tooltip">
+							<label for="ip_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Hostname or IP Address</label>
+							<input value={ tcp.IPAddress } type="text" name="ip_address" id="ip_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0.0.0.0..." required/>
+						</div>
+						<div id="ip_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							The IP address of the VPN server
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="web_port_tooltip">
+							<label for="web_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Web Server Port</label>
+							<input value={ strconv.Itoa(tcp.WebServerPort) } type="text" id="web_port" name="web_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+						</div>
+						<div id="web_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Port that the admin interface is served on
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="max_connections_tooltip">
+							<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Maximum Connected Clients</label>
+							<input value={ strconv.Itoa(tcp.MaxConnections) } type="text" id="max_connections" name="max_connections" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5" required/>
+						</div>
+						<div id="max_connections_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							The maximum amount of connections the VPN server will accept
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4 flex w-full">
+							<div class="w-3/5" data-tooltip-target="vpn_tooltip">
+								<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet</label>
+								<input value={ tcp.VpnSubnet } type="text" id="vpn_subnet" name="vpn_subnet" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+							</div>
+							<div id="vpn_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+								The subnet that clients will be assigned IPs from
+								<div class="tooltip-arrow" data-popper-arrow></div>
+							</div>
+							<p class="mx-2">/</p>
+							<div class="w-2/5" data-tooltip-target="vpn_subnet_tooltip">
+								<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet Mask</label>
+								<input value={ strconv.Itoa(tcp.VpnSubnetMask) } type="text" id="vpn_subnet_mask" name="vpn_subnet_mask" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+							</div>
+							<div id="vpn_subnet_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+								The mask of the subnet that clients will be assigned IPs from
+								<div class="tooltip-arrow" data-popper-arrow></div>
+							</div>
+						</div>
+						<div class="flex items-center mb-4" data-tooltip-target="gateway_tooltip">
+							<p class="mr-2">Use VPN Server As Gateway</p>
+							<label class="relative inline-flex items-center cursor-pointer">
+								if tcp.UseAsGateway {
+									<input type="checkbox" name="use_as_gateway" class="sr-only peer" checked/>
+								} else {
+									<input type="checkbox" name="use_as_gateway" class="sr-only peer"/>
+								}
+								<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+							</label>
+						</div>
+						<div id="gateway_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Dedermines if the VPN server will be used as a gateway for clients. This is required for geospoofing
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
+					</form>
 				</div>
-				<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-					<p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-				</div>
-				<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-settings" role="tabpanel" aria-labelledby="settings-tab">
-					<p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Settings tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-				</div>
-				<div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="styled-contacts" role="tabpanel" aria-labelledby="contacts-tab">
-					<p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Contacts tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
+				<div class="hidden p-4 rounded-lg " id="styled-dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
+					<form action="/settings/server/udp" method="POST">
+						<div class="mb-4" data-tooltip-target="tcp_port_tooltip">
+							<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">UDP VPN Server Port</label>
+							<input value={ strconv.Itoa(udp.TCPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
+						</div>
+						<div id="tcp_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							If the server is using TCP, the port that it is served on
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="ip_tooltip">
+							<label for="ip_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Hostname or IP Address</label>
+							<input value={ udp.IPAddress } type="text" name="ip_address" id="ip_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0.0.0.0..." required/>
+						</div>
+						<div id="ip_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							The IP address of the VPN server
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="web_port_tooltip">
+							<label for="web_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Web Server Port</label>
+							<input value={ strconv.Itoa(udp.WebServerPort) } type="text" id="web_port" name="web_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+						</div>
+						<div id="web_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Port that the admin interface is served on
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4" data-tooltip-target="max_connections_tooltip">
+							<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Maximum Connected Clients</label>
+							<input value={ strconv.Itoa(udp.MaxConnections) } type="text" id="max_connections" name="max_connections" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5" required/>
+						</div>
+						<div id="max_connections_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							The maximum amount of connections the VPN server will accept
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<div class="mb-4 flex w-full">
+							<div class="w-3/5" data-tooltip-target="vpn_tooltip">
+								<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet</label>
+								<input value={ udp.VpnSubnet } type="text" id="vpn_subnet" name="vpn_subnet" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+							</div>
+							<div id="vpn_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+								The subnet that clients will be assigned IPs from
+								<div class="tooltip-arrow" data-popper-arrow></div>
+							</div>
+							<p class="mx-2">/</p>
+							<div class="w-2/5" data-tooltip-target="vpn_subnet_tooltip">
+								<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet Mask</label>
+								<input value={ strconv.Itoa(udp.VpnSubnetMask) } type="text" id="vpn_subnet_mask" name="vpn_subnet_mask" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
+							</div>
+							<div id="vpn_subnet_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+								The mask of the subnet that clients will be assigned IPs from
+								<div class="tooltip-arrow" data-popper-arrow></div>
+							</div>
+						</div>
+						<div class="flex items-center mb-4" data-tooltip-target="gateway_tooltip">
+							<p class="mr-2">Use VPN Server As Gateway</p>
+							<label class="relative inline-flex items-center cursor-pointer">
+								if udp.UseAsGateway {
+									<input type="checkbox" name="use_as_gateway" class="sr-only peer" checked/>
+								} else {
+									<input type="checkbox" name="use_as_gateway" class="sr-only peer"/>
+								}
+								<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+							</label>
+						</div>
+						<div id="gateway_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
+							Dedermines if the VPN server will be used as a gateway for clients. This is required for geospoofing
+							<div class="tooltip-arrow" data-popper-arrow></div>
+						</div>
+						<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
+					</form>
 				</div>
 			</div>
-			<form action="/settings/server" method="POST">
-				<div class="p-4 border-2 border-gray-200 rounded">
-					<div class="mb-4" data-tooltip-target="tcp_port_tooltip">
-						<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">TCP VPN Server Port</label>
-						<input value={ strconv.Itoa(settings.TCPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
-					</div>
-					<div id="tcp_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-						If the server is using TCP, the port that it is served on
-						<div class="tooltip-arrow" data-popper-arrow></div>
-					</div>
-					<div class="mb-4" data-tooltip-target="port_tooltip">
-						<label for="vpn_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">UDP VPN Server Port</label>
-						<input value={ strconv.Itoa(settings.UDPPort) } type="text" id="vpn_port" name="vpn_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="1194..." required/>
-					</div>
-					<div id="port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-						If the server is using UDP, the port that it is served on 
-						<div class="tooltip-arrow" data-popper-arrow></div>
-					</div>
-				</div>
-				<div class="mb-4" data-tooltip-target="ip_tooltip">
-					<label for="ip_address" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Hostname or IP Address</label>
-					<input value={ settings.IPAddress } type="text" name="ip_address" id="ip_address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="0.0.0.0..." required/>
-				</div>
-				<div id="ip_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					The IP address of the VPN server
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<div class="mb-4" data-tooltip-target="web_port_tooltip">
-					<label for="web_port" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Web Server Port</label>
-					<input value={ strconv.Itoa(settings.WebServerPort) } type="text" id="web_port" name="web_port" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
-				</div>
-				<div id="web_port_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Port that the admin interface is served on
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<div class="mb-4" data-tooltip-target="max_connections_tooltip">
-					<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">Maximum Connected Clients</label>
-					<input value={ strconv.Itoa(settings.MaxConnections) } type="text" id="max_connections" name="max_connections" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="5" required/>
-				</div>
-				<div id="max_connections_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					The maximum amount of connections the VPN server will accept
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<div class="mb-4 flex w-full">
-					<div class="w-3/5" data-tooltip-target="vpn_tooltip">
-						<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet</label>
-						<input value={ settings.VpnSubnet } type="text" id="vpn_subnet" name="vpn_subnet" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
-					</div>
-					<div id="vpn_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-						The subnet that clients will be assigned IPs from
-						<div class="tooltip-arrow" data-popper-arrow></div>
-					</div>
-					<p class="mx-2">/</p>
-					<div class="w-2/5" data-tooltip-target="vpn_subnet_tooltip">
-						<label for="max_connections" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white text-2xl">VPN Subnet Mask</label>
-						<input value={ strconv.Itoa(settings.VpnSubnetMask) } type="text" id="vpn_subnet_mask" name="vpn_subnet_mask" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block  p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="8080" required/>
-					</div>
-					<div id="vpn_subnet_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-						The mask of the subnet that clients will be assigned IPs from
-						<div class="tooltip-arrow" data-popper-arrow></div>
-					</div>
-				</div>
-				<div class="flex items-center mb-4" data-tooltip-target="gateway_tooltip">
-					<p class="mr-2">Use VPN Server As Gateway</p>
-					<label class="relative inline-flex items-center cursor-pointer">
-						if settings.UseAsGateway {
-							<input type="checkbox" name="use_as_gateway" class="sr-only peer" checked/>
-						} else {
-							<input type="checkbox" name="use_as_gateway" class="sr-only peer"/>
-						}
-						<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-					</label>
-				</div>
-				<div id="gateway_tooltip" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700">
-					Dedermines if the VPN server will be used as a gateway for clients. This is required for geospoofing
-					<div class="tooltip-arrow" data-popper-arrow></div>
-				</div>
-				<button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Save Settings</button>
-			</form>
 		</div>
 	</div>
 }

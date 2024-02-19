@@ -108,22 +108,22 @@ func setupRouter() *chi.Mux {
 		r.Use(login.AuthMiddleware)
 		r.Route("/server", func(r chi.Router) {
 			r.Get("/", settings.ServerSettingsPage)
-			r.Post("/", settings.SetServerSettings)
+			r.Post("/{protocol}", settings.SetServerSettings)
 		})
 
 		r.Route("/client", func(r chi.Router) {
 			r.Get("/", settings.ClientSettingsPage)
-			r.Post("/", settings.SetClientSettings)
+			r.Post("/{protocol}", settings.SetClientSettings)
 		})
 
 		r.Route("/auth", func(r chi.Router) {
 			r.Get("/", settings.AuthSettingsPage)
-			r.Post("/", settings.SetAuthSettings)
+			r.Post("/{protocol}", settings.SetAuthSettings)
 		})
 
 		r.Route("/config", func(r chi.Router) {
 			r.Get("/", settings.ConfigFileSettingsPage)
-			r.Post("/", settings.SetConfigFileContent)
+			r.Post("/{protocol}", settings.SetConfigFileContent)
 		})
 	})
 

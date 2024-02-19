@@ -7,29 +7,41 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func ServerSettingsPage(w http.ResponseWriter, r *http.Request) {
-	settings, err := GetSettings()
+	tcp, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Println(settings)
-	ServerSettings("test", settings).Render(r.Context(), w)
+	udp, err := GetUDPSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	ServerSettings("test", tcp, udp).Render(r.Context(), w)
 }
 
 func ClientSettingsPage(w http.ResponseWriter, r *http.Request) {
-	settings, err := GetSettings()
+	tcp, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	ClientSettings("test", settings).Render(r.Context(), w)
+	udp, err := GetUDPSettings()
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	ClientSettings("test", tcp, udp).Render(r.Context(), w)
 }
 
 func AuthSettingsPage(w http.ResponseWriter, r *http.Request) {
-	settings, err := GetSettings()
+	settings, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -38,12 +50,15 @@ func AuthSettingsPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func ConfigFileSettingsPage(w http.ResponseWriter, r *http.Request) {
-	contents, err := os.ReadFile(common.VPN_TCP_CONFIG_FILE)
+	tcp, err := os.ReadFile(common.VPN_TCP_CONFIG_FILE)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-	fmt.Println(string(contents))
-	ConfigFile("test", string(contents)).Render(r.Context(), w)
+	udp, err := os.ReadFile(common.VPN_UDP_CONFIG_FILE)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	ConfigFile("test", string(tcp), string(udp)).Render(r.Context(), w)
 }
 
 func SetServerSettings(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +66,7 @@ func SetServerSettings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	s, err := GetSettings()
+	s, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -65,11 +80,20 @@ func SetServerSettings(w http.ResponseWriter, r *http.Request) {
 	s.MaxConnections = int(MaxConnections)
 	s.UseAsGateway = r.Form.Get("use_as_gateway") == "on"
 
-	err = s.SaveSettings()
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+	if chi.URLParam(r, "protocol") == "tcp" {
+		err = s.SaveTCPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	} else {
+		err = s.SaveUDPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
+
 	http.Redirect(w, r, "/settings/server", http.StatusSeeOther)
 }
 
@@ -78,7 +102,7 @@ func SetClientSettings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	s, err := GetSettings()
+	s, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -87,10 +111,18 @@ func SetClientSettings(w http.ResponseWriter, r *http.Request) {
 	s.DNSServer2 = r.Form.Get("dns2")
 	s.PrivateAccess = r.Form.Get("private_access") == "on"
 
-	err = s.SaveSettings()
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+	if chi.URLParam(r, "protocol") == "tcp" {
+		err = s.SaveTCPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	} else {
+		err = s.SaveUDPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 	http.Redirect(w, r, "/settings/client", http.StatusSeeOther)
 }
@@ -100,7 +132,7 @@ func SetAuthSettings(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	settings, err := GetSettings()
+	settings, err := GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -112,10 +144,19 @@ func SetAuthSettings(w http.ResponseWriter, r *http.Request) {
 	settings.LockoutTimeout = lockout_timeout
 	settings.EnforceStrongPW = r.Form.Get("strong_passwords") == "on"
 	settings.AllowChangePW = r.Form.Get("change_password") == "on"
-	err = settings.SaveSettings()
-	if err != nil {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+
+	if chi.URLParam(r, "protocol") == "tcp" {
+		err = settings.SaveTCPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	} else {
+		err = settings.SaveUDPSettings()
+		if err != nil {
+			fmt.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 	http.Redirect(w, r, "/settings/auth", http.StatusSeeOther)
 }
@@ -127,9 +168,16 @@ func SetConfigFileContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	content := r.Form.Get("config")
-	err = os.WriteFile(common.VPN_TCP_CONFIG_FILE, []byte(content), 755)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+	if chi.URLParam(r, "protocol") == "tcp" {
+		err = os.WriteFile(common.VPN_TCP_CONFIG_FILE, []byte(content), 755)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	} else {
+		err = os.WriteFile(common.VPN_UDP_CONFIG_FILE, []byte(content), 755)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
 	http.Redirect(w, r, "/settings/config", http.StatusSeeOther)
 }

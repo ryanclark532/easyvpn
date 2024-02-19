@@ -50,7 +50,7 @@ type Settings struct {
 	DNSServer2    string `json:"dnsserver2" bun:"-"`
 }
 
-func (s Settings) SaveSettings() error {
+func (s Settings) SaveUDPSettings() error {
 	_, err := database.DB.NewUpdate().Table("settings").Set("latest = ?", false).Where("latest = ?", true).Exec(context.Background())
 	if err != nil {
 		return err
@@ -61,13 +61,28 @@ func (s Settings) SaveSettings() error {
 	if err != nil {
 		return err
 	}
-	err = s.RewriteConfig()
+	err = s.RewriteConfig(common.VPN_UDP_CONFIG_FILE)
 	return err
 }
 
-func (s Settings) RewriteConfig() error {
+func (s Settings) SaveTCPSettings() error {
+	_, err := database.DB.NewUpdate().Table("settings").Set("latest = ?", false).Where("latest = ?", true).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	s.Version += 1
+	s.Latest = true
+	_, err = database.DB.NewInsert().Model(s).Exec(context.Background())
+	if err != nil {
+		return err
+	}
+	err = s.RewriteConfig(common.VPN_TCP_CONFIG_FILE)
+	return err
+}
 
-	file, err := os.OpenFile(common.VPN_TCP_CONFIG_FILE, os.O_RDWR, 0644)
+func (s Settings) RewriteConfig(config string) error {
+
+	file, err := os.OpenFile(config, os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
@@ -115,7 +130,7 @@ func (s Settings) RewriteConfig() error {
 	return nil
 }
 
-func GetSettings() (*Settings, error) {
+func GetTCPSettings() (*Settings, error) {
 	newSettings := new(Settings)
 	err := database.DB.NewSelect().Model(newSettings).Where("latest = 1").Scan(context.Background())
 	if err != nil {
@@ -123,6 +138,36 @@ func GetSettings() (*Settings, error) {
 	}
 
 	file, err := os.Open(common.VPN_TCP_CONFIG_FILE)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == SETTINGS_BREAK {
+			break
+		}
+	}
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		readConfigLine(line, newSettings)
+	}
+	fmt.Println(newSettings.VpnSubnet)
+	return newSettings, nil
+}
+
+func GetUDPSettings() (*Settings, error) {
+	newSettings := new(Settings)
+	err := database.DB.NewSelect().Model(newSettings).Where("latest = 1").Scan(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := os.Open(common.VPN_UDP_CONFIG_FILE)
 	if err != nil {
 		return nil, err
 	}

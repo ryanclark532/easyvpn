@@ -9,8 +9,6 @@ import (
 	"os"
 	"strings"
 	"unicode"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func removeWhitespace(input string) string {

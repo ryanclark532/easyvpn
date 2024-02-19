@@ -100,7 +100,7 @@ func StatusOverviewPage(w http.ResponseWriter, r *http.Request) {
 	} else {
 		color = "yellow"
 	}
-	s, err := settings.GetSettings()
+	s, err := settings.GetTCPSettings()
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
