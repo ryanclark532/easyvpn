@@ -1,7 +1,38 @@
 ﻿@page "/"
+@using manager.Internal.Config
+@using Microsoft.AspNetCore.Authorization
+@inject ConfigParser ConfigParser
+
+@attribute [Authorize]
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h3 class="mb-3">Configuration</h3>
 
-Welcome to your new app.
+<form @onsubmit="HandleValidSubmit">
+    @foreach (var entry in ConfigParser.Config)
+    {
+        <div class="mb-3 d-flex align-items-center">
+            <label class="form-label me-2" style="width: 120px;">@entry.Key:</label>
+            <input id="name" @bind="ConfigParser.Config[entry.Key]" class="form-control" style="flex: 1;"/>
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@if (_formSubmitted)
+{
+    <p class="text-success">Form submitted successfully!</p>
+}
+
+@code {
+    private bool _formSubmitted;
+
+    private void HandleValidSubmit()
+    {
+        // Handle form submission
+        _formSubmitted = true;
+    }
+
+}
